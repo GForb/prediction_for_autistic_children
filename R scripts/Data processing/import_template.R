@@ -14,10 +14,10 @@ library(here)
 
 
 # for each wave:
-  # merge all questioanire data so there is one row per participant
-  # generate a variable indicating which wave
-  # generate an ID relating to each particpat
+  # merge all questionnaire data so there is one row per participant
   # select needed variables
+  # generate a variable indicating which wave
+  # generate an ID relating to each particpant
   # rename variables to match variable name list 
 
 # stack (use bind_rows) data from different rows
