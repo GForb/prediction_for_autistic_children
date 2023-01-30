@@ -1,0 +1,22 @@
+# Variable name guide
+
+
+## Particpant Information
+particpant_id - unique id for autistic participant
+gender
+age - age in years
+
+## Data about particpants
+append _p for parent report, _t for teacher report, and _s for self report. If more than one parent has completed a measure then the main parent should be _p and a subsequent parent _p2...
+For example parent report sdq is sdq_p, self report sdq is sdq_s.
+
+sdq - strengths and difficulties questionaire
+
+
+## Data about missingness
+If there is data on number of missing items add _miss_items to the end of the variable name
+
+For example sdq_p_miss_items 
+
+## study variables
+gui - Growing up in Ireland
