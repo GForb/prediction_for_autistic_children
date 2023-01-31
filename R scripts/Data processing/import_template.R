@@ -25,6 +25,6 @@ library(here)
 
 # merge stacked dataset with autism diagnosis tibble, 
 
-# keep only autistic particpants - drop others
+# keep only autistic participants - drop others
 
 # add a variable indicating which study the data is from
