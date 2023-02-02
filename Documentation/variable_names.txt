@@ -10,7 +10,12 @@ age - age in years
 append _p for parent report, _t for teacher report, and _s for self report. If more than one parent has completed a measure then the main parent should be _p and a subsequent parent _p2...
 For example parent report sdq is sdq_p, self report sdq is sdq_s.
 
-sdq - strengths and difficulties questionaire
+sdq_tot - strengths and difficulties questionaire total score
+sdq_cond - SQQ conduct problems
+sdq_peer - SDQ peer problems
+sdq_pro - SDQ pro-social
+sdq_hyp - SDQ hyperactivity subscale
+sdq_emot - SDQemotional subscale
 
 
 ## Data about missingness
