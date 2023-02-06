@@ -111,3 +111,5 @@ print(clean_data)
 length(unique(clean_data$ID))
 
 clean_data |> select(wave) |> table()
+
+write.csv(clean_data, file = file.path(derived_data, "GUI/gui_clean.csv"))
