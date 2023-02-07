@@ -86,7 +86,7 @@ gui_all <- bind_rows(gui_wave_1, gui_wave_2, gui_wave_3)
 
 # Selecting variables ----
 
-gui_selected <- gui_all |> select(ID, wave, gender, age, autism_status, sdq_emot_p, sdq_cond_p, sdq_hyp_p, sdq_peer_p, sdq_pro_p, sdq_tot_p, sdq_emot_t, sdq_cond_t, sdq_hyp_t, sdq_peer_p, sdq_pro_t, sdq_tot_t, sdq_emot_p2, sdq_cond_p2, sdq_hyp_p2, sdq_peer_p2, sdq_pro_p2, sdq_tot_p2) # add sdqs
+gui_selected <- gui_all |> select(ID, wave, gender, age, autism_status, sdq_emot_p, sdq_cond_p, sdq_hyp_p, sdq_peer_p, sdq_pro_p, sdq_tot_p, sdq_emot_t, sdq_cond_t, sdq_hyp_t, sdq_peer_t, sdq_pro_t, sdq_tot_t, sdq_emot_p2, sdq_cond_p2, sdq_hyp_p2, sdq_peer_p2, sdq_pro_p2, sdq_tot_p2) # add sdqs
 
 sorted_data <- gui_selected[order(gui_selected$ID, gui_selected$wave),]
 
