@@ -82,34 +82,35 @@ gui_wave_3 <- gui_wave_3 |>
 
 
 
-gui_all <- bind_rows(gui_wave_1, gui_wave_2, gui_wave_3)
+data_all <- bind_rows(gui_wave_1, gui_wave_2, gui_wave_3)
 
 
 # Selecting variables ----
 
-gui_selected <- gui_all |> select(ID, wave, gender, age, autism_status, sdq_emot_p, sdq_cond_p, sdq_hyp_p, sdq_peer_p, sdq_pro_p, sdq_tot_p, sdq_emot_t, sdq_cond_t, sdq_hyp_t, sdq_peer_t, sdq_pro_t, sdq_tot_t, sdq_emot_p2, sdq_cond_p2, sdq_hyp_p2, sdq_peer_p2, sdq_pro_p2, sdq_tot_p2) # add sdqs
+data_selected <- data_all |> select(ID, wave, gender, age, autism_status, 
+                                  starts_with("sdq")) 
 
-sorted_data <- gui_selected[order(gui_selected$ID, gui_selected$wave),]
+data_selected <- data_selected |> arrange(ID, wave)
+
 
 # Create list of autism IDs ----
-gui_autistic <- gui_all |> filter(autism_status ==1 |autism_status ==2) 
-id_of_asd_pcpts <- gui_autistic[!duplicated(gui_autistic$ID), ]
+data_autistic <- data_all |> filter(autism_status ==1 |autism_status ==2) 
+id_of_asd_pcpts <- data_autistic[!duplicated(data_autistic$ID), ]
 
 id_of_asd_pcpts <- id_of_asd_pcpts[['ID']]
 
 # Selecting autistic participants ----
-clean_data <- sorted_data |> 
+data_autistic <- data_selected |> 
   filter(ID %in% id_of_asd_pcpts)
-
-# Adding study level variables ----
-clean_data <- clean_data |> mutate(study = "gui",
-                                   country = "Ireland")
 
 
 clean_data |> select(wave, autism_status) |>  table(useNA = "always")
 
 print(clean_data)
 length(unique(clean_data$ID))
+# Adding study level variables ----
+gui_data <- data_autistic_mv_fixed |> mutate(study = "gui",
+                                   country = "Ireland")
 
 clean_data |> select(wave) |> table()
 
