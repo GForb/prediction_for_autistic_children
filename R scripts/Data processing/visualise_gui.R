@@ -3,16 +3,10 @@ library(here)
 library(ggplot2)
 library(patchwork)
 
-gui_data <- read_csv(file.path(derived_data, "GUI/gui_clean.csv"))
+load(file.path(derived_data, "gui.Rdata"))
 
 gui_data <- gui_data[,-1]
 
-gui_data$sdq_emot_t[gui_data$sdq_emot_t == 99] <- NA
-gui_data$sdq_cond_t[gui_data$sdq_cond_t == 99] <- NA
-gui_data$sdq_hyp_t[gui_data$sdq_hyp_t == 99] <- NA
-gui_data$sdq_peer_t[gui_data$sdq_peer_t == 99] <- NA
-gui_data$sdq_pro_t[gui_data$sdq_pro_t == 99] <- NA
-gui_data$sdq_tot_t[gui_data$sdq_tot_t == 99] <- NA
 
 gui_data <- as.data.frame(gui_data)
 
