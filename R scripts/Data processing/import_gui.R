@@ -113,4 +113,4 @@ gui_data <- data_autistic_mv_fixed |> mutate(study = "gui",
                                    country = "Ireland")
 
 
-write.csv(clean_data, file = file.path(derived_data, "GUI/gui_clean.csv"))
+save (gui_data, file = file.path(derived_data, "gui.Rdata"))
