@@ -107,14 +107,10 @@ data_autistic <- data_selected |>
 data_autistic_mv_fixed <- data_autistic |> 
   mutate(across(starts_with("sdq"),  ~na_if(., 99)))
 
-clean_data |> select(wave, autism_status) |>  table(useNA = "always")
 
-print(clean_data)
-length(unique(clean_data$ID))
 # Adding study level variables ----
 gui_data <- data_autistic_mv_fixed |> mutate(study = "gui",
                                    country = "Ireland")
 
-clean_data |> select(wave) |> table()
 
 write.csv(clean_data, file = file.path(derived_data, "GUI/gui_clean.csv"))
