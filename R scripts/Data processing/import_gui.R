@@ -103,6 +103,9 @@ id_of_asd_pcpts <- id_of_asd_pcpts[['ID']]
 data_autistic <- data_selected |> 
   filter(ID %in% id_of_asd_pcpts)
 
+# Replacing missing values coded as numbers with NAs ----
+data_autistic_mv_fixed <- data_autistic |> 
+  mutate(across(starts_with("sdq"),  ~na_if(., 99)))
 
 clean_data |> select(wave, autism_status) |>  table(useNA = "always")
 
