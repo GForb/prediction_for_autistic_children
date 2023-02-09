@@ -5,17 +5,29 @@ library(patchwork)
 
 load(file.path(derived_data, "gui.Rdata"))
 
-gui_data <- gui_data[,-1]
+gui_data |> 
+  select(-ID, where(~is.character(.))) |> 
+  pivot_longer(everything())
+  
 
+# Obtaining a tibble of summaries ----
+data_long <- gui_data |> 
+  select(where(~!is.character(.)), -ID, -wave) |> 
+  pivot_longer(everything())
 
-gui_data <- as.data.frame(gui_data)
+summary_statistics <- data_long |> 
+  group_by(name) |> 
+  summarise(n = sum(!is.na(value)),
+            mean = mean(value,na.rm = TRUE), 
+            sd = sd(value, na.rm = TRUE),
+            median = median(value, na.rm =TRUE),
+            p25 = quantile (value, probs = 0.25, na.rm = TRUE),
+            p75 = quantile (value, probs = 0.75, na.rm = TRUE),
+            min = min(value, na.rm = TRUE),
+            max = max(value, na.rm = TRUE)
+  )
 
 for (i in 6:23) {
-  print(paste("Variable:", colnames(gui_data[i])))
-  print(paste("Minimum value of variable:", min(gui_data[,i], na.rm = T)))
-  print(paste("Maximum value of variable:", max(gui_data[,i], na.rm =T)))
-  print(paste("Median value of variable:", median(gui_data[,i], na.rm =T)))
-  print(paste("Mean of variable:", mean(gui_data[,i], na.rm =T)))
   tmp <- ggplot(gui_data, aes(x = 1.5, y = gui_data[,i], na.rm = T)) + 
     labs(x = as.character(names(gui_data[i])), y = "Value") +
     ggdist::stat_halfeye(
