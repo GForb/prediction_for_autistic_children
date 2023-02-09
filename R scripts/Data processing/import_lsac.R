@@ -1,0 +1,17 @@
+library(tidyverse)
+library(here)
+
+lsac_wave_1 <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey data/SAS/lsacgrk4.sas7bdat"))
+lsac_wave_2 <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey data/SAS/lsacgrk6.sas7bdat"))
+lsac_wave_2.5 <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey data/SAS/lsacgrk7.sas7bdat"))
+lsac_wave_3 <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey data/SAS/lsacgrk8.sas7bdat"))
+lsac_wave_3.5 <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey data/SAS/lsacgrk9.sas7bdat"))
+lsac_wave_4 <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey data/SAS/lsacgrk10.sas7bdat"))
+lsac_wave_5 <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey data/SAS/lsacgrk12.sas7bdat"))
+lsac_wave_6 <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey data/SAS/lsacgrk14.sas7bdat"))
+lsac_wave_7 <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey data/SAS/lsacgrk16.sas7bdat"))
+lsac_wave_8 <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey data/SAS/lsacgrk18.sas7bdat"))
+lsac_wave_9.1 <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey data/SAS/lsacgrk20.sas7bdat"))
+lsac_wave_9.2 <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey data/SAS/lsacgrk21.sas7bdat"))
+
+med_cond <- grep("hs17a", colnames(lsac_wave_1))
