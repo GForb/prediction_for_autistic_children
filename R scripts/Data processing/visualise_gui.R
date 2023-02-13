@@ -5,10 +5,6 @@ library(patchwork)
 
 load(file.path(derived_data, "gui.Rdata"))
 
-gui_data |> 
-  select(-ID, where(~is.character(.))) |> 
-  pivot_longer(everything())
-  
 
 # Obtaining a tibble of summaries ----
 data_long <- gui_data |> 

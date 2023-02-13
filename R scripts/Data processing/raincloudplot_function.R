@@ -1,10 +1,6 @@
 library(gridExtra)
 library(ggdist)
 
-give_column <- function(varname, data) {
-  ind <- grep(varname, colnames(data))
-  return(ind)
-}
 
 make_raincloudplot <- function(column, col_label, colour) {
   data = tibble(column)
