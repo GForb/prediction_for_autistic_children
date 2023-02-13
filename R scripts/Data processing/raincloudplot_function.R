@@ -40,24 +40,9 @@ make_raincloudplots <- function(data, columns, colour) {
   }
 }
 
-#now merged with the next function - can be deleted
-give_plotlist <- function(data, columns, colour) {
-  plt_names <- list()
-  plots <- list()
-  for(i in 1:length(columns)){
-    name <- paste("plot", i, sep="")
-    plt_names[i] <- name
-    plots[i] <- columns[i]
-  }
-  names(plots) <- plt_names
-  plotlist <- lapply(plots, make_raincloudplot, data = data, colour = colour)
   return(plotlist)
 }
-#now merged with the next function - can be deleted
-make_summary_plot <- function(plotlist){
-  finalplot <- grid.arrange(grobs = plotlist, ncol = 6)
-  return(finalplot)
-}
+
 
 #this works only if you install the package called gridExtra (function call inside function references to the package)
 compare_raincloudplots <- function(data, columns, colour, figure_col_number){
