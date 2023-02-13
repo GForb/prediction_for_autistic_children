@@ -6,14 +6,14 @@ give_column <- function(varname, data) {
   return(ind)
 }
 
-make_raincloudplot <- function(data, column, colour) {
-  data <- as.data.frame(data)
-  tmp <- ggplot(data, aes(x = 1.5, y = data[,column], colour = colour, na.rm = T)) + 
-    labs(x = as.character(names(data[column])), y = "Value") +
+make_raincloudplot <- function(column, col_label, colour) {
+  data = tibble(column)
+  col_name = colnames(data)
+  tmp <- ggplot(data, aes(x = 1.5, y = .data[[col_name]],  colour = colour, na.rm = T)) + 
+    labs(x = as.character(col_label), y = "Value") +
     ggdist::stat_halfeye(
       colour = colour, 
       fill = colour,
-      adjust = .5, 
       width = .6, 
       .width = 0, 
       justification = -.3, 
