@@ -1,4 +1,6 @@
 library(gridExtra)
+library(ggdist)
+
 give_column <- function(varname, data) {
   ind <- grep(varname, colnames(data))
   return(ind)
@@ -40,17 +42,9 @@ make_raincloudplots <- function(data, colour) {
 
 
 #this works only if you install the package called gridExtra (function call inside function references to the package)
-compare_raincloudplots <- function(data, columns, colour, figure_col_number){
-  plt_names <- list()
-  plots <- list()
-  for(i in 1:length(columns)){
-    name <- paste("plot", i, sep="")
-    plt_names[i] <- name
-    plots[i] <- columns[i]
-  }
-  names(plots) <- plt_names
-  plotlist <- lapply(plots, make_raincloudplot, data = data, colour = colour)
-  finalplot <- gridExtra::grid.arrange(grobs = plotlist, ncol = figure_col_number)
+compare_raincloudplots <- function(data, colour, ncol_in_figure){
+  plotlist <- make_raincloudplots(data, colour)
+  finalplot <- gridExtra::grid.arrange(grobs = plotlist, ncol = ncol_in_figure)
   return(finalplot)
 }
 
