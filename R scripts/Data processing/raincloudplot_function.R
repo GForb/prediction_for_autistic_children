@@ -33,13 +33,8 @@ make_raincloudplot <- function(data, column, colour) {
   return(tmp)
 }
 
-make_raincloudplots <- function(data, columns, colour) {
-  for (i in columns) {
-    plt <- make_raincloudplot(data, i, colour)
-    print(plt)
-  }
-}
-
+make_raincloudplots <- function(data, colour) {
+  plotlist <- map2(data, colnames(data), make_raincloudplot, colour = colour)
   return(plotlist)
 }
 
