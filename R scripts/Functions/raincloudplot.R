@@ -24,7 +24,7 @@ make_raincloudplot <- function(column, col_label, colour) {
       alpha = .3,
       colour = colour,
       position = position_jitter(
-        seed = 1, width = .1
+        seed = 1, width = .1 ,height =0.15
       )
     ) + 
     coord_cartesian(xlim = c(1.2, NA), clip = "off")
