@@ -54,7 +54,5 @@ compare_raincloudplots <- function(data, columns, colour, figure_col_number){
   return(finalplot)
 }
 
-compare_raincloudplots(clean_data, 6:11, "darkgreen", 3) #this does what i wanted it to do 
-#suggested use: (also i can put the give_column function into the compare_raincloudplots and then we can get plots by variable namess)
-compare_raincloudplots(clean_data, give_column("sdq", clean_data), "red", 6)
+
 
