@@ -19,9 +19,9 @@ sdq_emot - SDQemotional subscale
 
 
 ## Data about missingness
-If there is data on number of missing items add _miss_items to the end of the variable name
+If there is data on number of missing items add miss_items_ to the start of the variable name
 
-For example sdq_p_miss_items 
+For example miss_items_sdq_p
 
 ## study variables
 gui - Growing up in Ireland
