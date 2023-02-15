@@ -319,4 +319,10 @@ lsac_data <- data_asd_lsac |>
   mutate(study = "lsac", 
          country = "Australia")
 
+lsac_data <- lsac_data |> 
+  arrange(ID, wave)
+lsac_data
+
+
 save(lsac_data, file = file.path(derived_data, "lsac.Rdata"))
+
