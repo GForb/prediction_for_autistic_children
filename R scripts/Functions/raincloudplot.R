@@ -1,5 +1,6 @@
 library(gridExtra)
 library(ggdist)
+library(ggthemes)
 
 
 make_raincloudplot <- function(column, col_label, colour) {
@@ -27,7 +28,9 @@ make_raincloudplot <- function(column, col_label, colour) {
         seed = 1, width = .1 ,height =0.15
       )
     ) + 
-    coord_cartesian(xlim = c(1.2, NA), clip = "off")
+    coord_cartesian(xlim = c(1.2, NA), clip = "off") +
+    ggthemes::theme_fivethirtyeight() +
+    theme(axis.title = element_text(), axis.ticks.x = element_blank(), axis.text.x = element_blank())
   return(tmp)
 }
 
