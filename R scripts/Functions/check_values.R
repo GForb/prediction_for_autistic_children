@@ -2,6 +2,7 @@ library(tidyverse)
 library(here)
 
 correct_values <- read.csv("variable_metadata.csv")
+#cleaning up metadata so it doesn't cause errors 
 correct_values[3, 1] <- "sdq_tot"
 correct_values[6, 1] <- "sdq_pro"
 
