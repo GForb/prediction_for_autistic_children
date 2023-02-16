@@ -14,13 +14,13 @@ check_values <- function(data, metadata) {
     tibble <- data |> 
       select(starts_with(string))
     for (j in 1:ncol(tibble)) {
-      if(max(tibble[,j], na.rm = TRUE) > metadata[i,3]){
+      if(min(tibble[,j], na.rm = TRUE) < metadata[i, 2]){
         test_passed <- FALSE
-        failed_the_test[i] <- colnames(tibble[,j])
+        failed_the_test <- append(failed_the_test, colnames(tibble[,j]))
       }else{
-        if(min(tibble[,j], na.rm = TRUE) < metadata[i, 2]){
+        if(max(tibble[,j], na.rm = TRUE) > metadata[i,3]){
           test_passed <- FALSE
-          failed_the_test[i] <- colnames(tibble[,j])
+          failed_the_test <- append(failed_the_test, colnames(tibble[,j]))
         }
       }
     }
@@ -31,4 +31,20 @@ check_values <- function(data, metadata) {
     return(print(paste0(failed_test, failed_the_test)))
   }
 }
+#examples:
+
+#incorrect case
+check_values(lsac_data, correct_values)
+
+#incorrect case
 check_values(gui_data, correct_values)
+
+#fixing metadata values 
+correct_values[1, 2] <- 1
+correct_values[1, 3] <- 2
+
+#now gui data should be correct
+check_values(gui_data, correct_values)
+
+#now gender shouldnt appear for lsac
+check_values(lsac_data, correct_values)
