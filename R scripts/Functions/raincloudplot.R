@@ -106,13 +106,15 @@ make_gif <- function(data, n_o_waves, column, col_label, colour){
   for(i in 1:n_o_waves){
     present_data <- data_wave[[i]]
     print(present_data)
-    column_sel <- tibble(purrr::pluck(column))
+    column_sel <- magrittr::extract(column)
     print(column_sel)
     rc <- make_raincloudplot(column_sel, col_label, colour)
-    rc +
+    rc <- rc +
       ggplot2::ggtitle(paste("Wave", i))
     plots[i] <- rc
   }
   return(plots)
 }
+
+make_gif(gui_data, 3, gui_data$sdq_hyp_p, "hyper", "green")
 make_animated_plot(gui_data, gui_data$sdq_emot_p, "SDQ Emotional", "red")
