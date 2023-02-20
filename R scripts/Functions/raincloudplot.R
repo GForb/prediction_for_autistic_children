@@ -30,7 +30,7 @@ make_raincloudplot <- function(column, col_label, colour) {
       )
     ) + 
     coord_cartesian(xlim = c(1.2, NA), clip = "off") +
-    #ggthemes::theme_fivethirtyeight() 
+    ggthemes::theme_fivethirtyeight() 
     theme(axis.title = element_text(), axis.ticks.x = element_blank(), axis.text.x = element_blank())
   return(tmp)
 }
@@ -119,7 +119,7 @@ divide_by_wave <- function(data, n_o_waves){
 # }
 
 
-make_gif2 <- function(data, n_o_waves, as_string_column, col_label, colour){
+make_raincloudplot_wave <- function(data, n_o_waves, as_string_column, col_label, colour){
   data_wave <- divide_by_wave(data, n_o_waves)
   lapply(data_wave[as_string_column], print)
   raincloud_wave <- lapply(data_wave, function(x){
@@ -127,6 +127,8 @@ make_gif2 <- function(data, n_o_waves, as_string_column, col_label, colour){
   })
   return(raincloud_wave)
 }
+
+
 
 y <- make_gif2(gui_data, 3, "sdq_hyp_p", "Emotional", "pink")
 y
