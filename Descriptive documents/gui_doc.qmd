@@ -1,0 +1,19 @@
+---
+title: "Growing Up in Ireland (GUI) descriptive statistics and visualisation"
+format: html
+editor: visual
+---
+
+```{r}
+library(tidyverse)
+library(here)
+library(ggplot2)
+library(haven)
+library(gridExtra)
+library(ggdist)
+library(ggthemes)
+library(gifski)
+library(magick)
+```
+
+The Growing Up in Ireland cohort is a general population cohort following
