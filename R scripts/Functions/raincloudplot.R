@@ -2,6 +2,7 @@ library(gridExtra)
 library(ggdist)
 library(ggthemes)
 library(gifski)
+library(cowplot)
 
 
 make_raincloudplot <- function(column, col_label, colour) {
@@ -30,8 +31,8 @@ make_raincloudplot <- function(column, col_label, colour) {
       )
     ) + 
     coord_cartesian(xlim = c(1.2, NA), clip = "off") +
-    #ggthemes::theme_fivethirtyeight() 
-    theme(axis.title = element_text(), axis.ticks.x = element_blank(), axis.text.x = element_blank())
+    ggthemes::theme_few() +
+    theme( title = element_text(), axis.title = element_text(), axis.ticks.x = element_blank(), axis.text.x = element_blank(), axis.text.y = element_text())
   return(tmp)
 }
 
@@ -119,16 +120,17 @@ divide_by_wave <- function(data, n_o_waves){
 # }
 
 
-make_gif2 <- function(data, n_o_waves, as_string_column, col_label, colour){
+make_raincloudplot_wave <- function(data, n_o_waves, as_string_column, col_label, colour){
   data_wave <- divide_by_wave(data, n_o_waves)
-  lapply(data_wave[as_string_column], print)
   raincloud_wave <- lapply(data_wave, function(x){
     lapply(x[as_string_column], make_raincloudplot, col_label = col_label, colour = colour)
   })
   return(raincloud_wave)
 }
 
-y <- make_gif2(gui_data, 3, "sdq_hyp_p", "Emotional", "pink")
+
+
+y <- make_raincloudplot_wave(gui_data, 3, "sdq_hyp_p", "Hyperactive", "pink")
 y
 #make_gif(gui_data, 3, gui_data$sdq_hyp_p, "hyper", "green")
 #make_animated_plot(gui_data, gui_data$sdq_emot_p, "SDQ Emotional", "red")
