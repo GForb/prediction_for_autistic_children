@@ -2,7 +2,7 @@ library(gridExtra)
 library(ggdist)
 library(ggthemes)
 library(gifski)
-library(cowplot)
+
 
 
 make_raincloudplot <- function(column, col_label, colour) {
