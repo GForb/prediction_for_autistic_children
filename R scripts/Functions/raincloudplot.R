@@ -14,8 +14,13 @@ set_labs <- function(variable, metadata){
 
 make_raincloudplot <- function(column, col_label, colour) {
   meta <- read_csv(here::here("variable_metadata.csv"))
-  var_name <- sub(".*\\$", "", deparse(substitute(column)))
-  var_name <- sub("_\\w$", "", var_name)
+  if(class(column) == "numeric"){
+    var_name <- sub(".*\\$", "", deparse(substitute(column)))
+    var_name <- sub("_\\w$", "", var_name)}
+  if(class(var_name) == "character"){
+    var_name <- column 
+    var_name <- gsub("[^[:alnum:]_]", "", deparse(substitute(my_data[var_name])))
+  }
   limz <- set_labs(var_name, meta)
   data = tibble(column)
   col_name = colnames(data)
@@ -81,9 +86,19 @@ make_raincloudplot_wave <- function(data, n_o_waves, as_string_column, col_label
   return(raincloud_wave)
 }
 
+# create a data frame
+my_data <- data.frame(x = 1:10, y = letters[1:10])
+
+# create a variable name as a string
+var_name <- "x"
+
+# get the variable name from the data frame as a string
+var_name_string <- gsub("[^[:alnum:]_]", "", deparse(substitute(my_data[var_name])))
+
+# print the variable name string
+cat(var_name_string)
 
 
-#y <- make_raincloudplot_wave(gui_data, 3, "sdq_hyp_p", "Hyperactive", "pink")
+make_raincloudplot_wave(gui_data, 3, "sdq_hyp_p", "Hyperactive", "pink")
 #y
-
 
