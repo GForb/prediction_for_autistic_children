@@ -23,7 +23,7 @@ check_values <- function(data, metadata) {
 
 check_variable <- function(variable_to_check, min, max, data) {
   
-  columns_to_check <- data |> slect(starts_with(variable_to_check))
+  columns_to_check <- data |> select(starts_with(variable_to_check))
   if(ncol(check_col) >1) {
     check_cols(columns_to_check, min, max)
   }
