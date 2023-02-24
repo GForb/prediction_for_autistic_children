@@ -33,7 +33,7 @@ check_variable <- function(variable_to_check, min, max, data) {
 check_columns <- function(data, min, max) {
   failed_vars <- list()
   
-  failed_vars <- apply(data, MARGIN = 2 FUN = check_column, min = min, max = max)
+  failed_vars <- apply(data, MARGIN = 2, FUN = check_column, min = min, max = max)
  
   
   return(failed_vars)
