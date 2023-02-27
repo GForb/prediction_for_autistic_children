@@ -7,3 +7,6 @@ sdq_peer,0,10,any,SDQ Peer problems,SDQ Peer
 sdq_pro,0,10,any,SDQ Pro-social,SDQ Social
 sdq_hyp,0,10,any,SDQ Hyperactivity,SDQ Hyper
 sdq_emot,0,10,any,SDQ Emotional,SDQ Emot.
+iq_performance,1,180,any,Performance IQ,PIQ
+iq_verbal,1,180,any,Verbal IQ,VIQ
+iq_full_scale,1,180,any,Full Scale IQ,FSIQ

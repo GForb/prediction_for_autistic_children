@@ -3,13 +3,14 @@
 
 ## Particpant Information
 particpant_id - unique id for autistic participant
-gender
-age - age in years
+sex - Sex
+age - Age in years
 
 ## Data about particpants
 append _p for parent report, _t for teacher report, and _s for self report. If more than one parent has completed a measure then the main parent should be _p and a subsequent parent _p2...
 For example parent report sdq is sdq_p, self report sdq is sdq_s.
 
+### SDQ
 sdq_tot - strengths and difficulties questionaire total score
 sdq_cond - SQQ conduct problems
 sdq_peer - SDQ peer problems
@@ -17,6 +18,10 @@ sdq_pro - SDQ pro-social
 sdq_hyp - SDQ hyperactivity subscale
 sdq_emot - SDQemotional subscale
 
+### IQ
+iq_performance - Performance IQ
+iq_verbal - Verbal IQ
+iq_full_scale - Full scale IQ
 
 ## Data about missingness
 If there is data on number of missing items add miss_items_ to the start of the variable name

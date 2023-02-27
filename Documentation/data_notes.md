@@ -18,3 +18,17 @@ pc3d3d -  Does YP have autism spectrum disorders (e.g. autism, aspergers syndrom
 ### Wave 4 - no mention of autism
 
 Speach and language difficulty data is available alongside ASD question in wave 2
+
+## Howlin Rutter
+We treat the data as two waves and use the following variables from the original data:
+
+#### Wave 1: Childhood
+- critage - Age
+- sex - Sex
+- cpiq = performance iq - note critiq, labelled best estimate iq is identical to this variabl
+- cviq = verbal iq
+
+#### Wave 2: Adulthood
+- testage - Age
+- bestfina - performance IQ
+- viqest
