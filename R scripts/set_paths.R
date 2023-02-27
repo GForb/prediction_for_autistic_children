@@ -5,3 +5,5 @@ data_and_outputs <-  Sys.getenv("pfac_path")
 raw_data <- file.path(data_and_outputs, "Raw data")
 derived_data <- file.path(data_and_outputs, "Derived data")
 outputs <- file.path(data_and_outputs, "Outputs")
+
+var_metadata <- read.csv(here::here("variable_metadata.csv"))
