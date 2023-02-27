@@ -2,9 +2,14 @@
 title: "Growing Up in Ireland (GUI) descriptive statistics and visualisation"
 format: html
 editor: visual
+execute: 
+  echo: false
 ---
 
+# **Growing Up in Ireland (GUI) study characteristics**
+
 ```{r}
+#| warning: false
 library(tidyverse)
 library(here)
 library(ggplot2)
@@ -14,6 +19,317 @@ library(ggdist)
 library(ggthemes)
 library(gifski)
 library(magick)
+library(gt)
+library(gtExtras)
+
+source(here::here("R scripts/set_paths.R"))
+source(here::here("R scripts/Data Processing/import_gui.R"))
+source(here::here("R scripts/Functions/raincloudplot.R"))
+source(here::here("R scripts/Functions/summary_functions.R"))
+source(here::here("R scripts/Functions/gif.R"))
 ```
 
-The Growing Up in Ireland cohort is a general population cohort following
+The Growing Up in Ireland cohort is a general population cohort commenced in 2006. It follows two cohorts, 8000 individuals who were 9 years old when data collection started ('98 cohort) and 10000 additional children who were 9 months old when data collection began ('08 cohort). The present study only includes the '98 cohort as the '08 cohort does not meet the study's eligibility criteria.
+
+The following table displays the descriptive statistics for autistic participants associated with each study variable (SDQ completed by Primary Caregiver).
+
+Table 1.
+
+```{r}
+#| warning: false
+make_summary_table(gui_data) |> 
+  filter(name %in% c("age", "gender", "sdq_emot_p", "sdq_cond_p", "sdq_hyp_p", "sdq_peer_p", "sdq_pro_p"))|> 
+  gt() |> 
+  gt_theme_espn()
+```
+
+### Autistic Participants in the GUI
+
+Information about the ASD status of pcpts e.g. diagnosis ,validity of diagnosis, reported by who etc.
+
+## Descriptive statistics for each wave
+
+#### Table 2a. Wave 1 data
+
+```{r}
+#| warning: false
+wave_1 <- make_summary_by_wave(gui_data, 3)
+wave_1 <- wave_1[[1]] |> 
+  filter(name %in% c("age", "gender", "sdq_emot_p", "sdq_cond_p", "sdq_hyp_p", "sdq_peer_p", "sdq_pro_p", "sdq_tot_p"))
+wave_1|> 
+  gt() |> 
+  gt_theme_espn()
+```
+
+#### Table 2b. Wave 2 data
+
+```{r}
+#| warning: false
+wave_2 <- make_summary_by_wave(gui_data, 3)
+wave_2 <- wave_2[[2]] |> 
+  filter(name %in% c("age", "gender", "sdq_emot_p", "sdq_cond_p", "sdq_hyp_p", "sdq_peer_p", "sdq_pro_p", "sdq_tot_p"))
+wave_2|> 
+  gt() |> 
+  gt_theme_espn()
+```
+
+### Table 2c. Wave 3 data
+
+```{r}
+#| warning: false
+wave_3 <- make_summary_by_wave(gui_data, 3)
+wave_3 <- wave_3[[3]] |> 
+  filter(name %in% c("age", "gender", "sdq_emot_p", "sdq_cond_p", "sdq_hyp_p", "sdq_peer_p", "sdq_pro_p", "sdq_tot_p"))
+wave_3|> 
+  gt() |> 
+  gt_theme_espn()
+```
+
+## Visual representation of the data
+
+#### Figure 1a SDQ Total Problems Score
+
+```{r}
+#| warning: false
+make_raincloudplot(gui_data$sdq_tot_p, "SDQ Total Problems Score", "blue4")
+make_summary_table(gui_data) |> 
+  filter(name == "sdq_tot_p") |> 
+  gt() |> 
+  gt_theme_espn()
+```
+
+#### Figure 1b SDQ Total Problems Score by Wave
+
+```{r}
+#| warning: false
+sdq_tot <- make_raincloudplot_wave(gui_data, 3, "sdq_tot_p", "SDQ Total Problems Score by Wave", "blue4")
+create_gif(sdq_tot)
+```
+
+```{r}
+#| warning: false
+first <- make_summary_by_wave(gui_data, 3)
+first[[1]] |> 
+  filter(name == "sdq_tot_p") |> 
+  gt() |> 
+  tab_header("Wave 1") |> 
+  gt_theme_espn()
+second <- make_summary_by_wave(gui_data, 3)
+second[[2]] |> 
+  filter(name == "sdq_tot_p") |> 
+  gt() |> 
+  tab_header("Wave 2") |> 
+  gt_theme_espn()
+third <- make_summary_by_wave(gui_data, 3)
+third[[3]] |>
+  filter(name == "sdq_tot_p") |>
+  gt() |>
+  tab_header("Wave 3") |> 
+  gt_theme_espn()
+```
+
+#### Figure 2a SDQ Emotional Problems Scale
+
+```{r}
+#| warning: false
+make_raincloudplot(gui_data$sdq_emot_p, "SDQ Emotinal Problems scale", "darkmagenta")
+make_summary_table(gui_data) |> 
+  filter(name == "sdq_emot_p") |> 
+  gt() |> 
+  gt_theme_espn()
+
+```
+
+Figure 2b SDQ Emotinal Problems Scale by Wave
+
+```{r}
+#| warning: false
+sdq_emot <- make_raincloudplot_wave(gui_data, 3, "sdq_emot_p", "SDQ Emotinal Problems scale", "darkmagenta")
+create_gif(sdq_emot)
+```
+
+```{r}
+#| warning: false
+first <- make_summary_by_wave(gui_data, 3)
+first[[1]] |> 
+  filter(name == "sdq_emot_p") |> 
+  gt() |> 
+  tab_header("Wave 1") |> 
+  gt_theme_espn()
+second <- make_summary_by_wave(gui_data, 3)
+second[[2]] |> 
+  filter(name == "sdq_emot_p") |> 
+  gt() |> 
+  tab_header("Wave 2") |> 
+  gt_theme_espn()
+third <- make_summary_by_wave(gui_data, 3)
+third[[3]] |>
+  filter(name == "sdq_emot_p") |>
+  gt() |>
+  tab_header("Wave 3") |> 
+  gt_theme_espn()
+```
+
+Figure 3a SDQ Conduct Problems Scale
+
+```{r}
+#| warning: false
+make_raincloudplot(gui_data$sdq_cond_p, "SDQ Conduct Problems Scale", "olivedrab4")
+make_summary_table(gui_data) |> 
+  filter(name == "sdq_cond_p") |> 
+  gt() |> 
+  gt_theme_espn()
+```
+
+Figure 3b SDQ Conduct Problems Scale by Wave
+
+```{r}
+#| warning: false
+sdq_cond <- make_raincloudplot_wave(gui_data, 3, "sdq_cond_p", "SDQ Conduct Problems Scale", "olivedrab4")
+create_gif(sdq_cond)
+```
+
+```{r}
+#| warning: false
+first <- make_summary_by_wave(gui_data, 3)
+first[[1]] |> 
+  filter(name == "sdq_cond_p") |> 
+  gt() |> 
+  tab_header("Wave 1") |> 
+  gt_theme_espn()
+second <- make_summary_by_wave(gui_data, 3)
+second[[2]] |> 
+  filter(name == "sdq_cond_p") |> 
+  gt() |> 
+  tab_header("Wave 2") |> 
+  gt_theme_espn()
+third <- make_summary_by_wave(gui_data, 3)
+third[[3]] |>
+  filter(name == "sdq_cond_p") |>
+  gt() |>
+  tab_header("Wave 3") |> 
+  gt_theme_espn()
+```
+
+Figure 4a SDQ Hyperactivity Scale
+
+```{r}
+#| warning: false
+make_raincloudplot(gui_data$sdq_hyp_p, "SDQ Hyperactivity Scale", "aquamarine4")
+make_summary_table(gui_data) |> 
+  filter(name == "sdq_hyp_p") |> 
+  gt() |> 
+  gt_theme_espn()
+```
+
+Figure 4b SDQ Hyperactivity Scale by Wave
+
+```{r}
+#| warning: false
+sdq_hyp <- make_raincloudplot_wave(gui_data, 3, "sdq_hyp_p", "SDQ Hyperactivity Scale", "aquamarine4")
+create_gif(sdq_hyp)
+```
+
+```{r}
+#| warning: false
+first <- make_summary_by_wave(gui_data, 3)
+first[[1]] |> 
+  filter(name == "sdq_hyp_p") |> 
+  gt() |> 
+  tab_header("Wave 1") |> 
+  gt_theme_espn()
+second <- make_summary_by_wave(gui_data, 3)
+second[[2]] |> 
+  filter(name == "sdq_hyp_p") |> 
+  gt() |> 
+  tab_header("Wave 2") |> 
+  gt_theme_espn()
+third <- make_summary_by_wave(gui_data, 3)
+third[[3]] |>
+  filter(name == "sdq_hyp_p") |>
+  gt() |>
+  tab_header("Wave 3") |> 
+  gt_theme_espn()
+```
+
+Figure 5a SDQ Peer Problems score
+
+```{r}
+#| warning: false
+make_raincloudplot(gui_data$sdq_peer_p, "SDQ Peer Problems Scale", "coral1")
+make_summary_table(gui_data) |> 
+  filter(name == "sdq_peer_p") |> 
+  gt() |> 
+  gt_theme_espn()
+```
+
+Figure 5b SDQ Peer Problems score by Wave
+
+```{r}
+#| warning: false
+sdq_peer <- make_raincloudplot_wave(gui_data, 3, "sdq_peer_p", "SDQ Peer Problems Scale", "coral1")
+create_gif(sdq_peer)
+```
+
+```{r}
+#| warning: false
+first <- make_summary_by_wave(gui_data, 3)
+first[[1]] |> 
+  filter(name == "sdq_peer_p") |> 
+  gt() |> 
+  tab_header("Wave 1") |> 
+  gt_theme_espn()
+second <- make_summary_by_wave(gui_data, 3)
+second[[2]] |> 
+  filter(name == "sdq_peer_p") |> 
+  gt() |> 
+  tab_header("Wave 2") |> 
+  gt_theme_espn()
+third <- make_summary_by_wave(gui_data, 3)
+third[[3]] |>
+  filter(name == "sdq_peer_p") |>
+  gt() |>
+  tab_header("Wave 3") |> 
+  gt_theme_espn()
+```
+
+Figure 6a SDQ Prosociality Scale
+
+```{r}
+#| warning: false
+make_raincloudplot(gui_data$sdq_pro_p, "SDQ Prosociality Scale", "firebrick1")
+make_summary_table(gui_data) |> 
+  filter(name == "sdq_pro_p") |> 
+  gt() |> 
+  gt_theme_espn()
+```
+
+Figure 6b SDQ Prosociality Scale
+
+```{r}
+#| warning: false 
+sdq_pro <- make_raincloudplot_wave(gui_data, 3, "sdq_pro_p", "SDQ Prosociality Scale", "firebrick1")
+create_gif(sdq_pro)
+```
+
+```{r}
+#| warning: false
+first <- make_summary_by_wave(gui_data, 3)
+first[[1]] |> 
+  filter(name == "sdq_pro_p") |> 
+  gt() |> 
+  tab_header("Wave 1") |> 
+  gt_theme_espn()
+second <- make_summary_by_wave(gui_data, 3)
+second[[2]] |> 
+  filter(name == "sdq_pro_p") |> 
+  gt() |> 
+  tab_header("Wave 2") |> 
+  gt_theme_espn()
+third <- make_summary_by_wave(gui_data, 3)
+third[[3]] |>
+  filter(name == "sdq_pro_p") |>
+  gt() |>
+  tab_header("Wave 3") |> 
+  gt_theme_espn()
+```
