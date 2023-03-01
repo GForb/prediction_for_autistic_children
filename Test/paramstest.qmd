@@ -1,0 +1,27 @@
+---
+title: "test"
+params: 
+    data: ""
+editor: visual
+---
+
+```{r}
+ #| warning: false 
+library(tidyverse) 
+library(here) 
+library(ggplot2) 
+library(haven) 
+library(gridExtra) 
+library(ggdist) 
+library(ggthemes) 
+library(gifski) 
+library(magick) 
+library(gt) 
+library(gtExtras)
+
+source(here::here("R scripts/set_paths.R")) 
+source(here::here(params$data)) 
+source(here::here("R scripts/Functions/raincloudplot.R")) 
+source(here::here("R scripts/Functions/summary_functions.R")) 
+source(here::here("R scripts/Functions/gif.R"))
+```
