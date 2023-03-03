@@ -13,21 +13,21 @@ set_labs <- function(variable, metadata){
 }
 
 make_raincloudplot <- function(column, col_label, colour) {
-  meta <- read_csv(here::here("variable_metadata.csv"))
-  if(class(column) == "numeric"){
-    var_name <- sub(".*\\$", "", deparse(substitute(column)))
-    var_name <- sub("_\\w$", "", var_name)}
-  if(class(column) == "character"){
-    #this expression doesnt work because the name of the variable is X[[i]] and I cant check the metadata with that 
-    var_name <- colnames(column)
-    var_name <- gsub("[^[:alnum:]_]", "", deparse(substitute(x[var_name])))
-  }
-  print(var_name)
-  limz <- set_labs(var_name, meta)
+  # meta <- read_csv(here::here("variable_metadata.csv"))
+  # if(class(column) == "numeric"){
+  #   var_name <- sub(".*\\$", "", deparse(substitute(column)))
+  #   var_name <- sub("_\\w$", "", var_name)}
+  # if(class(column) == "character"){
+  #   #this expression doesnt work because the name of the variable is X[[i]] and I cant check the metadata with that 
+  #   var_name <- colnames(column)
+  #   var_name <- gsub("[^[:alnum:]_]", "", deparse(substitute(x[var_name])))
+  # }
+  # print(var_name)
+  # limz <- set_labs(var_name, meta)
   data = tibble(column)
   col_name = colnames(data)
   tmp <- ggplot(data, aes(x = 1.5, y = .data[[col_name]],  colour = colour, na.rm = T)) + 
-    ylim(limz[[1]], limz[[2]])+
+    #ylim(limz[[1]], limz[[2]])+
     labs(x = as.character(col_label), y = "Value") +
     ggdist::stat_halfeye(
       colour = colour, 
