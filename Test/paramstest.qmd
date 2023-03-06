@@ -55,6 +55,7 @@ for (wav in 1:waves) {
     filter(name %in% params$variables) |> 
     gt() |> 
     gt_theme_espn()
+  show(wave)
 }
 
 ```
@@ -64,13 +65,11 @@ Plots:
 ```{r}
 #| warning: false
 for (variable in params$variables) {
-  x <- make_raincloudplot(get(set_name)[[variable]], paste(variable, "score"), params$colour)
-  show(x)
-  y <- make_summary_table(get(set_name)) |> 
+  make_raincloudplot(get(set_name)[[variable]], paste(variable, "score"), params$colour)
+  make_summary_table(get(set_name)) |> 
     filter(name == variable) |> 
     gt() |> 
     gt_theme_espn()
-  show(y)
 }
 ```
 
