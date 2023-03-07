@@ -12,18 +12,7 @@ set_labs <- function(variable, metadata){
   return(c(minimum, maximum))
 }
 
-make_raincloudplot <- function(column, col_label, colour) {
-  # meta <- read_csv(here::here("variable_metadata.csv"))
-  # if(class(column) == "numeric"){
-  #   var_name <- sub(".*\\$", "", deparse(substitute(column)))
-  #   var_name <- sub("_\\w$", "", var_name)}
-  # if(class(column) == "character"){
-  #   #this expression doesnt work because the name of the variable is X[[i]] and I cant check the metadata with that 
-  #   var_name <- colnames(column)
-  #   var_name <- gsub("[^[:alnum:]_]", "", deparse(substitute(x[var_name])))
-  # }
-  # print(var_name)
-  # limz <- set_labs(var_name, meta)
+make_raincloudplot <- function(column, col_label, colour, ylims = NULL) {
   data = tibble(column)
   col_name = colnames(data)
   tmp <- ggplot(data, aes(x = 1.5, y = .data[[col_name]],  colour = colour, na.rm = T)) + 
@@ -52,6 +41,10 @@ make_raincloudplot <- function(column, col_label, colour) {
     coord_cartesian(xlim = c(1.2, NA), clip = "off") +
     ggthemes::theme_few() +
     theme( title = element_text(), axis.title = element_text(), axis.ticks.x = element_blank(), axis.text.x = element_blank(), axis.text.y = element_text())
+  if(!is.null(ylims)){
+    tmp <- tmp + ylim(ylims)
+  }
+  
   return(tmp)
 }
 
@@ -88,8 +81,4 @@ make_raincloudplot_wave <- function(data, n_o_waves, as_string_column, col_label
   return(raincloud_wave)
 }
 
-
-
-#make_raincloudplot_wave(gui_data, 3, "sdq_hyp_p", "Hyperactive", "pink")
-#y
 

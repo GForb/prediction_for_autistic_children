@@ -13,6 +13,10 @@ column <- gui_data |> select(sdq_emot_p)
 plot1 <- make_raincloudplot(column, col_label = "Parent 1", colour = "darkgreen")
 plot1
 
+plot2 <- make_raincloudplot(column, col_label = "Parent 1", colour = "darkgreen", ylims = c(-5, 15))
+plot2
+
+
 # make_raincloudplots  ----
 plots <- gui_data |> 
   select(ends_with("_p")) |> 
