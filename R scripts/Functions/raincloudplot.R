@@ -12,7 +12,7 @@ set_labs <- function(variable, metadata){
   return(c(minimum, maximum))
 }
 
-make_raincloudplot <- function(column, col_label, colour, ylims = NULL) {
+make_raincloudplot <- function(column, col_label,ylims = NULL, colour) {
   data = tibble(column)
   col_name = colnames(data)
   tmp <- ggplot(data, aes(x = 1.5, y = .data[[col_name]],  colour = colour, na.rm = T)) + 
@@ -48,11 +48,30 @@ make_raincloudplot <- function(column, col_label, colour, ylims = NULL) {
   return(tmp)
 }
 
-make_raincloudplots <- function(data, colour) {
-  plotlist <- map2(data, colnames(data), make_raincloudplot, colour = colour)
+make_raincloudplots <- function(data, colour, var_metadata = NULL) {
+  ylims <- colnames(data)
+  if(is.null(var_metadata)){
+    ylims <- rep(NULL, length(ylims))
+  }else{
+    ylims <- lapply(variables, find_min_max, var_metadata)
+  }
+
+  plot_args <- tibble::tibble(column = as.list(data), 
+                              col_label = variables, 
+                              ylims = ylims)
+
+  plotlist <- pmap(plot_args, make_raincloudplot, colour = colour)
   return(plotlist)
 }
 
+find_min_max <- function(variable_name, var_metadata) {
+  metadata_row <- var_metadata[startsWith(variable_name, var_metadata[,1]),]
+  ylims <- c(metadata_row[1,2], metadata_row[1,3])
+  if (any(is.na(ylims))) {
+    ylims <- NULL
+  }
+  return(ylims)
+}
 
 #this works only if you install the package called gridExtra (function call inside function references to the package)
 compare_raincloudplots <- function(data, colour, ncol_in_figure){
@@ -75,7 +94,8 @@ divide_by_wave <- function(data, n_o_waves){
 
 make_raincloudplot_wave <- function(data, n_o_waves, as_string_column, col_label, colour){
   data_wave <- divide_by_wave(data, n_o_waves)
-  raincloud_wave <- lapply(data_wave, function(x){
+  raincloud_wave <- lapply(data_wave, 
+                           function(x){
     lapply(x[as_string_column], make_raincloudplot, col_label = col_label, colour = colour)
   })
   return(raincloud_wave)
