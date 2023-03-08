@@ -1,15 +1,3 @@
-library(tidyverse)
-library(here)
-#this is a really good helper function so I'll put it here as well 
-divide_by_wave <- function(data, n_o_waves){
-  data_wave <- list()
-  for (i in 1:n_o_waves) {
-    subseted <- data |> 
-      filter(wave == i)
-    data_wave[i] <- list(subseted)
-  }
-  return(data_wave)
-}
 
 make_summary_table <- function(data) {
   data_long <- data |> 
@@ -28,10 +16,9 @@ make_summary_table <- function(data) {
   return(summary_statistics)
 }
 
-make_summary_by_wave <- function(data, n_o_waves) {
-  data_wave <- divide_by_wave(data, n_o_waves)
+make_summary_by_wave <- function(data) {
+  data_wave <- divide_by_wave(data)
   summary_tables <- lapply(data_wave, make_summary_table)
   return(summary_tables)
 }
 
-make_summary_by_wave(gui_data, 3)

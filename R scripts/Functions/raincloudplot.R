@@ -65,14 +65,6 @@ make_raincloudplots <- function(data, colour, var_metadata = NULL) {
   return(plotlist)
 }
 
-find_min_max <- function(variable_name, var_metadata) {
-  metadata_row <- var_metadata[startsWith(variable_name, var_metadata[,1]),]
-  ylims <- c(metadata_row[1,2], metadata_row[1,3])
-  if (any(is.na(ylims))) {
-    ylims <- NULL
-  }
-  return(ylims)
-}
 
 #this works only if you install the package called gridExtra (function call inside function references to the package)
 compare_raincloudplots <- function(data, colour, ncol_in_figure){
@@ -82,12 +74,8 @@ compare_raincloudplots <- function(data, colour, ncol_in_figure){
 }
 
 
-divide_by_wave <- function(data, n_o_waves = NULL){
-  if (is.null(n_o_waves)) {
-    wave_ids <- data$wave |> unique()
-  } else {
-    wave_ids <- 1:n_o_waves
-  }
+divide_by_wave <- function(data){
+  wave_ids <- data$wave |> unique()
   data_wave <- list()
   for (i in wave_ids) {
     subseted <- data |> 
@@ -98,9 +86,9 @@ divide_by_wave <- function(data, n_o_waves = NULL){
 }
 
 
-make_raincloudplot_wave <- function(data, n_o_waves = NULL, as_string_column, col_label, colour, var_metadata = NULL){
+make_raincloudplot_wave <- function(data, as_string_column, col_label, colour, var_metadata = NULL){
 
-  data_wave <- divide_by_wave(data, n_o_waves)
+  data_wave <- divide_by_wave(data)
   
   if (is.null(var_metadata)) {
     ylims <- NULL

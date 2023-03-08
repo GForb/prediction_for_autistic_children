@@ -6,6 +6,8 @@ library(patchwork)
 library(testthat)
 source(here("R scripts", "set_paths.R" ))
 source(here("R scripts", "Functions","raincloudplot.R" ))
+source(here("R scripts", "Functions","helper_functions.R" ))
+
 load(file.path(derived_data, "gui.Rdata"))
 
 #testing functions
@@ -17,10 +19,6 @@ test_that("find_muin_max", {
 })
 
 test_that("divide_by_waves", {
-  data_divided <- divide_by_wave(gui_data, 3)
-  expect_equal(length(data_divided), 3)
-  expect_equal(nrow(data_divided[[3]]), 110)
-  
   data_divided2 <- divide_by_wave(gui_data)
   expect_equal(length(data_divided2), 3)
   expect_equal(nrow(data_divided2[[3]]), 110)
@@ -62,12 +60,13 @@ plots <- final_plot <- gui_data |>
 
 # raincloud plots by wave
 
-wave_plots1  <- make_raincloudplot_wave(gui_data, 3, "sdq_tot_p", "Total SDQ", "springgreen")
+wave_plots1  <- make_raincloudplot_wave(gui_data,  "sdq_tot_p", "Total SDQ", "springgreen")
 wave_plots1
 
-wave_plots2  <- make_raincloudplot_wave(gui_data, 3, "sdq_tot_p", "Total SDQ", "springgreen", var_metadata = var_metadata)
+wave_plots2  <- make_raincloudplot_wave(gui_data,  
+                                        "sdq_tot_p", 
+                                        "Total SDQ", "springgreen", 
+                                        var_metadata = var_metadata)
 wave_plots2
 
-wave_plots3  <- make_raincloudplot_wave(gui_data, as_string_column =  "sdq_tot_p",col_label =  "Total SDQ",colour =  "springgreen", var_metadata = var_metadata)
-wave_plots3
 
