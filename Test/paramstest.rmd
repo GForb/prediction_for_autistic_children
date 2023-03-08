@@ -86,16 +86,18 @@ GIFs:
 
 ```{r}
 #| warning: false
-# for (variable in params$variables) {
-#   gif <- make_raincloudplot_wave(data, waves, variable, paste(variable, "score by wave"), params$colour)
-#   create_gif(gif)
-#   # for (wav in 1:waves) {
-#   #   first <- make_summary_by_wave(data, waves)
-#   #   first[[wav]] |>
-#   #   filter(name == variable) |>
-#   #     gt() |>
-#   #     tab_header(paste("Wave:", wav)) |>
-#   #     gt_theme_espn()
-#   # }
-# }
+for (variable in params$variables) {
+  gif <- make_raincloudplot_wave(data, variable, paste(variable, "score by wave"), params$colour)
+  gif <- create_gif(gif)
+  show(gif)
+  for (wav in 1:waves) {
+    first <- make_summary_by_wave(data, waves)
+    first[[wav]] |>
+    filter(name == variable) |>
+      gt() |>
+      tab_header(paste("Wave:", wav)) |>
+      gt_theme_espn()
+    first
+  }
+}
 ```
