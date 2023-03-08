@@ -4,7 +4,7 @@ library(here)
 library(ggplot2)
 library(patchwork)
 library(testthat)
-
+source(here("R scripts", "set_paths.R" ))
 source(here("R scripts", "Functions","raincloudplot.R" ))
 load(file.path(derived_data, "gui.Rdata"))
 

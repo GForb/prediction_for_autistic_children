@@ -49,7 +49,7 @@ make_raincloudplot <- function(column, col_label,ylims = NULL, colour) {
 }
 
 make_raincloudplots <- function(data, colour, var_metadata = NULL) {
-  ylims <- colnames(data)
+  variables <- colnames(data)
   if(is.null(var_metadata)){
     ylims <- rep(NULL, length(ylims))
   }else{
@@ -59,6 +59,7 @@ make_raincloudplots <- function(data, colour, var_metadata = NULL) {
   plot_args <- tibble::tibble(column = as.list(data), 
                               col_label = variables, 
                               ylims = ylims)
+  
 
   plotlist <- pmap(plot_args, make_raincloudplot, colour = colour)
   return(plotlist)
