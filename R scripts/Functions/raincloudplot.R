@@ -74,17 +74,6 @@ compare_raincloudplots <- function(data, colour, ncol_in_figure){
 }
 
 
-divide_by_wave <- function(data){
-  wave_ids <- data$wave |> unique()
-  data_wave <- list()
-  for (i in wave_ids) {
-    subseted <- data |> 
-      filter(wave == i)
-    data_wave[i] <- list(subseted)
-  }
-  return(data_wave)
-}
-
 
 make_raincloudplot_wave <- function(data, as_string_column, col_label, colour, var_metadata = NULL){
 

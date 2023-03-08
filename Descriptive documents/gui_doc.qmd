@@ -102,7 +102,7 @@ make_summary_table(gui_data) |>
 
 ```{r}
 #| warning: false
-sdq_tot <- make_raincloudplot_wave(gui_data, 3, "sdq_tot_p", "SDQ Total Problems Score by Wave", "blue4")
+sdq_tot <- make_raincloudplot_wave(gui_data,  "sdq_tot_p", "SDQ Total Problems Score by Wave", "blue4")
 create_gif(sdq_tot)
 ```
 
@@ -144,7 +144,7 @@ Figure 2b SDQ Emotinal Problems Scale by Wave
 
 ```{r}
 #| warning: false
-sdq_emot <- make_raincloudplot_wave(gui_data, 3, "sdq_emot_p", "SDQ Emotinal Problems scale", "darkmagenta")
+sdq_emot <- make_raincloudplot_wave(gui_data,  "sdq_emot_p", "SDQ Emotinal Problems scale", "darkmagenta")
 create_gif(sdq_emot)
 ```
 
@@ -185,7 +185,7 @@ Figure 3b SDQ Conduct Problems Scale by Wave
 
 ```{r}
 #| warning: false
-sdq_cond <- make_raincloudplot_wave(gui_data, 3, "sdq_cond_p", "SDQ Conduct Problems Scale", "olivedrab4")
+sdq_cond <- make_raincloudplot_wave(gui_data,  "sdq_cond_p", "SDQ Conduct Problems Scale", "olivedrab4")
 create_gif(sdq_cond)
 ```
 
@@ -226,7 +226,7 @@ Figure 4b SDQ Hyperactivity Scale by Wave
 
 ```{r}
 #| warning: false
-sdq_hyp <- make_raincloudplot_wave(gui_data, 3, "sdq_hyp_p", "SDQ Hyperactivity Scale", "aquamarine4")
+sdq_hyp <- make_raincloudplot_wave(gui_data, "sdq_hyp_p", "SDQ Hyperactivity Scale", "aquamarine4")
 create_gif(sdq_hyp)
 ```
 
@@ -267,7 +267,7 @@ Figure 5b SDQ Peer Problems score by Wave
 
 ```{r}
 #| warning: false
-sdq_peer <- make_raincloudplot_wave(gui_data, 3, "sdq_peer_p", "SDQ Peer Problems Scale", "coral1")
+sdq_peer <- make_raincloudplot_wave(gui_data,  "sdq_peer_p", "SDQ Peer Problems Scale", "coral1")
 create_gif(sdq_peer)
 ```
 
@@ -308,7 +308,7 @@ Figure 6b SDQ Prosociality Scale
 
 ```{r}
 #| warning: false 
-sdq_pro <- make_raincloudplot_wave(gui_data, 3, "sdq_pro_p", "SDQ Prosociality Scale", "firebrick1")
+sdq_pro <- make_raincloudplot_wave(gui_data,  "sdq_pro_p", "SDQ Prosociality Scale", "firebrick1")
 create_gif(sdq_pro)
 ```
 
