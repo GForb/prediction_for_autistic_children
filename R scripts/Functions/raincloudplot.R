@@ -81,9 +81,14 @@ compare_raincloudplots <- function(data, colour, ncol_in_figure){
 }
 
 
-divide_by_wave <- function(data, n_o_waves){
+divide_by_wave <- function(data, n_o_waves = NULL){
+  if (is.null(n_o_waves)) {
+    wave_ids <- data$wave |> unique()
+  } else {
+    wave_ids <- 1:n_o_waves
+  }
   data_wave <- list()
-  for (i in 1:n_o_waves) {
+  for (i in wave_ids) {
     subseted <- data |> 
       filter(wave == i)
     data_wave[i] <- list(subseted)

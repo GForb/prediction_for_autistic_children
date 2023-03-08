@@ -16,6 +16,17 @@ test_that("find_muin_max", {
                NULL)
 })
 
+test_that("divide_by_waves", {
+  data_divided <- divide_by_wave(gui_data, 3)
+  expect_equal(length(data_divided), 3)
+  expect_equal(nrow(data_divided[[3]]), 110)
+  
+  data_divided2 <- divide_by_wave(gui_data)
+  expect_equal(length(data_divided2), 3)
+  expect_equal(nrow(data_divided2[[3]]), 110)
+  
+})
+
 variables <- colnames(gui_data)
 ylims <- lapply(variables, find_min_max, var_metadata)
 
