@@ -39,7 +39,7 @@ gui_wave_3 <- gui_wave_3 |>
 ## SDQs ----
 
 gui_wave_1 <- gui_wave_1 |> 
-  rename(gender = mma5ap2, # 1 = male, 2 = female 
+  rename(sex = mma5ap2, # 1 = male, 2 = female 
          age = MMagep2, 
          sdq_emot_p = MMH2_SDQemot, 
          sdq_cond_p = MMH2_SDQcond, 
@@ -55,7 +55,7 @@ gui_wave_1 <- gui_wave_1 |>
          sdq_tot_t = TCSDQtot)
 
 gui_wave_2 <- gui_wave_2 |> 
-  rename(gender = p2sexw2,
+  rename(sex = p2sexw2,
          age = p2agew2,
          sdq_emot_p = w2pcd2_sdqemot, 
          sdq_cond_p = w2pcd2_sdqcond, 
@@ -65,7 +65,7 @@ gui_wave_2 <- gui_wave_2 |>
          sdq_tot_p = w2pcd2_sdqtot)
 
 gui_wave_3 <- gui_wave_3 |> 
-  rename(gender = p2sexW3, 
+  rename(sex = p2sexW3, 
          age = p2ageW3, #1 = 16/17, 2 = 18
          sdq_emot_p = w3pcg_SDQemotional, 
          sdq_cond_p = w3pcg_SDQconduct, 
@@ -87,7 +87,7 @@ data_all <- bind_rows(gui_wave_1, gui_wave_2, gui_wave_3)
 
 # Selecting variables ----
 
-data_selected <- data_all |> select(ID, wave, gender, age, autism_status, 
+data_selected <- data_all |> select(ID, wave, sex, age, autism_status, 
                                   starts_with("sdq")) 
 
 data_selected <- data_selected |> arrange(ID, wave)
