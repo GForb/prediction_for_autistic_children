@@ -24,6 +24,8 @@ library(gtExtras)
 
 source(here::here("R scripts/set_paths.R"))
 source(here::here("R scripts/Data Processing/import_gui.R"))
+source(here::here("R scripts/Functions/helper_functions.R"))
+
 source(here::here("R scripts/Functions/raincloudplot.R"))
 source(here::here("R scripts/Functions/summary_functions.R"))
 source(here::here("R scripts/Functions/gif.R"))
@@ -53,7 +55,7 @@ Information about the ASD status of pcpts e.g. diagnosis ,validity of diagnosis,
 
 ```{r}
 #| warning: false
-wave_1 <- make_summary_by_wave(gui_data, 3)
+wave_1 <- make_summary_by_wave(gui_data)
 wave_1 <- wave_1[[1]] |> 
   filter(name %in% c("age", "gender", "sdq_emot_p", "sdq_cond_p", "sdq_hyp_p", "sdq_peer_p", "sdq_pro_p", "sdq_tot_p"))
 wave_1|> 
@@ -65,7 +67,7 @@ wave_1|>
 
 ```{r}
 #| warning: false
-wave_2 <- make_summary_by_wave(gui_data, 3)
+wave_2 <- make_summary_by_wave(gui_data)
 wave_2 <- wave_2[[2]] |> 
   filter(name %in% c("age", "gender", "sdq_emot_p", "sdq_cond_p", "sdq_hyp_p", "sdq_peer_p", "sdq_pro_p", "sdq_tot_p"))
 wave_2|> 
@@ -77,7 +79,7 @@ wave_2|>
 
 ```{r}
 #| warning: false
-wave_3 <- make_summary_by_wave(gui_data, 3)
+wave_3 <- make_summary_by_wave(gui_data)
 wave_3 <- wave_3[[3]] |> 
   filter(name %in% c("age", "gender", "sdq_emot_p", "sdq_cond_p", "sdq_hyp_p", "sdq_peer_p", "sdq_pro_p", "sdq_tot_p"))
 wave_3|> 
@@ -91,7 +93,9 @@ wave_3|>
 
 ```{r}
 #| warning: false
-make_raincloudplot(gui_data$sdq_tot_p, "SDQ Total Problems Score", "blue4")
+make_raincloudplot(column = gui_data["sdq_tot_p"], 
+                   col_label = "SDQ Total Problems Score", 
+                   colour = "blue4")
 make_summary_table(gui_data) |> 
   filter(name == "sdq_tot_p") |> 
   gt() |> 
@@ -102,25 +106,25 @@ make_summary_table(gui_data) |>
 
 ```{r}
 #| warning: false
-sdq_tot <- make_raincloudplot_wave(gui_data,  "sdq_tot_p", "SDQ Total Problems Score by Wave", "blue4")
+sdq_tot <- make_raincloudplot_wave(data = gui_data,  "sdq_tot_p", "SDQ Total Problems Score by Wave", "blue4")
 create_gif(sdq_tot)
 ```
 
 ```{r}
 #| warning: false
-first <- make_summary_by_wave(gui_data, 3)
+first <- make_summary_by_wave(gui_data)
 first[[1]] |> 
   filter(name == "sdq_tot_p") |> 
   gt() |> 
   tab_header("Wave 1") |> 
   gt_theme_espn()
-second <- make_summary_by_wave(gui_data, 3)
+second <- make_summary_by_wave(gui_data)
 second[[2]] |> 
   filter(name == "sdq_tot_p") |> 
   gt() |> 
   tab_header("Wave 2") |> 
   gt_theme_espn()
-third <- make_summary_by_wave(gui_data, 3)
+third <- make_summary_by_wave(gui_data)
 third[[3]] |>
   filter(name == "sdq_tot_p") |>
   gt() |>
@@ -132,7 +136,9 @@ third[[3]] |>
 
 ```{r}
 #| warning: false
-make_raincloudplot(gui_data$sdq_emot_p, "SDQ Emotinal Problems scale", "darkmagenta")
+make_raincloudplot(column = gui_data$sdq_emot_p,
+                   col_label =  "SDQ Emotinal Problems scale",
+                   colour =  "darkmagenta")
 make_summary_table(gui_data) |> 
   filter(name == "sdq_emot_p") |> 
   gt() |> 
@@ -150,19 +156,19 @@ create_gif(sdq_emot)
 
 ```{r}
 #| warning: false
-first <- make_summary_by_wave(gui_data, 3)
+first <- make_summary_by_wave(gui_data)
 first[[1]] |> 
   filter(name == "sdq_emot_p") |> 
   gt() |> 
   tab_header("Wave 1") |> 
   gt_theme_espn()
-second <- make_summary_by_wave(gui_data, 3)
+second <- make_summary_by_wave(gui_data)
 second[[2]] |> 
   filter(name == "sdq_emot_p") |> 
   gt() |> 
   tab_header("Wave 2") |> 
   gt_theme_espn()
-third <- make_summary_by_wave(gui_data, 3)
+third <- make_summary_by_wave(gui_data)
 third[[3]] |>
   filter(name == "sdq_emot_p") |>
   gt() |>
@@ -174,7 +180,9 @@ Figure 3a SDQ Conduct Problems Scale
 
 ```{r}
 #| warning: false
-make_raincloudplot(gui_data$sdq_cond_p, "SDQ Conduct Problems Scale", "olivedrab4")
+make_raincloudplot(column = gui_data$sdq_cond_p, 
+                   col_label = "SDQ Conduct Problems Scale",
+                   colour =  "olivedrab4")
 make_summary_table(gui_data) |> 
   filter(name == "sdq_cond_p") |> 
   gt() |> 
@@ -191,19 +199,19 @@ create_gif(sdq_cond)
 
 ```{r}
 #| warning: false
-first <- make_summary_by_wave(gui_data, 3)
+first <- make_summary_by_wave(gui_data)
 first[[1]] |> 
   filter(name == "sdq_cond_p") |> 
   gt() |> 
   tab_header("Wave 1") |> 
   gt_theme_espn()
-second <- make_summary_by_wave(gui_data, 3)
+second <- make_summary_by_wave(gui_data)
 second[[2]] |> 
   filter(name == "sdq_cond_p") |> 
   gt() |> 
   tab_header("Wave 2") |> 
   gt_theme_espn()
-third <- make_summary_by_wave(gui_data, 3)
+third <- make_summary_by_wave(gui_data)
 third[[3]] |>
   filter(name == "sdq_cond_p") |>
   gt() |>
@@ -215,7 +223,9 @@ Figure 4a SDQ Hyperactivity Scale
 
 ```{r}
 #| warning: false
-make_raincloudplot(gui_data$sdq_hyp_p, "SDQ Hyperactivity Scale", "aquamarine4")
+make_raincloudplot(column = gui_data$sdq_hyp_p,
+                   col_label = "SDQ Hyperactivity Scale",
+                   colour = "aquamarine4")
 make_summary_table(gui_data) |> 
   filter(name == "sdq_hyp_p") |> 
   gt() |> 
@@ -232,19 +242,19 @@ create_gif(sdq_hyp)
 
 ```{r}
 #| warning: false
-first <- make_summary_by_wave(gui_data, 3)
+first <- make_summary_by_wave(gui_data)
 first[[1]] |> 
   filter(name == "sdq_hyp_p") |> 
   gt() |> 
   tab_header("Wave 1") |> 
   gt_theme_espn()
-second <- make_summary_by_wave(gui_data, 3)
+second <- make_summary_by_wave(gui_data)
 second[[2]] |> 
   filter(name == "sdq_hyp_p") |> 
   gt() |> 
   tab_header("Wave 2") |> 
   gt_theme_espn()
-third <- make_summary_by_wave(gui_data, 3)
+third <- make_summary_by_wave(gui_data)
 third[[3]] |>
   filter(name == "sdq_hyp_p") |>
   gt() |>
@@ -256,7 +266,9 @@ Figure 5a SDQ Peer Problems score
 
 ```{r}
 #| warning: false
-make_raincloudplot(gui_data$sdq_peer_p, "SDQ Peer Problems Scale", "coral1")
+make_raincloudplot(column = gui_data$sdq_peer_p, 
+                   col_label = "SDQ Peer Problems Scale",
+                   colour = "coral1")
 make_summary_table(gui_data) |> 
   filter(name == "sdq_peer_p") |> 
   gt() |> 
@@ -273,19 +285,19 @@ create_gif(sdq_peer)
 
 ```{r}
 #| warning: false
-first <- make_summary_by_wave(gui_data, 3)
+first <- make_summary_by_wave(gui_data)
 first[[1]] |> 
   filter(name == "sdq_peer_p") |> 
   gt() |> 
   tab_header("Wave 1") |> 
   gt_theme_espn()
-second <- make_summary_by_wave(gui_data, 3)
+second <- make_summary_by_wave(gui_data)
 second[[2]] |> 
   filter(name == "sdq_peer_p") |> 
   gt() |> 
   tab_header("Wave 2") |> 
   gt_theme_espn()
-third <- make_summary_by_wave(gui_data, 3)
+third <- make_summary_by_wave(gui_data)
 third[[3]] |>
   filter(name == "sdq_peer_p") |>
   gt() |>
@@ -297,7 +309,9 @@ Figure 6a SDQ Prosociality Scale
 
 ```{r}
 #| warning: false
-make_raincloudplot(gui_data$sdq_pro_p, "SDQ Prosociality Scale", "firebrick1")
+make_raincloudplot(column = gui_data$sdq_pro_p,
+                   col_label = "SDQ Prosociality Scale",
+                   colour = "firebrick1")
 make_summary_table(gui_data) |> 
   filter(name == "sdq_pro_p") |> 
   gt() |> 
@@ -314,19 +328,19 @@ create_gif(sdq_pro)
 
 ```{r}
 #| warning: false
-first <- make_summary_by_wave(gui_data, 3)
+first <- make_summary_by_wave(gui_data)
 first[[1]] |> 
   filter(name == "sdq_pro_p") |> 
   gt() |> 
   tab_header("Wave 1") |> 
   gt_theme_espn()
-second <- make_summary_by_wave(gui_data, 3)
+second <- make_summary_by_wave(gui_data)
 second[[2]] |> 
   filter(name == "sdq_pro_p") |> 
   gt() |> 
   tab_header("Wave 2") |> 
   gt_theme_espn()
-third <- make_summary_by_wave(gui_data, 3)
+third <- make_summary_by_wave(gui_data)
 third[[3]] |>
   filter(name == "sdq_pro_p") |>
   gt() |>
