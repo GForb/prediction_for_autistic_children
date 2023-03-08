@@ -12,18 +12,7 @@ set_labs <- function(variable, metadata){
   return(c(minimum, maximum))
 }
 
-make_raincloudplot <- function(column, col_label, colour) {
-  # meta <- read_csv(here::here("variable_metadata.csv"))
-  # if(class(column) == "numeric"){
-  #   var_name <- sub(".*\\$", "", deparse(substitute(column)))
-  #   var_name <- sub("_\\w$", "", var_name)}
-  # if(class(column) == "character"){
-  #   #this expression doesnt work because the name of the variable is X[[i]] and I cant check the metadata with that 
-  #   var_name <- colnames(column)
-  #   var_name <- gsub("[^[:alnum:]_]", "", deparse(substitute(x[var_name])))
-  # }
-  # print(var_name)
-  # limz <- set_labs(var_name, meta)
+make_raincloudplot <- function(column, col_label,ylims = NULL, colour) {
   data = tibble(column)
   col_name = colnames(data)
   tmp <- ggplot(data, aes(x = 1.5, y = .data[[col_name]],  colour = colour, na.rm = T)) + 
@@ -52,11 +41,27 @@ make_raincloudplot <- function(column, col_label, colour) {
     coord_cartesian(xlim = c(1.2, NA), clip = "off") +
     ggthemes::theme_few() +
     theme( title = element_text(), axis.title = element_text(), axis.ticks.x = element_blank(), axis.text.x = element_blank(), axis.text.y = element_text())
+  if(!is.null(ylims)){
+    tmp <- tmp + ylim(ylims)
+  }
+  
   return(tmp)
 }
 
-make_raincloudplots <- function(data, colour) {
-  plotlist <- map2(data, colnames(data), make_raincloudplot, colour = colour)
+make_raincloudplots <- function(data, colour, var_metadata = NULL) {
+  variables <- colnames(data)
+  if(is.null(var_metadata)){
+    ylims <- rep(NULL, length(ylims))
+  }else{
+    ylims <- lapply(variables, find_min_max, var_metadata)
+  }
+
+  plot_args <- tibble::tibble(column = as.list(data), 
+                              col_label = variables, 
+                              ylims = ylims)
+  
+
+  plotlist <- pmap(plot_args, make_raincloudplot, colour = colour)
   return(plotlist)
 }
 
@@ -69,9 +74,10 @@ compare_raincloudplots <- function(data, colour, ncol_in_figure){
 }
 
 
-divide_by_wave <- function(data, n_o_waves){
+divide_by_wave <- function(data){
+  wave_ids <- data$wave |> unique()
   data_wave <- list()
-  for (i in 1:n_o_waves) {
+  for (i in wave_ids) {
     subseted <- data |> 
       filter(wave == i)
     data_wave[i] <- list(subseted)
@@ -80,16 +86,24 @@ divide_by_wave <- function(data, n_o_waves){
 }
 
 
-make_raincloudplot_wave <- function(data, n_o_waves, as_string_column, col_label, colour){
-  data_wave <- divide_by_wave(data, n_o_waves)
-  raincloud_wave <- lapply(data_wave, function(x){
-    lapply(x[as_string_column], make_raincloudplot, col_label = col_label, colour = colour)
+make_raincloudplot_wave <- function(data, as_string_column, col_label, colour, var_metadata = NULL){
+
+  data_wave <- divide_by_wave(data)
+  
+  if (is.null(var_metadata)) {
+    ylims <- NULL
+  } else {
+    ylims <- find_min_max(as_string_column, var_metadata)
+  }
+  raincloud_wave <- lapply(data_wave, 
+                           function(x){
+    lapply(x[as_string_column], 
+           make_raincloudplot, 
+           col_label = paste(col_label, "Wave", unique(x$wave)), 
+           colour = colour, 
+           ylims = ylims)
   })
   return(raincloud_wave)
 }
 
-
-
-#make_raincloudplot_wave(gui_data, 3, "sdq_hyp_p", "Hyperactive", "pink")
-#y
 
