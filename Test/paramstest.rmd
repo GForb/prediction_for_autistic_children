@@ -13,7 +13,7 @@ editor: visual
 # Note that you can also dynamically control options by setting them to a value
 # DPI setting increased for Word output, cairo is anti aliasing
 # copied this from https://stackoverflow.com/questions/33445110/rmarkdown-global-options-vs-opts-chunk we may want to change the figure options
-knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE,
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE, cache = FALSE,
                       dev="png", fig.width = 10, fig.height = 7, dpi=200, dev.args=list(type="cairo"))
 ```
 
@@ -38,6 +38,7 @@ source(here::here("R scripts/Functions/summary_functions.R"))
 source(here::here("R scripts/Functions/gif.R"))
 set_name <- as.name(params$name_dataset)
 waves <- max(get(set_name)[["wave"]])
+data <- get(set_name)
 ```
 
 Summary table
@@ -45,7 +46,7 @@ Summary table
 ```{r}
 #| warning: false
   
-make_summary_table(get(set_name)) |> 
+make_summary_table(data) |> 
   filter(name %in% params$variables)|> 
   gt() |> 
   gt_theme_espn()
@@ -56,12 +57,12 @@ Summary tables by wave
 ```{r}
 #| warning: false
 for (wav in 1:waves) {
-  wave <- make_summary_by_wave(get(set_name), waves)
+  wave <- make_summary_by_wave(data, waves)
   wave <- wave[[wav]] |> 
     filter(name %in% params$variables) |> 
     gt() |> 
     gt_theme_espn()
-  show(wave)
+  print(wave)
 }
   
 ```
@@ -71,11 +72,13 @@ Plots:
 ```{r}
 #| warning: false
 for (variable in params$variables) {
-  # make_raincloudplot(get(set_name)[[variable]], paste(variable, "score"), params$colour)
-  make_summary_table(get(set_name)) |> 
+  plot <- make_raincloudplot(get(set_name)[[variable]], paste(variable, "score"), params$colour)
+  table <- make_summary_table(get(set_name)) |> 
     filter(name == variable) |> 
     gt() |> 
     gt_theme_espn()
+  print(plot)
+  table
 }
 ```
 
@@ -84,15 +87,15 @@ GIFs:
 ```{r}
 #| warning: false
 # for (variable in params$variables) {
-#   gif <- make_raincloudplot_wave(get(set_name), waves, variable, paste(variable, "score by wave"), params$colour)
+#   gif <- make_raincloudplot_wave(data, waves, variable, paste(variable, "score by wave"), params$colour)
 #   create_gif(gif)
-#   for (wav in 1:waves) {
-#     first <- make_summary_by_wave(get(set_name), waves)
-#     first[[wav]] |> 
-#     filter(name == variable) |> 
-#       gt() |> 
-#       tab_header(paste("Wave:", wav)) |> 
-#       gt_theme_espn()
-#   }
+#   # for (wav in 1:waves) {
+#   #   first <- make_summary_by_wave(data, waves)
+#   #   first[[wav]] |>
+#   #   filter(name == variable) |>
+#   #     gt() |>
+#   #     tab_header(paste("Wave:", wav)) |>
+#   #     gt_theme_espn()
+#   # }
 # }
 ```
