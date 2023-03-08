@@ -97,11 +97,22 @@ divide_by_wave <- function(data, n_o_waves = NULL){
 }
 
 
-make_raincloudplot_wave <- function(data, n_o_waves, as_string_column, col_label, colour){
+make_raincloudplot_wave <- function(data, n_o_waves = NULL, as_string_column, col_label, colour, var_metadata = NULL){
+
   data_wave <- divide_by_wave(data, n_o_waves)
+  
+  if (is.null(var_metadata)) {
+    ylims <- NULL
+  } else {
+    ylims <- find_min_max(as_string_column, var_metadata)
+  }
   raincloud_wave <- lapply(data_wave, 
                            function(x){
-    lapply(x[as_string_column], make_raincloudplot, col_label = col_label, colour = colour)
+    lapply(x[as_string_column], 
+           make_raincloudplot, 
+           col_label = paste(col_label, "Wave", unique(x$wave)), 
+           colour = colour, 
+           ylims = ylims)
   })
   return(raincloud_wave)
 }
