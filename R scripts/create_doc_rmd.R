@@ -15,7 +15,7 @@ create_doc <- function(path, dataset, variables, colour, filename) {
 
 create_doc("R scripts/Data Processing/import_gui.R", 
            "gui_data", 
-           c("age", "gender", "sdq_emot_p", "sdq_cond_p", "sdq_hyp_p", "sdq_peer_p", "sdq_pro_p"), 
+           c("age", "sex", "sdq_emot_p", "sdq_cond_p", "sdq_hyp_p", "sdq_peer_p", "sdq_pro_p"), 
            "red", 
            "I hope this works.html")
 
