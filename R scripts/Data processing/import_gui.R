@@ -80,7 +80,10 @@ gui_wave_3 <- gui_wave_3 |>
          sdq_pro_p2 = w3scg_SDQprosocial, 
          sdq_tot_p2 = w3scg_SDQtotaldiffs)
 
+#recoding age
 
+gui_wave_3 <- gui_wave_3 |> 
+  mutate(age = case_when(age == 1 ~ 17, age == 2 ~ 18))
 
 data_all <- bind_rows(gui_wave_1, gui_wave_2, gui_wave_3)
 
