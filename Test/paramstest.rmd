@@ -57,7 +57,7 @@ Summary tables by wave
 ```{r}
 #| warning: false
 for (wav in 1:waves) {
-  wave <- make_summary_by_wave(data, waves)
+  wave <- make_summary_by_wave(data)
   wave <- wave[[wav]] |> 
     filter(name %in% params$variables) |> 
     gt() |> 
@@ -72,13 +72,13 @@ Plots:
 ```{r}
 #| warning: false
 for (variable in params$variables) {
-  plot <- make_raincloudplot(get(set_name)[[variable]], paste(variable, "score"), params$colour)
-  table <- make_summary_table(get(set_name)) |> 
+  plot <- make_raincloudplot(data[variable], paste(variable, "score"), params$colour)
+  table <- make_summary_table(data) |> 
     filter(name == variable) |> 
     gt() |> 
     gt_theme_espn()
   print(plot)
-  table
+  print(table)
 }
 ```
 
@@ -89,9 +89,9 @@ GIFs:
 for (variable in params$variables) {
   gif <- make_raincloudplot_wave(data, variable, paste(variable, "score by wave"), params$colour)
   gif <- create_gif(gif)
-  show(gif)
+  gif #i just read the documentation and print() shows the tibble that represents the gif so if it doesnt work with the object i dont know whats RMarkdowns problem
   for (wav in 1:waves) {
-    first <- make_summary_by_wave(data, waves)
+    first <- make_summary_by_wave(data)
     first[[wav]] |>
     filter(name == variable) |>
       gt() |>
