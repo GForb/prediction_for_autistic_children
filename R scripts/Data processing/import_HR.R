@@ -48,4 +48,8 @@ howlin_rutter_data$study <- "Howlin-Rutter"
 howlin_rutter_data <- howlin_rutter_data |> 
   arrange(ID)
 
+check_values(howlin_rutter_data)
+
+save(howlin_rutter_data, file = file.path(derived_data, "howlin-rutter.Rdata"))
+
 save(howlin_rutter_data, file = file.path(derived_data, "howlin_rutter.Rdata"))
