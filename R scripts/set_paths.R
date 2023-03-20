@@ -7,3 +7,5 @@ derived_data <- file.path(data_and_outputs, "Derived data")
 outputs <- file.path(data_and_outputs, "Outputs")
 
 var_metadata <- read.csv(here::here("variable_metadata.csv"))
+
+source(here::here("R scripts/Functions/check_values.R"))
