@@ -115,5 +115,6 @@ data_autistic_mv_fixed <- data_autistic |>
 gui_data <- data_autistic_mv_fixed |> mutate(study = "gui",
                                    country = "Ireland")
 
+check_values(gui_data)
 
 save (gui_data, file = file.path(derived_data, "gui.Rdata"))
