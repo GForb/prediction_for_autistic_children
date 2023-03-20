@@ -322,5 +322,7 @@ lsac_data <- data_asd_lsac |>
 lsac_data <- lsac_data |> 
   arrange(ID, wave)
 
+check_values(lsac_data)
+
 save(lsac_data, file = file.path(derived_data, "lsac.Rdata"))
 
