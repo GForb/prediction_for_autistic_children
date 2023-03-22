@@ -3,7 +3,7 @@ title: "Document"
 params: 
   data: "R scripts/Data Processing/import_gui.R"  #"Path/to/data/as_string"
   name_dataset: "gui_data"  #"Robject as string"
-  variables: c("age", "gender", "sdq_emot_p", "sdq_cond_p", "sdq_hyp_p", "sdq_peer_p", "sdq_pro_p") 
+  variables: !r c("age", "sex", "sdq_emot_p", "sdq_cond_p", "sdq_hyp_p", "sdq_peer_p", "sdq_pro_p") 
   colour: "red" #"name of colour"
 editor: visual
 ---
@@ -35,6 +35,7 @@ source(here::here("R scripts/set_paths.R"))
 source(here::here(params$data)) 
 source(here::here("R scripts/Functions/raincloudplot.R")) 
 source(here::here("R scripts/Functions/summary_functions.R")) 
+source(here::here("R scripts/Functions/helper_functions.R")) 
 source(here::here("R scripts/Functions/gif.R"))
 set_name <- as.name(params$name_dataset)
 waves <- max(get(set_name)[["wave"]])
@@ -58,11 +59,10 @@ Summary tables by wave
 #| warning: false
 for (wav in 1:waves) {
   wave <- make_summary_by_wave(data)
-  wave <- wave[[wav]] |> 
-    filter(name %in% params$variables) |> 
-    gt() |> 
+  wave[[wav]] |>
+    filter(name %in% params$variables) |>
+    gt() |>
     gt_theme_espn()
-  print(wave)
 }
   
 ```
@@ -72,8 +72,11 @@ Plots:
 ```{r}
 #| warning: false
 for (variable in params$variables) {
-  plot <- make_raincloudplot(data[variable], paste(variable, "score"), params$colour)
-  table <- make_summary_table(data) |> 
+  column = data[[variable]]
+  plot <- make_raincloudplot(column = column, 
+                             col_label = paste(variable, "score"), 
+                             colour = params$colour)
+  table <- make_summary_table(get(set_name)) |> 
     filter(name == variable) |> 
     gt() |> 
     gt_theme_espn()
@@ -87,7 +90,10 @@ GIFs:
 ```{r}
 #| warning: false
 for (variable in params$variables) {
-  gif <- make_raincloudplot_wave(data, variable, paste(variable, "score by wave"), params$colour)
+  gif <- make_raincloudplot_wave(data = data, 
+                                 as_string_column = variable, 
+                                 col_label = paste(variable, "score by wave"), 
+                                 colour = params$colour)
   gif <- create_gif(gif)
   gif #i just read the documentation and print() shows the tibble that represents the gif so if it doesnt work with the object i dont know whats RMarkdowns problem
   for (wav in 1:waves) {

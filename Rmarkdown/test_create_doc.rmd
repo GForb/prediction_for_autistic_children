@@ -1,0 +1,76 @@
+---
+title: "Document"
+params: 
+  data: ""  #"Path/to/data/as_string"
+  name_dataset: ""  #"Robject as string"
+  variables:  
+  colour: 
+editor: visual
+---
+
+```{r global_options, include=FALSE}
+# This is a way to set options for all code chunks at once
+# Note that you can also dynamically control options by setting them to a value
+# DPI setting increased for Word output, cairo is anti aliasing
+# copied this from https://stackoverflow.com/questions/33445110/rmarkdown-global-options-vs-opts-chunk we may want to change the figure options
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE, cache = FALSE,
+                      dev="png", fig.width = 10, fig.height = 7, dpi=200, dev.args=list(type="cairo"))
+```
+
+```{r}
+#| warning: false 
+library(tidyverse)
+library(here) 
+library(ggplot2) 
+library(gridExtra) 
+library(ggdist) 
+library(ggthemes) 
+library(gifski) 
+library(magick) 
+library(gt) 
+library(gtExtras)
+  
+source(here::here("R scripts/set_paths.R")) 
+source(here::here("R scripts/Functions/raincloudplot.R")) 
+source(here::here("R scripts/Functions/summary_functions.R")) 
+source(here::here("R scripts/Functions/helper_functions.R")) 
+
+data_file <- paste0(params$name_dataset, ".Rdata")
+load(file.path(derived_data, data_file))
+
+set_name <- as.name(paste0(params$name_dataset, "_data"))
+waves <- max(get(set_name)[["wave"]])
+data <- get(set_name)
+```
+
+Summary table
+
+```{r}
+#| warning: false
+  
+make_summary_table(data) |> 
+  filter(name %in% params$variables)|> 
+  gt() |> 
+  gt_theme_espn()
+```
+
+
+Plots:
+
+```{r}
+#| warning: false
+for (variable in params$variables) {
+  column = data[[variable]]
+  plot <- make_raincloudplot(column = column, 
+                             col_label = paste(variable, "score"), 
+                             colour = params$colour)
+  table <- make_summary_table(get(set_name)) |> 
+    filter(name == variable) |> 
+    gt() |> 
+    gt_theme_espn()
+  print(plot)
+  table
+}
+```
+
+
