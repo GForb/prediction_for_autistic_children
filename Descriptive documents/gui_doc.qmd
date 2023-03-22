@@ -10,27 +10,12 @@ execute:
 
 ```{r}
 #| warning: false
-library(tidyverse)
-library(here)
-library(ggplot2)
-library(haven)
-library(gridExtra)
-library(ggdist)
-library(ggthemes)
-library(gifski)
-library(magick)
-library(gt)
-library(gtExtras)
 
-source(here::here("R scripts/set_paths.R"))
+
+source(here::here("R scripts/config.R")) 
 source(here::here("R scripts/Data Processing/import_gui.R"))
-source(here::here("R scripts/Functions/helper_functions.R"))
 
-source(here::here("R scripts/Functions/raincloudplot.R"))
-source(here::here("R scripts/Functions/summary_functions.R"))
-source(here::here("R scripts/Functions/gif.R"))
 ```
-
 The Growing Up in Ireland cohort is a general population cohort commenced in 2006. It follows two cohorts, 8000 individuals who were 9 years old when data collection started ('98 cohort) and 10000 additional children who were 9 months old when data collection began ('08 cohort). The present study only includes the '98 cohort as the '08 cohort does not meet the study's eligibility criteria.
 
 The following table displays the descriptive statistics for autistic participants associated with each study variable (SDQ completed by Primary Caregiver).

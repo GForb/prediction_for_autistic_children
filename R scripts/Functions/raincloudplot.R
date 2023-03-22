@@ -1,8 +1,3 @@
-library(gridExtra)
-library(ggdist)
-library(ggthemes)
-library(gifski)
-
 set_labs <- function(variable, metadata){
   #returns a list with a minimum an maximum value 
   var <- metadata |> 

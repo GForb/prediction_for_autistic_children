@@ -1,6 +1,3 @@
-library(tidyverse)
-library(here)
-library(haven)
 
 
 #importing data; wave 1 corresponds to sweep at age 5 ; we have sdq from age 3

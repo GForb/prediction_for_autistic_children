@@ -1,6 +1,3 @@
-library(magick)
-library(ggplot2)
-
 save_ggplots <- function(ggplot_list, directory, prefix = "plot") {
   # create the directory if it doesn't exist
   if (!dir.exists(directory)) dir.create(directory)
