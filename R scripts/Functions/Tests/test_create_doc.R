@@ -3,7 +3,7 @@ test_that("create_doc", {
   source(here::here("R scripts", "Functions", "create_doc.R"))
   system_time <- Sys.time()
   create_doc( 
-    template = here::here("Test/paramstest.rmd"),
+    template = here::here("Rmarkdown/test_create_doc.rmd"),
     dataset = "gui", 
     variables = c("sdq_tot_p", "sdq_tot_t"), 
     colour = "red", 
