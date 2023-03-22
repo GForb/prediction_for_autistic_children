@@ -1,4 +1,3 @@
-source(here::here("R scripts/Functions/gif.R"))
 #making a gif
 
 load(file.path(derived_data, "lsac.Rdata"))

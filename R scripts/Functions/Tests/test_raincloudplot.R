@@ -1,12 +1,6 @@
 # add code which loads clean data
-library(tidyverse)
-library(here)
-library(ggplot2)
-library(patchwork)
-library(testthat)
-source(here("R scripts", "set_paths.R" ))
-source(here("R scripts", "Functions","raincloudplot.R" ))
-source(here("R scripts", "Functions","helper_functions.R" ))
+
+
 
 load(file.path(derived_data, "gui.Rdata"))
 

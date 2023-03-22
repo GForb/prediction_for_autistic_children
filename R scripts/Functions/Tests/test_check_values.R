@@ -1,8 +1,4 @@
-library(tidyverse)
-library(testthat)
-var_metadata <- read.csv(here::here("variable_metadata.csv"))
 
-source(here::here("R scripts", "Functions","check_values.R" ))
 
 test_that("check_column", {
   check_column(column = 1:10, min = 1, max = 10) |> expect_false()

@@ -1,4 +1,3 @@
-library(testthat)
 test_that("create_doc", {
   source(here::here("R scripts", "Functions", "create_doc.R"))
   system_time <- Sys.time()
