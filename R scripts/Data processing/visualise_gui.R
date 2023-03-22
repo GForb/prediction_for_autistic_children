@@ -1,7 +1,3 @@
-library(tidyverse)
-library(here)
-library(ggplot2)
-library(patchwork)
 
 load(file.path(derived_data, "gui.Rdata"))
 

@@ -1,6 +1,4 @@
-library(tidyverse)
-library(here)
-library(haven)
+
 
 howlin_rutter <- haven::read_sav(file.path(raw_data, "Howlin-Rutter/Gordon Anon f-up data .sav"))
 

@@ -1,5 +1,4 @@
-library(tidyverse)
-library(here)
+
 
 lsac_wave_1 <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey data/SAS/lsacgrk4.sas7bdat"))
 lsac_wave_2 <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey data/SAS/lsacgrk6.sas7bdat"))
