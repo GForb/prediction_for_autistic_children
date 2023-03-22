@@ -26,11 +26,14 @@ var_metadata <- utils::read.csv(here::here("variable_metadata.csv"))
 
 
 # Sourcing functions ----
-functions_dir <-"R scripts/Functions"
-functions <- list.files(here::here(functions_dir))
-ignore_fuctions <- c("Tests")
-for (fun in functions) {
-  if (!(fun %in% ignore_fuctions)) {
-    source(here::here(functions_dir, fun))
+source_functions <- function() {
+  function_dir <- "R scripts/Functions"
+  for (fun in list.files(here::here(function_dir), pattern="\\.R$")) {
+    source(here::here(function_dir, fun))
   }
+  
 }
+source_functions()
+
+
+
