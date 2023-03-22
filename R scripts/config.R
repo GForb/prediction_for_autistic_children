@@ -10,10 +10,18 @@ outputs <- file.path(data_and_outputs, "Outputs")
 # Loading required libraries
 library(here)
 library(tidyverse)
-
+library(haven) 
+library(gridExtra) 
+library(ggdist) 
+library(ggthemes) 
+library(gifski) 
+library(magick) 
+library(gt) 
+library(gtExtras)
+library(testthat)
 
 # Loading variable metadata ----
-var_metadata <- read.csv(here::here("variable_metadata.csv"))
+var_metadata <- utils::read.csv(here::here("variable_metadata.csv"))
 
 
 
