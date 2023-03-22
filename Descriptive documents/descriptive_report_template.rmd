@@ -81,7 +81,7 @@ for (variable in params$variables) {
     gt() |> 
     gt_theme_espn()
   print(plot)
-  table
+  print(table)
 }
 ```
 
@@ -95,7 +95,7 @@ for (variable in params$variables) {
                                  col_label = paste(variable, "score by wave"), 
                                  colour = params$colour)
   gif <- create_gif(gif)
-  show(gif)
+  gif #i just read the documentation and print() shows the tibble that represents the gif so if it doesnt work with the object i dont know whats RMarkdowns problem
   for (wav in 1:waves) {
     first <- make_summary_by_wave(data)
     first[[wav]] |>

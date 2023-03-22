@@ -12,7 +12,7 @@ set_labs <- function(variable, metadata){
   return(c(minimum, maximum))
 }
 
-make_raincloudplot <- function(column, col_label,ylims = NULL, colour) {
+make_raincloudplot <- function(column, col_label, colour, ylims = NULL) {
   data = tibble(column)
   col_name = colnames(data)
   tmp <- ggplot(data, aes(x = 1.5, y = .data[[col_name]],  colour = colour, na.rm = T)) + 

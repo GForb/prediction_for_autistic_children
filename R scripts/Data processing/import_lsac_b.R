@@ -1,20 +1,17 @@
 library(tidyverse)
 library(here)
 
-lsac_wave_1 <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey data/SAS/lsacgrk4.sas7bdat"))
-lsac_wave_2 <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey data/SAS/lsacgrk6.sas7bdat"))
-lsac_wave_2.5 <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey data/SAS/lsacgrk7.sas7bdat"))
-lsac_wave_3 <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey data/SAS/lsacgrk8.sas7bdat"))
-lsac_wave_3.5 <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey data/SAS/lsacgrk9.sas7bdat"))
-lsac_wave_4 <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey data/SAS/lsacgrk10.sas7bdat"))
-lsac_wave_5 <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey data/SAS/lsacgrk12.sas7bdat"))
-lsac_wave_6 <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey data/SAS/lsacgrk14.sas7bdat"))
-lsac_wave_7 <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey data/SAS/lsacgrk16.sas7bdat"))
-lsac_wave_8 <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey data/SAS/lsacgrk18.sas7bdat"))
-lsac_wave_9.1 <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey data/SAS/lsacgrk20.sas7bdat"))
-lsac_wave_9.2 <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey data/SAS/lsacgrk21.sas7bdat"))
+lsac_wave_1_b <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey data/SAS/lsacgrb4.sas7bdat"))
+lsac_wave_2_b <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey data/SAS/lsacgrb5.sas7bdat"))
+lsac_wave_3_b <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey data/SAS/lsacgrb6.sas7bdat"))
+lsac_wave_4_b <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey data/SAS/lsacgrb8.sas7bdat"))
+lsac_wave_5_b <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey data/SAS/lsacgrb10.sas7bdat"))
+lsac_wave_6_b <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey data/SAS/lsacgrb12.sas7bdat"))
+lsac_wave_7_b <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey data/SAS/lsacgrb14.sas7bdat"))
+lsac_wave_8_b <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey data/SAS/lsacgrb16.sas7bdat"))
+lsac_wave_9_b <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey data/SAS/lsacgrb17.sas7bdat"))
 
-lsac_wave_1 <- lsac_wave_1 |> #they start to ask for asd only at wave 4 (at 11...)
+lsac_wave_1_b <- lsac_wave_1_b |> 
   rename(ID = hicid,
          peabody_pic_vocab = cppvt,
          peabody_pic_vocab_int = cppvt2, 
@@ -34,7 +31,8 @@ lsac_wave_1 <- lsac_wave_1 |> #they start to ask for asd only at wave 4 (at 11..
          sdq_pro_t = ctpsoc, 
          sdq_tot_t = ctsdqta)
 
-lsac_wave_2 <- lsac_wave_2 |> 
+
+lsac_wave_3_b <- lsac_wave_3_b |> 
   rename(ID = hicid, 
          peabody_pic_vocab = dppvtd,
          peabody_pic_vocab_int = dppvt2,
@@ -54,7 +52,7 @@ lsac_wave_2 <- lsac_wave_2 |>
          sdq_pro_t = dtpsoc,
          sdq_tot_t = dtsdqtb)
 
-lsac_wave_3 <- lsac_wave_3 |> 
+lsac_wave_4_b <- lsac_wave_4_b |> 
   rename(ID = hicid, 
          peabody_pic_vocab = eppvt,
          peabody_pic_vocab_int = eppvt2,
@@ -76,7 +74,7 @@ lsac_wave_3 <- lsac_wave_3 |>
          sdq_pro_t = etpsoc,
          sdq_tot_t = etsdqtb)
 
-lsac_wave_4 <- lsac_wave_4 |> 
+lsac_wave_5_b <- lsac_wave_5_b |> 
   rename(ID = hicid, 
          autism = fhs17w,
          matrix = fmatreas,
@@ -125,7 +123,7 @@ lsac_wave_4 <- lsac_wave_4 |>
          sdq_pro_f = ffpsoc,
          sdq_tot_f = ffsdqtb)
 
-lsac_wave_5 <- lsac_wave_5 |> 
+lsac_wave_6_b <- lsac_wave_6_b |> 
   rename(ID = hicid,
          autism = ghs17w,
          age = gf03m1, 
@@ -173,7 +171,7 @@ lsac_wave_5 <- lsac_wave_5 |>
          sdq_pro_f = gfpsoc,
          sdq_tot_f = gfsdqtb)
 
-lsac_wave_6 <- lsac_wave_6 |> #academic vars badly documented so might not be correct 
+lsac_wave_7_b <- lsac_wave_7_b |> 
   rename(ID = hicid,
          autism = hhs17w,
          visual_attention_speed = hlc16c1a,
@@ -230,60 +228,9 @@ lsac_wave_6 <- lsac_wave_6 |> #academic vars badly documented so might not be co
          sdq_pro_f = hfpsoc,
          sdq_tot_f = hfsdqtb)
 
-lsac_wave_7 <- lsac_wave_7 |> #academic performance vars are badly documented so it might not be correct
-  rename(ID = hicid,
-         autism = ihs17w,
-         visual_attention_speed = ilc16a1a,
-         visual_attention_comp = ilc16a1i,
-         visual_attention_integrity = ilc16a1j,
-         working_memory_speed = ilc16a2a,
-         working_memory_comp = ilc16a2i,
-         working_memory_integrity = ilc16a2j, 
-         exec_func_tot_errors = ilc16a3c,
-         exec_func_comp = ilc16a3i,
-         exec_func_integrity = ilc16a3j,
-         age = if03m1, 
-         sex = zf02m1,
-         sdq_emot_p = iaemot,
-         sdq_cond_p = iacondb, 
-         sdq_hyp_p = iahypr,
-         sdq_peer_p = iapeer, 
-         sdq_pro_p = iapsoc, 
-         sdq_tot_p = iasdqtb, 
-         sdq_emot_c = icemot, 
-         sdq_cond_c = iccondb, 
-         sdq_hyp_c = ichypr,
-         sdq_peer_c = icpeer,
-         sdq_pro_c = icpsoc, 
-         sdq_tot_c = icsdqtb, 
-         sdq_emot_ple = ipemot, 
-         sdq_cond_ple = ipcondb,
-         sdq_hyp_ple = iphypr,
-         sdq_peer_ple = ippeer,
-         sdq_pro_ple = ippsoc,
-         sdq_tot_ple = ipsdqtb,
-         sdq_emot_p2 = ibemot, 
-         sdq_cond_p2 = ibcondb,
-         sdq_hyp_p2 = ibhypr,
-         sdq_peer_p2 = ibpeer,
-         sdq_pro_p2 = ibpsoc,
-         sdq_tot_p2 = ibsdqtb,
-         sdq_emot_m = imemot, 
-         sdq_cond_m = imcondb,
-         sdq_hyp_m = imhypr,
-         sdq_peer_m = impeer,
-         sdq_pro_m = impsoc,
-         sdq_tot_m = imsdqtb,
-         sdq_emot_f = ifemot, 
-         sdq_cond_f = ifcondb,
-         sdq_hyp_f = ifhypr,
-         sdq_peer_f = ifpeer,
-         sdq_pro_f = ifpsoc,
-         sdq_tot_f = ifsdqtb)
+lsac_b_all <- bind_rows(lsac_wave_1_b, lsac_wave_3_b, lsac_wave_4_b, lsac_wave_5_b, lsac_wave_6_b, lsac_wave_7_b)
 
-lsac_all <- bind_rows(lsac_wave_1, lsac_wave_2, lsac_wave_3, lsac_wave_4, lsac_wave_5, lsac_wave_6, lsac_wave_7)
-
-lsac_selected <- lsac_all |> 
+lsac_b_selected <- lsac_b_all |> 
   select(ID, 
          wave, 
          sex, 
@@ -304,25 +251,24 @@ lsac_selected <- lsac_all |>
          exec_func_integrity,
          starts_with("sdq"))
 
-lsac_selected <- lsac_selected |> 
+lsac_b_selected <- lsac_b_selected |> 
   arrange(ID, wave)
 
-data_autistic_lsac <- lsac_all |> 
-  filter(autism == 1) #there is a value (-9) which i cant really place anywhere
+lsac_autistic_b <- lsac_b_all |> 
+  filter(autism == 1)
 
-id_of_asd_pcpts <- unique(data_autistic_lsac$ID)
+ids_of_asd_pcpts <- unique(lsac_autistic_b$ID)
 
-data_asd_lsac <- lsac_selected |> 
-  filter(ID %in% id_of_asd_pcpts)
+asd_lsac_b_cohort <- lsac_b_selected |> 
+  filter(ID %in% ids_of_asd_pcpts)
 
-lsac_data <- data_asd_lsac |> 
-  mutate(study = "lsac", 
+lsac_b_data <- asd_lsac_b_cohort |> 
+  mutate(study = "lsac B cohort", 
          country = "Australia")
 
-lsac_data <- lsac_data |> 
+lsac_b_data <- lsac_b_data |> 
   arrange(ID, wave)
 
-check_values(lsac_data)
+check_values(lsac_b_data)
 
-save(lsac_data, file = file.path(derived_data, "lsac.Rdata"))
-
+save(lsac_b_data, file = file.path(derived_data, "lsac_B.Rdata"))
