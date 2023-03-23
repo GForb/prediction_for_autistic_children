@@ -9,7 +9,7 @@ outputs <- file.path(data_and_outputs, "Outputs")
 
 # Loading required libraries
 library(here)
-library(tidyverse)
+library(testthat)
 library(haven) 
 library(gridExtra) 
 library(ggdist) 
@@ -18,7 +18,8 @@ library(gifski)
 library(magick) 
 library(gt) 
 library(gtExtras)
-library(testthat)
+library(tidyverse)
+filter <- dplyr::filter
 
 # Loading variable metadata ----
 var_metadata <- utils::read.csv(here::here("variable_metadata.csv"))
@@ -35,5 +36,17 @@ source_functions <- function() {
 }
 source_functions()
 
+# Test function ----
+test <- function(filename = NULL) {
+  if (is.null(filename)) {
+    test_dir <- "R scripts/Functions/Tests"
+    for (test in list.files(here::here(test_dir), pattern="\\.R$")) {
+      print(paste("Running tests in", test))
+      source(here::here(test_dir, test))
+    }
+  } else {
+    source(here::here(test_dir, filename))
+  }
+}
 
 
