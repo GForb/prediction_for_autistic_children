@@ -1,10 +1,9 @@
 ---
 title: "Document"
 params: 
-  data: ""  #"Path/to/data/as_string"
-  name_dataset: ""  #"Robject as string"
-  variables:  
-  colour: 
+  name_dataset: "gui"  #"Robject as string"
+  variables:  "sdq_tot_p"
+  colour: "blue"
 editor: visual
 ---
 
@@ -29,8 +28,9 @@ data_file <- paste0(params$name_dataset, ".Rdata")
 load(file.path(derived_data, data_file))
 
 set_name <- as.name(paste0(params$name_dataset, "_data"))
-waves <- max(get(set_name)[["wave"]])
 data <- get(set_name)
+
+waves <- max(data[["wave"]])
 ```
 
 Summary table
@@ -39,7 +39,7 @@ Summary table
 #| warning: false
   
 make_summary_table(data) |> 
-  filter(name %in% params$variables)|> 
+  filter(name %in% params$variables) |> 
   gt() |> 
   gt_theme_espn()
 ```
