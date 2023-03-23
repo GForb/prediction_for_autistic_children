@@ -44,16 +44,17 @@ make_summary_table(data) |>
 
 Summary tables by wave
 
-```{r}
+```{r results='asis' }
 #| warning: false
-for (wav in 1:waves) {
-  wave <- make_summary_by_wave(data)
-  wave[[wav]] |>
-    filter(name %in% params$variables) |>
-    gt() |>
-    gt_theme_espn()
+
+wave_tables <- make_summary_by_wave(data)
+for (wav in 1:length(wave_tables)) {
+  wave_tables[[wav]] |> 
+    filter(name %in% params$variables) |> 
+    gt() |> 
+    htmltools::tagList() |> 
+    print()
 }
-  
 
 ```
 
