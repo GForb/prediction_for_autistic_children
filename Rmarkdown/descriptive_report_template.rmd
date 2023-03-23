@@ -21,11 +21,14 @@ knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE, cache = FALSE,
 
   
 source(here::here("R scripts/config.R")) 
-source(here::here(params$data)) 
 
-set_name <- as.name(params$name_dataset)
-waves <- max(get(set_name)[["wave"]])
+data_file <- paste0(params$name_dataset, ".Rdata")
+load(file.path(derived_data, data_file))
+
+set_name <- as.name(paste0(params$name_dataset, "_data"))
 data <- get(set_name)
+
+waves <- max(data[["wave"]])
 ```
 
 Summary table
@@ -51,6 +54,7 @@ for (wav in 1:waves) {
     gt_theme_espn()
 }
   
+
 ```
 
 Plots:
