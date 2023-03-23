@@ -1,10 +1,9 @@
 ---
 title: "Document"
 params: 
-  data: "R scripts/Data Processing/import_gui.R"  #"Path/to/data/as_string"
-  name_dataset: "gui_data"  #"Robject as string"
-  variables: !r c("age", "sex", "sdq_emot_p", "sdq_cond_p", "sdq_hyp_p", "sdq_peer_p", "sdq_pro_p") 
-  colour: "red" #"name of colour"
+  name_dataset: "" 
+  variables: ""
+  colour: "" 
 editor: visual
 ---
 
