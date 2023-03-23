@@ -10,7 +10,7 @@ create_doc <- function(dataset,
                        variables, 
                        colour, 
                        template,
-                       output_file) {
+                       output_file = paste0("Dataset summaries/", dataset, ".html")) {
 
   parameters <- list(
                      name_dataset = dataset, 
