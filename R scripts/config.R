@@ -9,7 +9,7 @@ outputs <- file.path(data_and_outputs, "Outputs")
 
 # Loading required libraries
 library(here)
-library(tidyverse)
+library(testthat)
 library(haven) 
 library(gridExtra) 
 library(ggdist) 
@@ -18,7 +18,8 @@ library(gifski)
 library(magick) 
 library(gt) 
 library(gtExtras)
-library(testthat)
+library(tidyverse)
+filter <- dplyr::filter
 
 # Loading variable metadata ----
 var_metadata <- utils::read.csv(here::here("variable_metadata.csv"))
