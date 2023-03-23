@@ -35,5 +35,17 @@ source_functions <- function() {
 }
 source_functions()
 
+# Test function ----
+test <- function(filename = NULL) {
+  if (is.null(filename)) {
+    test_dir <- "R scripts/Functions/Tests"
+    for (test in list.files(here::here(test_dir), pattern="\\.R$")) {
+      print(paste("Running tests in", test))
+      source(here::here(test_dir, test))
+    }
+  } else {
+    source(here::here(test_dir, filename))
+  }
+}
 
 
