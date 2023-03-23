@@ -1,10 +1,9 @@
 ---
 title: "Document"
 params: 
-  data: "R scripts/Data Processing/import_gui.R"  #"Path/to/data/as_string"
-  name_dataset: "gui_data"  #"Robject as string"
-  variables: !r c("age", "sex", "sdq_emot_p", "sdq_cond_p", "sdq_hyp_p", "sdq_peer_p", "sdq_pro_p") 
-  colour: "red" #"name of colour"
+  name_dataset: "" 
+  variables: ""
+  colour: "" 
 editor: visual
 ---
 
@@ -22,11 +21,14 @@ knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE, cache = FALSE,
 
   
 source(here::here("R scripts/config.R")) 
-source(here::here(params$data)) 
 
-set_name <- as.name(params$name_dataset)
-waves <- max(get(set_name)[["wave"]])
+data_file <- paste0(params$name_dataset, ".Rdata")
+load(file.path(derived_data, data_file))
+
+set_name <- as.name(paste0(params$name_dataset, "_data"))
 data <- get(set_name)
+
+waves <- max(data[["wave"]])
 ```
 
 Summary table
@@ -42,16 +44,18 @@ make_summary_table(data) |>
 
 Summary tables by wave
 
-```{r}
+```{r results='asis' }
 #| warning: false
-for (wav in 1:waves) {
-  wave <- make_summary_by_wave(data)
-  wave[[wav]] |>
-    filter(name %in% params$variables) |>
-    gt() |>
-    gt_theme_espn()
+
+wave_tables <- make_summary_by_wave(data)
+for (wav in 1:length(wave_tables)) {
+  wave_tables[[wav]] |> 
+    filter(name %in% params$variables) |> 
+    gt() |> 
+    htmltools::tagList() |> 
+    print()
 }
-  
+
 ```
 
 Plots:

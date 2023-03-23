@@ -1,9 +1,9 @@
 ---
 title: "Document"
 params: 
-  name_dataset: "gui"  #"Robject as string"
-  variables:  "sdq_tot_p"
-  colour: "blue"
+  name_dataset: ""  #"Robject as string"
+  variables:  ""
+  colour: ""
 editor: visual
 ---
 
