@@ -1,5 +1,7 @@
 import csv 
-
+'''
+this script will overwrite the existing file so if something needs to be corrected or added we can just run it again
+'''
 study_metadata = [
   ['Study name', 'Wave', 'N', 'Source'],
   ['Growing Up in Ireland', '3', '91', 'https://doi.org/10.1177/1362361320981314'],
