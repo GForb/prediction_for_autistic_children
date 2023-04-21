@@ -1,4 +1,4 @@
-check_values <- function(data, metadata) {
+check_values <- function(data, metadata = var_metadata) {
 
   
   variables_to_check <- metadata[,1]
