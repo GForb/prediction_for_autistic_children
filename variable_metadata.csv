@@ -1,5 +1,5 @@
-﻿starts_with,min,max,values,label1,label2
-gender,1,2,integer,Female,Female
+starts_with,min,max,values,label1,label2
+sex,1,2,integer,Female,Female
 age,0,50,any,Age (years),Age (years)
 sdq_tot,0,40,any,SDQ Total,SDQ Total
 sdq_cond,0,10,any,SDQ Conduct problems,SDQ Cond.
