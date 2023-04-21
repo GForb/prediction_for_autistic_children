@@ -19,6 +19,7 @@ library(magick)
 library(gt) 
 library(gtExtras)
 library(tidyverse)
+library(qwraps2)
 filter <- dplyr::filter
 
 # Loading variable metadata ----
