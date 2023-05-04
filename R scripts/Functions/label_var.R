@@ -1,4 +1,4 @@
-var_metadata <- var_metadata[-2, ]
+#var_metadata <- var_metadata[-2, ]
 
 find_matching_column <- function(variable_name, data) {
   starts_with <- substr(variable_name, 1, nchar(variable_name)-2)
@@ -19,6 +19,6 @@ label_var <- function(as_string_variable, which_label, metadata = var_metadata) 
 
 
   
-find_matching_column("sdq_pro_p", var_metadata)
+#find_matching_column("sdq_pro_p", var_metadata)
 
-label_var("sdq_pro_p", "label1")
+#label_var("sdq_pro_p", "label1")
