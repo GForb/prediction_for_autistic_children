@@ -1,3 +1,8 @@
+library(patchwork)
+library(cowplot)
+library(gridExtra)
+library(grid)
+
 set_labs <- function(variable, metadata){
   #returns a list with a minimum an maximum value 
   var <- metadata |> 
@@ -90,6 +95,37 @@ make_raincloudplot_wave <- function(data, as_string_column, col_label, colour, v
   return(raincloud_wave)
 }
 
+combined_raincloudplot_wave<- function(data, variable, colour, metadata) {
+  raincloud_plots <- list()
+  plotlist <- make_raincloudplot_wave(data, variable, label_var(variable, "label1", metadata = metadata), colour, var_metadata = metadata)
+  wave <- max(data$wave)
+  for(i in 1:length(plotlist)){
+    raincloud_plots[[i]] <- plotlist[[i]][[1]]
+  }
+  for (i in 1:length(raincloud_plots)) {
+    raincloud_plots[[i]] <- raincloud_plots[[i]] + theme_void()
+  }
+  
+  # Combine the raincloud plots
+  combined_plot <- do.call(grid.arrange, c(raincloud_plots, ncol = length(raincloud_plots)))
+  
+  # Create a tableGrob for Y-axis tick labels
+  y_axis_labels <- tableGrob(data.frame(y = 1:40),
+                             theme = ttheme_default(base_size = 14),
+                             rows = NULL, cols = NULL)
+  
+  # Set the height of the tableGrob to match the combined plot
+  height <- combined_plot$heights
+  
+  # Combine the combined plot and Y-axis tick labels
+  combined_plot_with_y_axis <- arrangeGrob(y_axis_labels, combined_plot,
+                                           heights = unit.c(unit(1, "line"), height))
+  
+  # Display the combined plot with Y-axis tick labels
+  grid.newpage()
+  grid.draw(combined_plot_with_y_axis)
+  
+  return(combined_plot_with_y_axis)
+}
 
-
-
+zyh <- combined_raincloudplot_wave(gui_data, "sdq_tot_p", "red", var_metadata)
