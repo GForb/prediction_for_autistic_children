@@ -63,4 +63,5 @@ wave_plots2  <- make_raincloudplot_wave(gui_data,
                                         var_metadata = var_metadata)
 wave_plots2
 
-
+combined_plot <- combined_raincloudplot_wave(gui_data, "sdq_tot_p", "red", var_metadata)
+combined_plot

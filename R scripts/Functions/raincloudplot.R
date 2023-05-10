@@ -128,4 +128,3 @@ combined_raincloudplot_wave<- function(data, variable, colour, metadata) {
   return(combined_plot_with_y_axis)
 }
 
-zyh <- combined_raincloudplot_wave(gui_data, "sdq_tot_p", "red", var_metadata)
