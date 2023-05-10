@@ -74,9 +74,3 @@ combined_plot2 <- combined_raincloudplot_wave2(
   metadata =  var_metadata)
 combined_plot2
 
-box_plot_test(
-  data = gui_data,
-  variable = "sdq_tot_p",
-  col_label = "SDQ Total", 
-  colour =  "red",
-  metadata =  var_metadata)

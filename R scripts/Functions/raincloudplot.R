@@ -160,36 +160,7 @@ combined_raincloudplot_wave2 <- function(data, variable, col_label, colour, meta
   return(plot)
 }
 
-box_plot_test <- function(data, variable, col_label, colour, metadata=NULL) {
-  if (is.null(var_metadata)) {
-    ylims <- NULL
-  } else {
-    ylims <- find_min_max(variable, var_metadata)
-  }
-  
-  
-  data <- data[, c(variable, "wave")] |> 
-    mutate(
-      wave_factor = factor(wave, ordered = TRUE),
-      x = as.integer(wave_factor)*2-0.5
-    )
-  x <- data[["x"]]
+
   
 
-  data = tibble(x, column)
-  x_name = colnames(data)[1]
-  y_name = colnames(data)[2]
-  
-  print(data)
-  print(data[[x_name]])
-  tmp <- ggplot(data, aes(x = .data[[x_name]], y = .data[[y_name]], group = .data[[x_name]],  colour = colour, na.rm = T)) + 
-    geom_boxplot(
-      width = 0.25, 
-      outlier.shape = NA, 
-      colour = colour,
-)
-  
-  return(tmp)
-  
-}
 
