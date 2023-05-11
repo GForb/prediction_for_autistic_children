@@ -6,7 +6,7 @@ find_matching_column <- function(variable_name, data) {
   return(matching_column)
 }
 
-label_var <- function(as_string_variable, which_label, metadata = var_metadata) {
+label_var <- function(as_string_variable, which_label = "label1", metadata = var_metadata) {
   index <- find_matching_column(as_string_variable, metadata)
   column_ind <- 0
   if(which_label == "label2"){
