@@ -47,7 +47,7 @@ Summary tables by wave
 ```{r results='asis' }
 #| warning: false
 
-wave_tables <- make_summary_by_wave(data)
+wave_tables <- make_summary_table_by_wave(data)
 for (wav in 1:length(wave_tables)) {
   wave_tables[[wav]] |> 
     filter(name %in% params$variables) |> 
@@ -88,7 +88,7 @@ for (variable in params$variables) {
   gif <- create_gif(gif)
   gif #i just read the documentation and print() shows the tibble that represents the gif so if it doesnt work with the object i dont know whats RMarkdowns problem
   for (wav in 1:waves) {
-    first <- make_summary_by_wave(data)
+    first <- make_summary_table_by_wave(data)
     first[[wav]] |>
     filter(name == variable) |>
       gt() |>
