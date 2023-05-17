@@ -1,3 +1,8 @@
+library(patchwork)
+library(cowplot)
+library(gridExtra)
+library(grid)
+
 set_labs <- function(variable, metadata){
   #returns a list with a minimum an maximum value 
   var <- metadata |> 
@@ -7,10 +12,23 @@ set_labs <- function(variable, metadata){
   return(c(minimum, maximum))
 }
 
-make_raincloudplot <- function(column, col_label, colour, ylims = NULL) {
-  data = tibble(column)
-  col_name = colnames(data)
-  tmp <- ggplot(data, aes(x = 1.5, y = .data[[col_name]],  colour = colour, na.rm = T)) + 
+make_raincloudplot <- function(column, col_label, colour, ylims = NULL, x_col = NULL) {
+  if(is.null(x_col)){
+    x = 1.5
+  } else {
+    x = x_col
+  }
+  data = tibble(x, column)
+  x_name = colnames(data)[1]
+  y_name = colnames(data)[2]
+  
+    tmp <- ggplot(data, aes(
+                            x = .data[[x_name]], 
+                            y = .data[[y_name]], 
+                            group = .data[[x_name]],  
+                            colour = colour, 
+                            na.rm = T)
+                            ) + 
     #ylim(limz[[1]], limz[[2]])+
     labs(x = as.character(col_label), y = "Value") +
     ggdist::stat_halfeye(
@@ -20,11 +38,11 @@ make_raincloudplot <- function(column, col_label, colour, ylims = NULL) {
       .width = 0, 
       justification = -.3, 
       point_colour = colour) + 
-    geom_boxplot(
-      width = .25, 
-      outlier.shape = NA, 
-      colour = colour
-    ) +
+   geom_boxplot(
+        width = 0.25, 
+        outlier.shape = NA, 
+        colour = colour
+      ) +
     geom_point(
       size = 1.3,
       alpha = .3,
@@ -90,6 +108,88 @@ make_raincloudplot_wave <- function(data, as_string_column, col_label, colour, v
   return(raincloud_wave)
 }
 
+combined_raincloudplot_wave<- function(data, variable, colour, metadata) {
+  raincloud_plots <- list()
+  plotlist <- make_raincloudplot_wave(data, variable, label_var(variable, "label1", metadata = metadata), colour, var_metadata = metadata)
+  wave <- max(data$wave)
+  for(i in 1:length(plotlist)){
+    raincloud_plots[[i]] <- plotlist[[i]][[1]]
+  }
+  for (i in 1:length(raincloud_plots)) {
+    raincloud_plots[[i]] <- raincloud_plots[[i]] + theme_void()
+  }
+  
+  # Combine the raincloud plots
+  combined_plot <- do.call(grid.arrange, c(raincloud_plots, ncol = length(raincloud_plots)))
+  
+  # Create a tableGrob for Y-axis tick labels
+  y_axis_labels <- tableGrob(data.frame(y = 1:40),
+                             theme = ttheme_default(base_size = 14),
+                             rows = NULL, cols = NULL)
+  
+  # Set the height of the tableGrob to match the combined plot
+  height <- combined_plot$heights
+  
+  # Combine the combined plot and Y-axis tick labels
+  combined_plot_with_y_axis <- arrangeGrob(y_axis_labels, combined_plot,
+                                           heights = unit.c(unit(1, "line"), height))
+  
+  # Display the combined plot with Y-axis tick labels
+  grid.newpage()
+  grid.draw(combined_plot_with_y_axis)
+  
+  return(combined_plot_with_y_axis)
+}
 
+combined_raincloudplot_wave2 <- function(data, variable, col_label, colour, metadata=NULL) {
+  if (is.null(var_metadata)) {
+    ylims <- NULL
+  } else {
+    ylims <- find_min_max(variable, var_metadata)
+  }
+  
+  
+  data <- data[, c(variable, "wave")] |> 
+    mutate(
+      wave_factor = factor(wave, ordered = TRUE),
+      x = as.integer(wave_factor)*2-0.5
+    )
+  
+  plot <- make_raincloudplot(data[[variable]],col_label , colour, ylims = ylims, x_col = data["x"])
+  
+  return(plot)
+}
 
+box_plot_test <- function(data, variable, col_label, colour, metadata=NULL) {
+  if (is.null(var_metadata)) {
+    ylims <- NULL
+  } else {
+    ylims <- find_min_max(variable, var_metadata)
+  }
+  
+  
+  data <- data[, c(variable, "wave")] |> 
+    mutate(
+      wave_factor = factor(wave, ordered = TRUE),
+      x = as.integer(wave_factor)*2-0.5
+    )
+  x <- data[["x"]]
+  
+
+  data = tibble(x, column)
+  x_name = colnames(data)[1]
+  y_name = colnames(data)[2]
+  
+  print(data)
+  print(data[[x_name]])
+  tmp <- ggplot(data, aes(x = .data[[x_name]], y = .data[[y_name]], group = .data[[x_name]],  colour = colour, na.rm = T)) + 
+    geom_boxplot(
+      width = 0.25, 
+      outlier.shape = NA, 
+      colour = colour,
+)
+  
+  return(tmp)
+  
+}
 
