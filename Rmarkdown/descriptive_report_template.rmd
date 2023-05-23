@@ -78,23 +78,23 @@ for (variable in params$variables) {
 
 GIFs:
 
-```{r}
+```{r results='asis' }
 #| warning: false
 for (variable in params$variables) {
-  gif <- make_raincloudplot_wave(data = data, 
-                                 as_string_column = variable, 
-                                 col_label = paste(variable, "score by wave"), 
-                                 colour = params$colour)
-  gif <- create_gif(gif)
-  gif #i just read the documentation and print() shows the tibble that represents the gif so if it doesnt work with the object i dont know whats RMarkdowns problem
-  for (wav in 1:waves) {
-    first <- make_summary_table_by_wave(data)
-    first[[wav]] |>
-    filter(name == variable) |>
-      gt() |>
-      tab_header(paste("Wave:", wav)) |>
-      gt_theme_espn()
-    first
-  }
+  combined_plot2 <- combined_raincloudplot_wave2(
+    data = data,
+    variable = variable,
+    col_label = label_var(variable), 
+    colour =  colour,
+    metadata =  var_metadata)
+  print(combined_plot2)
+  wave_tables <- make_summary_table_by_wave(data)
+  for (wav in 1:length(wave_tables)) {
+  wave_tables[[wav]] |> 
+    filter(name == variable) |> 
+    gt() |> 
+    htmltools::tagList() |> 
+    print()
+}
 }
 ```
