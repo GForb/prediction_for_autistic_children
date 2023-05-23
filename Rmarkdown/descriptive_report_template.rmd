@@ -81,7 +81,7 @@ for (variable in params$variables) {
 }
 ```
 
-GIFs:
+Variables by wave:
 
 ```{r results='asis' }
 #| warning: false
