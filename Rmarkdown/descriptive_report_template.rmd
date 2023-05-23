@@ -55,6 +55,11 @@ for (wav in 1:length(wave_tables)) {
     htmltools::tagList() |> 
     print()
 }
+make_summary_by_wave(data) |> 
+  filter(name %in% params$variables) |> 
+  gt() |> 
+  htmltools::tagList() |> 
+  print()
 
 ```
 
@@ -88,13 +93,11 @@ for (variable in params$variables) {
     colour =  colour,
     metadata =  var_metadata)
   print(combined_plot2)
-  wave_tables <- make_summary_table_by_wave(data)
-  for (wav in 1:length(wave_tables)) {
-  wave_tables[[wav]] |> 
-    filter(name == variable) |> 
-    gt() |> 
-    htmltools::tagList() |> 
-    print()
-}
+  make_summary_by_wave(data) |> 
+  filter(name == variable) |> 
+  gt() |> 
+  htmltools::tagList() |> 
+  print()
+
 }
 ```
