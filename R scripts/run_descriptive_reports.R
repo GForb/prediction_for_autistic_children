@@ -5,6 +5,7 @@ colour = "green"
 
 
 create_doc(
+  set_title = "GUI descriptives",
   dataset = "gui", 
   variables = c("sdq_tot_p", "sdq_tot_t"), 
   colour = "green", 
