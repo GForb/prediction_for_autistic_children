@@ -31,11 +31,12 @@ get_variables <- function(report_type, metadata = var_metadata) {
 
 create_doc <- function(dataset, 
                        report_type, 
+                       title = "document",
                        colour = "red", 
                        template = here::here("Rmarkdown/descriptive_report_template.rmd"),
                        output_file = paste0("Dataset summaries/", dataset, ".html")) {
 
-  parameters <- list(
+  parameters <- list(set_title = title,
                      name_dataset = dataset, 
                      variables = get_variables(report_type), 
                      colour = colour)
