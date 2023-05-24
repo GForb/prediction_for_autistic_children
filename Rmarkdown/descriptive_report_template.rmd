@@ -72,12 +72,14 @@ for (variable in params$variables) {
   plot <- make_raincloudplot(column = column, 
                              col_label = paste(variable, "score"), 
                              colour = params$colour)
-  table <- make_summary_table(get(set_name)) |> 
+  print(plot)
+  make_summary_table(data) |> 
     filter(name == variable) |> 
     gt() |> 
-    gt_theme_espn()
-  print(plot)
-  print(table)
+    gt_theme_espn() |> 
+    htmltools::tagList() |> 
+    print()
+  
 }
 ```
 
