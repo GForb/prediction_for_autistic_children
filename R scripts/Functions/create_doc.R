@@ -30,14 +30,14 @@ get_variables <- function(report_type, metadata = var_metadata) {
 
 
 create_doc <- function(dataset, 
-                       variables = c("age", "sdq_tot_p", "sdq_cond_p", "sdq_hyp_p", "sdq_emot_p", "sdq_peer_p", "sdq_pro_p"), 
+                       report_type, 
                        colour = "red", 
                        template = here::here("Rmarkdown/descriptive_report_template.rmd"),
                        output_file = paste0("Dataset summaries/", dataset, ".html")) {
 
   parameters <- list(
                      name_dataset = dataset, 
-                     variables = variables, 
+                     variables = get_variables(report_type), 
                      colour = colour)
   
   output_file = file.path(outputs, output_file)
