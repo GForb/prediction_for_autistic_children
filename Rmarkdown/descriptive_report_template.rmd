@@ -1,9 +1,10 @@
 ---
-title: "Document"
 params: 
+  set_title: ""
   name_dataset: "" 
   variables: ""
   colour: "" 
+title: "`r params$set_title`"
 editor: visual
 ---
 
