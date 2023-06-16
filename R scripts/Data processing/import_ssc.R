@@ -28,6 +28,7 @@ cbcl_scores1 <- cbcl_scores1 |>
      cbcl_ext_total, cbcl_int_total) 
 
 cbcl_scores2 <- ssc_cbcl2 |> 
+  filter(role == "proband") |> 
   mutate(wave = 2,
          cbcl_ext_total = ach_rulebreak_sum + ach_aggressive_sum,
          cbcl_int_total = ach_somatic_sum + ach_anxdep_sum + ach_withdep_sum) |> 
@@ -43,8 +44,7 @@ cbcl_scores2 <- cbcl_scores2 |>
          cbcl_ext_total,
          cbcl_ext_tscore = ach_external_t_score,
          cbcl_int_total, 
-         cbcl_int_tscore = ach_internal_t_score) 
-
+         cbcl_int_tscore = ach_internal_t_score)  
   
 # Defining wave variable
 
@@ -73,7 +73,7 @@ ssc_wave_1 <- ssc_descriptive1 |>
 
 ssc_wave_2 <- ssc_med_hist2 |> 
   select(ID = sfari_id, age = age_at_eval) |> 
-  inner_join(cbcl_scores2, by = "ID") |> 
+  full_join(cbcl_scores2, by = "ID") |> 
   mutate(wave =2,
          age = age/12) 
 
