@@ -6,9 +6,12 @@ make_summary_table <- function(data) {
   summary_statistics <- data_long |> 
     group_by(name) |> 
     summarise(n = sum(!is.na(value)),
-              mean  = mean_sd(value, na_rm = TRUE, denote_sd = "paren"),
-              median = median_iqr(value, na_rm = TRUE),
-              minmax = paste(min(value), max(value), sep = ", "))
+              mean  = qwraps2::mean_sd(value, na_rm = TRUE, denote_sd = "paren", show_n = 'never'),
+              median = qwraps2::median_iqr(value, na_rm = TRUE, show_n = 'never'),
+              min = min(value, na.rm = TRUE),
+              max = max(value, na.rm  = TRUE))
+  summary_statistics |> 
+    mutate(minmax = paste(summary_statistics$min, summary_statistics$max, sep = ","))
               #paste("mean (sd)") = mean_sd(value, na.rm = TRUE, denote_sd = "paren"), 
               #sd = sd(value, na.rm = TRUE),
               #median = median(value, na.rm =TRUE),
@@ -41,7 +44,6 @@ make_summary_by_wave <- function(data) {
               #max = max(value, na.rm = TRUE))
   return(summary_statistics)
 }
-make_summary_by_wave(gui_data)
 
 make_summary_table_by_wave <- function(data) {
   data_wave <- divide_by_wave(data)
