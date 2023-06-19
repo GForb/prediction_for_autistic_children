@@ -75,7 +75,8 @@ ssc_wave_2 <- ssc_med_hist2 |>
   select(ID = sfari_id, age = age_at_eval) |> 
   full_join(cbcl_scores2, by = "ID") |> 
   mutate(wave =2,
-         age = age/12) 
+         age = age/12,
+         ID = str_replace(ID, "-", ".")) 
 
 
 # Renaming Variables ----
