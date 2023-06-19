@@ -5,8 +5,15 @@ test_data <- data.frame(
   sdq = rnorm(10, 10, 2)
 )
 
+test_data |> make_wide_dataset() |> make_long_dataset()
+
 test_that("make_wide_data", {
   wide_data <- make_wide_dataset(test_data)
   expect_equal(colnames(wide_data), c("ID", "iq_1", "iq_2", "sdq_1", "sdq_2"))
+})
+
+test_that("make_long_data", {
+  wide_data <- make_wide_dataset(test_data) |> make_long_dataset()
+  expect_equal(colnames(wide_data), c("ID", "wave", "iq", "sdq"))
 })
 
