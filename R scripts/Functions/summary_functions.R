@@ -1,4 +1,10 @@
 
+minmax <- function(value) {
+  paste(min(value, na.rm = TRUE) |> round(1), 
+        max(value, na.rm  = TRUE)|> round(1), 
+        sep = ", ")
+}
+
 make_summary_table <- function(data) {
   data_long <- data |> 
     select(where(~!is.character(.)), -ID, -wave) |> 
@@ -8,7 +14,7 @@ make_summary_table <- function(data) {
     summarise(n = sum(!is.na(value)),
               mean  = qwraps2::mean_sd(value, na_rm = TRUE, denote_sd = "paren", show_n = 'never'),
               median = qwraps2::median_iqr(value, na_rm = TRUE, show_n = 'never'),
-              minmax = paste(min(value, na.rm = TRUE), max(value, na.rm  = TRUE), sep = ","))
+              minmax = minmax(value))
 
               #paste("mean (sd)") = mean_sd(value, na.rm = TRUE, denote_sd = "paren"), 
               #sd = sd(value, na.rm = TRUE),
@@ -37,7 +43,7 @@ make_summary_by_wave <- function(data) {
               #median = median(value, na.rm =TRUE),
               #p25 = quantile (value, probs = 0.25, na.rm = TRUE),
               #p75 = quantile (value, probs = 0.75, na.rm = TRUE),
-              minmax = paste(min(value, na.rm = TRUE), max(value, na.rm  = TRUE), sep = ","))
+              minmax = minmax(value))
               #min = min(value, na.rm = TRUE),
               #max = max(value, na.rm = TRUE))
   return(summary_statistics)
