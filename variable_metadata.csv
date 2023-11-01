@@ -1,6 +1,8 @@
 starts_with,min,max,values,label1,label2
 sex,1,2,integer,Female,Female
 age,0,50,any,Age (years),Age (years)
+autism,0,1,integer,Autistic,Autistic
+autistic_any_wave,0,1,integer,Autistic (any wave),Autistic (any wave)
 sdq_tot,0,40,any,SDQ Total,SDQ Total
 sdq_cond,0,10,any,SDQ Conduct problems,SDQ Cond.
 sdq_peer,0,10,any,SDQ Peer problems,SDQ Peer

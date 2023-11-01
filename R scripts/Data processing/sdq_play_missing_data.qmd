@@ -1,0 +1,144 @@
+---
+title: "Missing data"
+format: html
+editor: visual
+---
+
+## Quarto
+
+```{r}
+#| echo: false
+#| warning: false
+#| output: false
+source(here::here("R scripts/config.R"))
+library(lme4)
+library(MASS)
+library(jomo)
+select <-  dplyr::select
+
+options(digits=3)
+
+data_folder <-  here::here(derived_data, "SDQ_gen_pop")
+
+train_data <- readRDS(file = here(data_folder, "sdq_gen_pop_non_autistic1000.rds"))
+test_data <- readRDS(file = here(data_folder, "sdq_gen_pop_non_autistic_test.rds"))
+
+#
+combined_data <- readRDS(file = here(data_folder, "sdq_gen_pop_non_autistic.rds")) |> 
+  mutate(base_sex = factor(base_sex))
+combined_data_cc <- combined_data |>  select(ID, studyid, wave, out_wave, age, starts_with("base"), starts_with("sdq"), train_data, test_data, relative_wave) |> 
+  na.omit() |> 
+  data.frame()
+
+combined_data_pc <- combined_data_cc |> mutate(base_sex = case_when(studyid == "mcs" ~ NA,
+                                                                    TRUE ~ base_sex),
+                                               base_sdq_cond_p = case_when(studyid == "mcs" ~ NA,
+                                                                           TRUE ~ base_sdq_cond_p))
+
+
+train_data_stp <- combined_data_cc |> filter(train_data==1, relative_wave == 1)
+test_data_stp <- combined_data_cc |> filter(test_data==1, relative_wave == 1)
+
+
+# Partially complete datasets:
+
+train_data_stp_pc <- train_data_stp |> mutate(base_sex = case_when(studyid == "mcs" ~ NA,
+                                                                    TRUE ~ base_sex),
+                                               base_sdq_cond_p = case_when(studyid == "mcs" ~ NA,
+                                                                           TRUE ~ base_sdq_cond_p))
+
+
+
+test_data_stp_pc <- test_data_stp |> mutate(base_sex = case_when(studyid == "mcs" ~ NA,
+                                                                    TRUE ~ base_sex),
+                                               base_sdq_cond_p = case_when(studyid == "mcs" ~NA,
+                                                                           TRUE ~ base_sdq_cond_p))
+
+
+my_pipeline <- function(model_function) {
+  IPDPredictR:::ipdma_prediction_pipeline(
+  data = train_data_stp,
+  model_function = model_function,
+  evaluate_performance = IPDPredictR:::evaluate_performance_continuous,
+  InternalExternalCV = FALSE,
+  test_data = test_data_stp,
+  study_var = "studyid"
+)
+
+  
+}
+
+```
+
+## Summaries
+
+```{R}
+for (data in list(train_data_stp, test_data_stp, train_data_stp_pc,  test_data_stp_pc)) {
+  table <- data |>  select(studyid, starts_with("sdq"), starts_with("base"), -base_sex) |>  group_by(studyid) |> summarise_variables()
+  table2 <- table(data$studyid, useNA = "always") 
+  table2 <- tibble(study = names(table2), counts = table2)
+  print(table)
+  print(table2)
+}
+
+
+
+
+
+```
+
+# Complete data mdoel
+```{R}
+complete_data_model <- function(data) {
+  lm("sdq_emot_p ~ studyid + age  +base_age  +base_sdq_emot_p +  base_sdq_cond_p + base_sdq_hyp_p + base_sdq_peer_p + base_sdq_pro_p + base_sex + age", data)
+}
+
+my_pipeline(complete_data_model)
+
+```
+
+# JOMO-YOLO
+```{R}
+# define cluster var
+studyid <- combined_data_pc$studyid
+Y <- combined_data_pc |> select(base_sdq_cond_p, base_sex)
+combined_data_pc$cons <- 1
+X <- combined_data_pc |> select(cons, sdq_emot_p, age, base_age, base_sdq_emot_p, base_sdq_hyp_p, base_sdq_peer_p, base_sdq_pro_p, age)
+set.seed(1569)
+
+# Follow the algorithm proposed in R-journal jomo paper to generate impuations
+
+# run jomo.MCMCchain to register first imputation
+imp1 <- jomo.MCMCchain(Y = Y, X = X, clus = studyid) 
+
+# Capture the state of the sampler as starting values for the second set of iterations:
+beta.start <- imp1$collectbeta[,,1000]   # capture the fixed parameter values
+l1cov.start <- imp1$collectomega[,,1000] # capture the level-1 covariance matrix values
+start.imp <- imp1$finimp.latnorm         # capture the final imputed data set (with
+                                         # latent normals for categorical variables)
+imp2 <- jomo.MCMCchain(Y = Y, X = X, clus =studyid, nburn = 10000)
+
+plot(imp2$collectbeta[1, 1, 1:10000], type = "l", ylab = expression(beta["e,0"]),
+     xlab = "Iteration number" )
+
+
+plot(imp2$collectomega[1, 1, 1:10000], type = "l", ylab = expression(omega[e,1,1]^2),
+     xlab = "Iteration number")
+
+imp3 <- jomo(Y = Y, X = X, nburn = 2000,  clus =studyid, nbetween = 1000, nimp = 10)
+
+imp3$Imputation |> table()
+table(imp3$Imputation, imp3$base_sex, useNA = "always")
+
+sdq_lm <- function(data) {
+  lm("sdq_emot_p ~ studyid + age  +base_age  +base_sdq_emot_p +  base_sdq_cond_p + base_sdq_hyp_p + base_sdq_peer_p + base_sdq_pro_p + base_sex + age", data = data)
+}
+evaluate_imputations_MI_Val(imp3, 
+                            model_function = sdq_lm, 
+                            evaluate_performance = 
+                              evaluate_continuous, 
+                            orig_data = combined_data_pc)
+
+#jomo <- lm("sdq_emot_p ~ studyid + age  +base_age  +base_sdq_emot_p +  base_sdq_cond_p + base_sdq_hyp_p + base_sdq_peer_p + base_sdq_pro_p + base_sex + age", data = train_data_stp)
+
+```

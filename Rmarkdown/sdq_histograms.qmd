@@ -1,0 +1,35 @@
+---
+title: "sdq_histograms"
+format: html
+editor: visual
+---
+
+## Quarto
+
+Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+
+## Running Code
+
+When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+
+```{r, echo = FALSE}
+
+source(here::here("R scripts", "config.R"))
+
+load(here::here(derived_data, "gui.Rdata"))
+data <- gui_data |> dplyr::filter(wave ==2)
+
+
+```
+
+
+```{r}
+
+
+
+hist(data$sdq_cond_p)
+hist(data$sdq_emot_p)
+hist(data$sdq_peer_p)
+hist(data$sdq_pro_p)
+hist(data$sdq_hyp_p)
+```

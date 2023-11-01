@@ -55,3 +55,42 @@ make_summary_table_by_wave <- function(data) {
   return(summary_tables)
 }
 
+sum_detail_by_study <- function(data, column) {
+  data |> 
+    group_by(studyid) |> 
+    sum_detail(column)
+  
+}
+
+sum_detail <- function(data, column) {
+  data |> 
+    summarise(n = sum(!is.na(.data[[column]])),
+              n_distinct = n_distinct(.data[[column]], na.rm = TRUE),
+              mean = mean(.data[[column]], na.rm = TRUE),
+              var = var(.data[[column]], na.rm = TRUE),
+              median = median(.data[[column]], na.rm = TRUE),
+              p25 = quantile(.data[[column]], na.rm = TRUE, probs = 0.25),
+              p75 = quantile(.data[[column]], na.rm = TRUE, probs = 0.75),
+              min = min(.data[[column]], na.rm = TRUE),
+              max = max(.data[[column]], na.rm = TRUE)
+    )
+}
+
+summarise_variables <- function(data) {
+  data |> pivot_longer(-any_of("studyid"), values_to = "value", names_to = "variable") |> 
+    group_by(variable) |> 
+    sum_detail("value")
+  
+}
+
+summarise_age <- function(data) {
+  data |>  summarise(mean_age = mean(age, na.rm = TRUE), 
+                     min_age = min(age, na.rm = TRUE),
+                     max_age = max(age, na.rm = TRUE),
+                     n = sum(!is.na(age))) |> 
+    print(n = 30)
+  
+} 
+
+
+

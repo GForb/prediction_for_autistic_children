@@ -1,6 +1,6 @@
 
 
-lsac_wave_1 <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey data/SAS/lsacgrk4.sas7bdat"))
+lsac_wave_1_raw <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey data/SAS/lsacgrk4.sas7bdat")) 
 lsac_wave_2 <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey data/SAS/lsacgrk6.sas7bdat"))
 lsac_wave_2.5 <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey data/SAS/lsacgrk7.sas7bdat"))
 lsac_wave_3 <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey data/SAS/lsacgrk8.sas7bdat"))
@@ -9,11 +9,12 @@ lsac_wave_4 <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey 
 lsac_wave_5 <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey data/SAS/lsacgrk12.sas7bdat"))
 lsac_wave_6 <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey data/SAS/lsacgrk14.sas7bdat"))
 lsac_wave_7 <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey data/SAS/lsacgrk16.sas7bdat"))
-lsac_wave_8 <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey data/SAS/lsacgrk18.sas7bdat"))
-lsac_wave_9.1 <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey data/SAS/lsacgrk20.sas7bdat"))
-lsac_wave_9.2 <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey data/SAS/lsacgrk21.sas7bdat"))
+# lsac_wave_8 <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey data/SAS/lsacgrk18.sas7bdat"))
+# lsac_wave_9.1 <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey data/SAS/lsacgrk20.sas7bdat"))
+# lsac_wave_9.2 <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey data/SAS/lsacgrk21.sas7bdat"))
 
-lsac_wave_1 <- lsac_wave_1 |> #they start to ask for asd only at wave 4 (at 11...)
+
+lsac_wave_1 <- lsac_wave_1_raw |> #they start to ask for asd only at wave 4 (at 11...)
   rename(ID = hicid,
          peabody_pic_vocab = cppvt,
          peabody_pic_vocab_int = cppvt2, 
@@ -31,7 +32,9 @@ lsac_wave_1 <- lsac_wave_1 |> #they start to ask for asd only at wave 4 (at 11..
          sdq_hyp_t = cthypr, 
          sdq_peer_t = ctpeer, 
          sdq_pro_t = ctpsoc, 
-         sdq_tot_t = ctsdqta)
+         sdq_tot_t = ctsdqta) |> 
+  mutate(wave = 1) |> 
+  select_analysis_variables()
 
 lsac_wave_2 <- lsac_wave_2 |> 
   rename(ID = hicid, 
@@ -51,7 +54,10 @@ lsac_wave_2 <- lsac_wave_2 |>
          sdq_hyp_t = dthypr, 
          sdq_peer_t = dtpeer,
          sdq_pro_t = dtpsoc,
-         sdq_tot_t = dtsdqtb)
+         sdq_tot_t = dtsdqtb) |> 
+  mutate(wave = 2) |> 
+  select_analysis_variables()
+
 
 lsac_wave_3 <- lsac_wave_3 |> 
   rename(ID = hicid, 
@@ -73,7 +79,10 @@ lsac_wave_3 <- lsac_wave_3 |>
          sdq_hyp_t = ethypr, 
          sdq_peer_t = etpeer,
          sdq_pro_t = etpsoc,
-         sdq_tot_t = etsdqtb)
+         sdq_tot_t = etsdqtb) |> 
+  mutate(wave = 3) |> 
+  select_analysis_variables()
+
 
 lsac_wave_4 <- lsac_wave_4 |> 
   rename(ID = hicid, 
@@ -122,7 +131,10 @@ lsac_wave_4 <- lsac_wave_4 |>
          sdq_hyp_f = ffhypr,
          sdq_peer_f = ffpeer,
          sdq_pro_f = ffpsoc,
-         sdq_tot_f = ffsdqtb)
+         sdq_tot_f = ffsdqtb) |> 
+  mutate(wave = 4) |> 
+  select_analysis_variables()
+
 
 lsac_wave_5 <- lsac_wave_5 |> 
   rename(ID = hicid,
@@ -170,7 +182,10 @@ lsac_wave_5 <- lsac_wave_5 |>
          sdq_hyp_f = gfhypr,
          sdq_peer_f = gfpeer,
          sdq_pro_f = gfpsoc,
-         sdq_tot_f = gfsdqtb)
+         sdq_tot_f = gfsdqtb) |> 
+  mutate(wave = 5) |> 
+  select_analysis_variables()
+
 
 lsac_wave_6 <- lsac_wave_6 |> #academic vars badly documented so might not be correct 
   rename(ID = hicid,
@@ -227,7 +242,10 @@ lsac_wave_6 <- lsac_wave_6 |> #academic vars badly documented so might not be co
          sdq_hyp_f = hfhypr,
          sdq_peer_f = hfpeer,
          sdq_pro_f = hfpsoc,
-         sdq_tot_f = hfsdqtb)
+         sdq_tot_f = hfsdqtb) |> 
+  mutate(wave = 6) |> 
+  select_analysis_variables()
+
 
 lsac_wave_7 <- lsac_wave_7 |> #academic performance vars are badly documented so it might not be correct
   rename(ID = hicid,
@@ -278,50 +296,37 @@ lsac_wave_7 <- lsac_wave_7 |> #academic performance vars are badly documented so
          sdq_hyp_f = ifhypr,
          sdq_peer_f = ifpeer,
          sdq_pro_f = ifpsoc,
-         sdq_tot_f = ifsdqtb)
+         sdq_tot_f = ifsdqtb)  |> 
+  mutate(wave = 7) |> 
+  select_analysis_variables()
+
+
+
 
 lsac_all <- bind_rows(lsac_wave_1, lsac_wave_2, lsac_wave_3, lsac_wave_4, lsac_wave_5, lsac_wave_6, lsac_wave_7)
 
-lsac_selected <- lsac_all |> 
-  select(ID, 
-         wave, 
-         sex, 
-         age, 
-         autism,
-         peabody_pic_vocab, 
-         peabody_pic_vocab_int, 
-         who_am_i, 
-         matrix, 
-         visual_attention_speed,
-         visual_attention_comp,
-         visual_attention_integrity,
-         working_memory_speed,
-         working_memory_comp,
-         working_memory_integrity,
-         exec_func_tot_errors,
-         exec_func_comp,
-         exec_func_integrity,
-         starts_with("sdq"))
 
-lsac_selected <- lsac_selected |> 
-  arrange(ID, wave)
 
-data_autistic_lsac <- lsac_all |> 
-  filter(autism == 1) #there is a value (-9) which i cant really place anywhere
 
-id_of_asd_pcpts <- unique(data_autistic_lsac$ID)
 
-data_asd_lsac <- lsac_selected |> 
-  filter(ID %in% id_of_asd_pcpts)
+lsac_all <- lsac_all |> 
+  arrange(ID, wave) |> 
+  mutate(autism = case_when(autism ==1 ~ 1,
+                            is.na(autism) ~ NA,
+                                  autism == 0 ~ 0,
+                                  autism == -9 ~ NA),
+         age = na_if(age, -9))
 
-lsac_data <- data_asd_lsac |> 
-  mutate(study = "lsac", 
+lsac_k_data <- lsac_all |> 
+  add_autistic_any_wave() |> 
+  mutate(study = "lsac_k", 
          country = "Australia")
 
-lsac_data <- lsac_data |> 
-  arrange(ID, wave)
+lsac_k_data <- lsac_k_data |> 
+  arrange(ID, wave) |> 
+  mutate(ID = as.character(ID))
 
-check_values(lsac_data)
+check_values(lsac_k_data)
 
-save(lsac_data, file = file.path(derived_data, "lsac.Rdata"))
+save(lsac_k_data, file = file.path(derived_data, "lsac_k.Rdata"))
 

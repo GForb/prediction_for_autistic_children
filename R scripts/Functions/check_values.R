@@ -19,16 +19,28 @@ check_values <- function(data, metadata = var_metadata) {
     test_passed <- TRUE
     results_string <- "Values in range for all checked variables"
     var_out_of_range <- NULL
+    data_min_max <- NULL
   } else {
     test_passed <- FALSE
     failed_test <- "The following variables had values out of range: "
     results_string <- paste(results, collapse = ", ")
     results_string <- paste("Variables with values out of range:", results_string)
     var_out_of_range <- results
+    
+    data_min_max <- min_max <- data |> 
+      select(all_of(var_out_of_range)) |> 
+      pivot_longer(cols = everything(), names_to = "variable", values_to = "value") |> 
+      group_by(variable) |> 
+      summarise(min = min(value, na.rm = TRUE),  max = max(value, na.rm = TRUE))
+    print(data_min_max)
+    
   }
   print(results_string)
-  return(list(passed = test_passed, 
-              var_out_of_range = var_out_of_range))
+  if(!test_passed){
+    stop("values out of range")
+  }
+
+
 }
 
 check_data <- function(variable_to_check, min, max, data) {
@@ -56,3 +68,11 @@ check_column <- function(column, min, max) {
   }
   return(test_failed)
 }
+
+check_single_obs_per_wave <- function(data) {
+  data %>%
+    dplyr::group_by(ID, wave) %>%
+    dplyr::summarise(n = dplyr::n(), .groups = "drop") %>%
+    dplyr::filter(n > 1L) 
+}
+
