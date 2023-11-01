@@ -37,3 +37,8 @@ vignettes/*.pdf
 
 # R Environment Variables
 .Renviron
+
+
+# html files created by Quartro or Rmarkdown
+Quarto/*.html
+Rmarkdown/*.html
