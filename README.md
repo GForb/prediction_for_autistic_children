@@ -8,3 +8,29 @@ We are bringing together data from multiple longitudinal studies of autistic chi
 
 
 The code is currently under developmet.
+
+# Organisation of this repository
+
+## 1. Documentation
+This folder contains notes on the dataset, instructions on how to set up file paths to use the repo, and a style guide (pointing at the tidyverse style guide) for contributing code.
+
+## 2. Rscripts
+### Top level files:
+  - config.R: Sets up paths and loads libraries and functions. Some of this could be taken out if fucntions were in a package
+  - 0_controller.R: Will run the whole analysis from start to finish - currently not updated
+  - run_descriptive_reports.R: Generates rmarkdown reports for each study containing descriptive graphs and summary tables. 
+
+### Data Processing: 
+There should be one import script per study. This should do all the merging and data manipulation required to get the data into the required form. At the end of each script check functions are called before saving to catch any out of range values or duplicate observations.
+### EDA: 
+Exploratory data analysis, any scripts that run exploratory analysis on the data. This should be restricted to descriptive analysis until the analysis plan is registered.
+### Functions: 
+This contains scripts of r functions that 
+  - Within the funcitons folder there is a Tests folder, this contains tests for the fucntions.
+
+## 3. Rmarkdown
+Contains required rmarkdown files. These are knitted by the run_desciprtive_reports function
+
+## Other files
+study_meta_data.csv contains data at a study level that can be used for reporting or checking
+variable_metadata.csv contains data at a variable level that can be used for reporting or checking.
