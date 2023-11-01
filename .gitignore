@@ -44,3 +44,6 @@ Quarto/*.html
 Rmarkdown/*.html
 Quarto/*/**
 Rmarkdown/*/**
+
+# Mac os files
+.DS_Store
