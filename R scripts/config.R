@@ -1,6 +1,6 @@
 # Setting paths ----
 # To set paths the global option "pfac_path" must be set with the path to the data and outputs folder. 
-# This can be done with the command options(pfac_path = "*path to data*"). This only needs to be run once.
+# If using Rstudio, this can be done by adding  Sys.setenv(pfac_path = "*path to data*") to the .Renviron file. To edit the .Renviron file you can use  usethis::edit_r_environ().
 
 data_and_outputs <-  Sys.getenv("pfac_path")
 raw_data <- file.path(data_and_outputs, "Raw data")
@@ -20,6 +20,10 @@ library(gt)
 library(gtExtras)
 library(tidyverse)
 library(qwraps2)
+library(cowplot)
+library(patchwork)
+library(grid)
+
 filter <- dplyr::filter
 
 # Loading variable metadata ----
@@ -51,4 +55,6 @@ test <- function(filename = NULL) {
   }
 }
 
+options("RStata.StataVersion" = 18)
+options("RStata.StataPath" = "/Applications/Stata/StataMP.app/Contents/MacOs/stata-mp")
 

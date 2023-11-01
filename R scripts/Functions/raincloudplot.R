@@ -1,7 +1,3 @@
-library(patchwork)
-library(cowplot)
-library(gridExtra)
-library(grid)
 
 set_labs <- function(variable, metadata){
   #returns a list with a minimum an maximum value 

@@ -35,3 +35,7 @@ complete_wide_data_adolescent |> make_summary_table()
 cor(complete_wide_data$cbcl_ext_total_1,complete_wide_data$cbcl_ext_total_2)
 cor(complete_wide_data$cbcl_int_total_1,complete_wide_data$cbcl_int_total_2)
 
+ssc_data_adolescent <-  ssc_data |> filter(age >10, age <19)
+cor.test(ssc_data$cbcl_ext_total, ssc_data$cbcl_int_total)
+
+cor.test(ssc_data_adolescent$cbcl_ext_total, ssc_data_adolescent$cbcl_int_total)

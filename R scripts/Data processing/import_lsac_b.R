@@ -28,8 +28,8 @@ lsac_wave_1_b <- lsac_wave_1_b |>
          sdq_hyp_t = cthypr, 
          sdq_peer_t = ctpeer, 
          sdq_pro_t = ctpsoc, 
-         sdq_tot_t = ctsdqta)
-
+         sdq_tot_t = ctsdqta) |> 
+  select_analysis_variables()
 
 lsac_wave_3_b <- lsac_wave_3_b |> 
   rename(ID = hicid, 
@@ -49,7 +49,8 @@ lsac_wave_3_b <- lsac_wave_3_b |>
          sdq_hyp_t = dthypr, 
          sdq_peer_t = dtpeer,
          sdq_pro_t = dtpsoc,
-         sdq_tot_t = dtsdqtb)
+         sdq_tot_t = dtsdqtb) |> 
+  select_analysis_variables()
 
 lsac_wave_4_b <- lsac_wave_4_b |> 
   rename(ID = hicid, 
@@ -71,7 +72,8 @@ lsac_wave_4_b <- lsac_wave_4_b |>
          sdq_hyp_t = ethypr, 
          sdq_peer_t = etpeer,
          sdq_pro_t = etpsoc,
-         sdq_tot_t = etsdqtb)
+         sdq_tot_t = etsdqtb) |> 
+  select_analysis_variables()
 
 lsac_wave_5_b <- lsac_wave_5_b |> 
   rename(ID = hicid, 
@@ -120,7 +122,8 @@ lsac_wave_5_b <- lsac_wave_5_b |>
          sdq_hyp_f = ffhypr,
          sdq_peer_f = ffpeer,
          sdq_pro_f = ffpsoc,
-         sdq_tot_f = ffsdqtb)
+         sdq_tot_f = ffsdqtb) |> 
+  select_analysis_variables()
 
 lsac_wave_6_b <- lsac_wave_6_b |> 
   rename(ID = hicid,
@@ -168,7 +171,8 @@ lsac_wave_6_b <- lsac_wave_6_b |>
          sdq_hyp_f = gfhypr,
          sdq_peer_f = gfpeer,
          sdq_pro_f = gfpsoc,
-         sdq_tot_f = gfsdqtb)
+         sdq_tot_f = gfsdqtb) |> 
+  select_analysis_variables()
 
 lsac_wave_7_b <- lsac_wave_7_b |> 
   rename(ID = hicid,
@@ -225,49 +229,30 @@ lsac_wave_7_b <- lsac_wave_7_b |>
          sdq_hyp_f = hfhypr,
          sdq_peer_f = hfpeer,
          sdq_pro_f = hfpsoc,
-         sdq_tot_f = hfsdqtb)
+         sdq_tot_f = hfsdqtb) |> 
+  select_analysis_variables()
 
 lsac_b_all <- bind_rows(lsac_wave_1_b, lsac_wave_3_b, lsac_wave_4_b, lsac_wave_5_b, lsac_wave_6_b, lsac_wave_7_b)
 
-lsac_b_selected <- lsac_b_all |> 
-  select(ID, 
-         wave, 
-         sex, 
-         age, 
-         autism,
-         peabody_pic_vocab, 
-         peabody_pic_vocab_int, 
-         who_am_i, 
-         matrix, 
-         visual_attention_speed,
-         visual_attention_comp,
-         visual_attention_integrity,
-         working_memory_speed,
-         working_memory_comp,
-         working_memory_integrity,
-         exec_func_tot_errors,
-         exec_func_comp,
-         exec_func_integrity,
-         starts_with("sdq"))
 
-lsac_b_selected <- lsac_b_selected |> 
-  arrange(ID, wave)
 
-lsac_autistic_b <- lsac_b_all |> 
-  filter(autism == 1)
+lsac_b_all <- lsac_b_all |> 
+  arrange(ID, wave) |> 
+  mutate(autism = case_when(autism ==1 ~ 1,
+                            is.na(autism) ~ NA,
+                                  autism == 0 ~ 0,
+                                  autism == -9 ~ NA))
 
-ids_of_asd_pcpts <- unique(lsac_autistic_b$ID)
-
-asd_lsac_b_cohort <- lsac_b_selected |> 
-  filter(ID %in% ids_of_asd_pcpts)
-
-lsac_b_data <- asd_lsac_b_cohort |> 
-  mutate(study = "lsac B cohort", 
+lsac_b_data <- lsac_b_all |> 
+  add_autistic_any_wave() |> 
+  mutate(study = "lsac_b", 
          country = "Australia")
 
 lsac_b_data <- lsac_b_data |> 
-  arrange(ID, wave)
+  arrange(ID, wave) |> 
+  mutate(ID = as.character(ID))
 
 check_values(lsac_b_data)
 
-save(lsac_b_data, file = file.path(derived_data, "lsac_B.Rdata"))
+save(lsac_b_data, file = file.path(derived_data, "lsac_b.Rdata"))
+
