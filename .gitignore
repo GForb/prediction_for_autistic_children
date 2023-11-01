@@ -42,3 +42,5 @@ vignettes/*.pdf
 # html files created by Quartro or Rmarkdown
 Quarto/*.html
 Rmarkdown/*.html
+Quarto/*/**
+Rmarkdown/*/**
