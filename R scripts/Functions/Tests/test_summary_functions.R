@@ -12,3 +12,9 @@ test_that("make_summary_by_wave", {
   suppressWarnings( tables <- make_summary_by_wave(gui_data))
   expect_equal(length(tables), 3)
 })
+
+
+make_summary_by_wave(gui_data)[[1]]
+
+
+make_summary_table_by_wave(gui_data)[[1]]

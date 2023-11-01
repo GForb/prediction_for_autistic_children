@@ -31,6 +31,7 @@ var_metadata <- utils::read.csv(here::here("variable_metadata.csv"))
 source_functions <- function() {
   function_dir <- "R scripts/Functions"
   for (fun in list.files(here::here(function_dir), pattern="\\.R$")) {
+    print(paste("sourcing", fun))
     source(here::here(function_dir, fun))
   }
   

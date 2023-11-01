@@ -10,3 +10,7 @@ sdq_emot,0,10,any,SDQ Emotional,SDQ Emot.
 iq_performance,1,180,any,Performance IQ,PIQ
 iq_verbal,1,180,any,Verbal IQ,VIQ
 iq_full_scale,1,180,any,Full Scale IQ,FSIQ
+cbcl_ext_total,0,100,any,CBCL Externalising,CBCL Externalising Total
+cbcl_ext_tscore,0,100,any,CBCL Externalising,CBCL Externalising T-score
+cbcl_int_total,0,100,any,CBCL Internalising,CBCL Internalising Total
+cbcl_int_tscore,0,100,any,CBCL Internalising,CBCL Internalising T-score
