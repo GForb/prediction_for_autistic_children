@@ -46,4 +46,8 @@ Quarto/*/**
 Rmarkdown/*/**
 
 # Mac os files
-.DS_Store
+**/.DS_Store
+
+# Rporilfe
+.Rprofile
+
