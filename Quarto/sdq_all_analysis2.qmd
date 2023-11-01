@@ -1,0 +1,219 @@
+---
+title: "sdq_all_models"
+format: html
+editor: visual
+---
+
+# Full runthough
+
+## Aim
+
+This document aims to run all the planned models for my meta-analysis using the SDQ
+
+## Data and Libraries
+
+For train data we use a sample of 1000 people non-autistic from four gen popualtion cohorts. The test data is the remainder of the non-autistic participants from these cohorts.
+
+```{r}
+#| echo: false
+#| warning: false
+#| output: false
+source(here::here("R scripts/config.R"))
+library(lme4)
+library(MASS)
+select <-  dplyr::select
+
+options(digits=3)
+
+data_folder <-  here::here(derived_data, "SDQ_gen_pop")
+
+train_data <- readRDS(file = here(data_folder, "sdq_gen_pop_non_autistic1000.rds"))
+test_data <- readRDS(file = here(data_folder, "sdq_gen_pop_non_autistic_test.rds"))
+
+
+test_data_cc <- test_data |> 
+  select(ID, studyid, wave, out_wave, age, starts_with("base"), starts_with("sdq"), test_data, train_data) |> na.omit() |> data.frame()
+
+test_data_cc <- test_data |> 
+  select(ID, studyid, wave, out_wave, age, starts_with("base"), starts_with("sdq"), test_data, train_data, relative_wave) |> na.omit() |> data.frame()
+
+train_data_cc <- train_data |> 
+  select(ID, studyid, wave, out_wave, age, starts_with("base"), starts_with("sdq"), test_data, train_data, relative_wave) |> na.omit() |> data.frame()
+
+
+train_data_stp  <-  train_data_cc |> filter(wave == out_wave)
+test_data_cc_stp <- test_data_cc |> filter(wave == out_wave)
+
+combined_data <- dplyr::bind_rows(test_data_cc, train_data_cc)
+
+outcome_var_names <-  c("sdq_emot_p", "sdq_cond_p", "sdq_hyp_p", "sdq_peer_p", "sdq_pro_p")
+```
+
+## Data summaries
+
+### Counts
+
+```{R}
+train_data_stp |>  summarise(n_complete = sum(!is.na(base_sdq_emot_p) & !is.na(sdq_emot_p)),
+                         N = n()) |> 
+  mutate(missing = N - n_complete,
+         n_prop = n_complete/N)
+train_data_stp |> group_by(studyid) |> summarise(n_complete = sum(!is.na(base_sdq_emot_p) & !is.na(sdq_emot_p)))
+
+test_data_cc_stp |>  summarise(n_complete = sum(!is.na(base_sdq_emot_p) & !is.na(sdq_emot_p)))
+test_data_cc_stp |> group_by(studyid) |> summarise(n_complete = sum(!is.na(base_sdq_emot_p) & !is.na(sdq_emot_p)))
+
+table(test_data_cc_stp$studyid, test_data_cc_stp$base_sex)
+```
+
+### Age
+
+```{R}
+# Age at baseline
+train_data_stp  |> select(studyid, age = base_age) |>  group_by(studyid) |> summarise_age()
+
+# Age at follow up
+train_data_stp |> select(studyid, age = age) |> group_by(studyid) |> summarise_age()
+```
+
+### Summaries
+
+```{R}
+train_data_stp |> 
+  select(studyid, starts_with("base")) |> 
+summarise_variables()
+
+train_data_stp |> 
+  select(studyid, age, starts_with("sdq")) |> 
+ summarise_variables()
+
+
+test_data_cc_stp |> 
+  select(studyid, starts_with("base")) |> 
+ summarise_variables()
+
+test_data_cc_stp |> 
+  select(studyid, age, starts_with("sdq")) |> 
+summarise_variables()
+
+
+
+hist(train_data_stp$base_sdq_emot_p, breaks = 10)
+hist(train_data_stp$sdq_emot_p, breaks = 10)
+hist(test_data$base_sdq_emot_p, breaks = 10)
+hist(test_data$sdq_emot_p, breaks = 10)
+
+
+```
+
+# Comparing Models
+
+## Single time point analysis
+
+### Complete data
+
+```{r}
+
+evaluate_model_by_study <- function(model) {
+ ProfacSims:::get_performance_by_study(test_data = test_data_cc_stp, 
+                                      model = model, 
+                                      evaluate_performance = ProfacSims:::evaluate_performance_continuous) |>     select(any_of("studyid"), everything()) |> 
+  flextable::flextable() |> 
+  flextable::merge_v(j = 1) |> 
+  flextable::border_inner_h() 
+}
+evaluate_model_overall <- function(model) {
+  ProfacSims:::ipdma_prediction_pipeline(test_data = test_data_cc_stp, 
+                                       model = model, 
+                                       evaluate_performance = ProfacSims:::evaluate_performance_continuous) |> 
+  select(any_of("studyid"), everything(), -any_of("test_ss")) |> 
+  flextable::flextable() |> 
+  flextable::merge_v(j = 1) |> 
+  flextable::border_inner_h() 
+
+}
+  
+
+
+```
+
+#### Define model functions
+
+```{r Model functions}
+
+
+modelfactory_random <- function(outcome) {
+  function(data){
+    formula <- paste0(outcome,  "~ base_age  +base_sdq_emot_p +  base_sdq_cond_p + base_sdq_hyp_p + base_sdq_peer_p + base_sdq_pro_p + + base_sex + age + (1|studyid)")
+    lme4::lmer(as.formula(formula), 
+               data = data, REML = TRUE)
+  }
+} 
+
+model_factory_fixed <- function(outcome) {
+  function(data){
+    formula <- paste0(outcome,  "~ studyid+ base_age  +base_sdq_emot_p +  base_sdq_cond_p + base_sdq_hyp_p + base_sdq_peer_p + base_sdq_pro_p + + base_sex + age")
+    lm(as.formula(formula), 
+               data = data)
+  }
+} 
+
+model_facotry_list = list(modelfactory_random, model_factory_fixed)
+
+
+```
+
+#### Evaluate models
+
+```{r}
+
+results <- IPDPredictR:::IPDMA_predict_model_rows_study_cols(model_factories = model_facotry_list, 
+                                                  model_labels=c("Random", "Fixed"), 
+                                                  outcome_var_names = outcome_var_names,
+                                                  outcome_labels=c("Emotion", "Conduct", "Hyperactivity", "Peer problems", "Pro-social"), 
+                                                  data = train_data_stp, 
+                                                  InternalExternalCV = FALSE,
+                                                  predict_function= predict,
+                                                  evaluate_performance = IPDPredictR:::evaluate_performance_cont_obs_pred, 
+                                                  test_data = test_data_cc_stp, 
+                                                  study_var_name = "studyid") 
+
+results |> 
+  IPDPredictR:::est_tau2() |> 
+  pivot_wider(names_from = metric, values_from = est_tau2) |> 
+  select(outcome, model, everything()) |> 
+  flextable::flextable() |> 
+  flextable::merge_v(j = c(1,2)) |> 
+  flextable::width(j = 3:5, width = 2) |> 
+  flextable::hline(i = c(1:4*2))
+
+
+
+```
+
+## Multiple timepoint - Andrew doubts this is possible.
+
+```{r }
+#| echo: false
+
+uri_results <- stata_results_many_outcomes(outcomes = outcome_var_names,
+                            timepoints = 1:3, data = combined_data, 
+                            stata_model_fun = stata_univariate_random_intercept)
+
+
+```
+
+```{r}
+
+uri_results |>   
+  IPDPredictR:::est_tau2() |> 
+  select(-tau2) |> 
+  pivot_wider(names_from = metric, values_from = est_tau2) |> 
+  select(outcome, timepoints, everything()) |> 
+  flextable::flextable() |> 
+  flextable::merge_v(j = c(1,2)) |> 
+  flextable::width(j = 3:5, width = 2) |> 
+  flextable::hline(i = c(1:4*3))
+
+
+```

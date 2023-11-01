@@ -1,0 +1,286 @@
+---
+title: "sdq_play"
+format: html
+editor: visual
+---
+
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| output: false
+source(here::here("R scripts/config.R"))
+library(lme4)
+library(MASS)
+select <-  dplyr::select
+
+options(digits=3)
+
+data_folder <-  here::here(derived_data, "SDQ_gen_pop")
+
+train_data <- readRDS(file = here(data_folder, "sdq_eda_1tp_train_data.rds"))
+test_data <- readRDS(file = here(data_folder, "sdq_eda_1tp_test_data.rds"))
+
+```
+
+
+
+
+# Summary stats of age and outcome correlations
+
+```{r}
+
+train_data |>  summarise(n_complete = sum(!is.na(sdq_emot_p) & !is.na(y_sdq_emot_p)),
+                         N = n()) |> 
+  mutate(missing = N - n_complete,
+         n_prop = n_complete/N)
+
+
+train_data |> group_by(studyid) |> summarise(n_complete = sum(!is.na(sdq_emot_p) & !is.na(y_sdq_emot_p)))
+
+test_data |>  summarise(n_complete = sum(!is.na(sdq_emot_p) & !is.na(y_sdq_emot_p)))
+test_data |> group_by(studyid) |> summarise(n_complete = sum(!is.na(sdq_emot_p) & !is.na(y_sdq_emot_p)))
+
+summarise_age <- function(data) {
+  data |>  summarise(mean_age = mean(age, na.rm = TRUE), 
+                     min_age = min(age, na.rm = TRUE),
+                     max_age = max(age, na.rm = TRUE),
+                     n = sum(!is.na(age))) |> 
+    print(n = 30)
+
+} 
+
+# Age at baseline
+train_data  |> group_by(studyid) |> summarise_age()
+
+# Age at follow up
+train_data |> select(studyid, age = y_age) |> group_by(studyid) |> summarise_age()
+
+# Outcome correlations
+train_data |> select(starts_with("y_sdq")) |> cor(use = "pairwise.complete.obs")
+train_data |> select(starts_with("y_sdq")) |> cor(use = "pairwise.complete.obs", method = "spearman")
+
+# Homotypic correlations
+cor(train_data$sdq_emot_p, train_data$y_sdq_emot_p, use = "pairwise.complete.obs")
+
+
+```
+
+# Histograms of outcomes
+
+```{r}
+
+train_data$y_sdq_emot_p |> hist(breaks = 10)
+
+mean(train_data$y_sdq_emot_p, na.rm = TRUE)
+var(train_data$y_sdq_emot_p, na.rm = TRUE)
+
+train_data$y_sdq_cond_p |> hist(breaks = 10)
+
+train_data$y_sdq_hyp_p |> hist(breaks = 10)
+
+train_data$y_sdq_peer_p |> hist(breaks = 10)
+train_data$y_sdq_pro_p |> hist(breaks = 10)
+```
+
+
+
+# Modelling
+
+
+```{r}
+
+model1 <- lme4::lmer("y_sdq_emot_p ~ age  +sdq_emot_p +  sdq_cond_p + sdq_hyp_p + sdq_peer_p + sdq_pro_p + y_age + (1|studyid)", 
+                    data = train_data, REML = FALSE)
+model2 = lm("y_sdq_emot_p ~ studyid + age  +sdq_emot_p +  sdq_cond_p + sdq_hyp_p + sdq_peer_p + sdq_pro_p + y_age", data = train_data)
+
+model3 = lme4::glmer("y_sdq_emot_p ~ age  +sdq_emot_p +  sdq_cond_p + sdq_hyp_p + sdq_peer_p + sdq_pro_p + y_age + (1|studyid)", 
+                     data = train_data, family = "poisson")
+model4 = glm("y_sdq_emot_p ~ studyid + age  +sdq_emot_p +  sdq_cond_p + sdq_hyp_p + sdq_peer_p + sdq_pro_p + y_age", data = train_data,family = "poisson")
+model5 = glm.nb("y_sdq_emot_p ~ studyid + age  +sdq_emot_p +  sdq_cond_p + sdq_hyp_p + sdq_peer_p + sdq_pro_p + y_age", data = train_data,)
+
+# Model 1: Linear, random intercept
+summary(model1)
+
+# Model 2: Linear, fixed intercept
+summary(model2)
+
+# Model 2: Poisson, random intercept
+summary(model3)
+
+# Model 3: Poisson, fixed intercept
+summary(model4)
+
+# Model 3: Negative binomia, fixed intercept
+summary(model5)
+
+```
+
+# AICs
+note the extractAIC function gives incorrect AIC for linear model
+
+```{r}
+#| warning: False
+
+models <- tibble(model_name = c("lm_re", "lm_fe", "poisson_re", "poisson_fe", "neg_bin_fe"), model = list(model1, model2, model3, model4, model5))
+
+get_aic <- function(model) {
+  aic <- AICcmodavg::aictab(cand.set = list(model))
+  return(aic$AICc)
+}
+
+models <- models |>rowwise() |>  mutate(AIC = get_aic(model))
+
+
+print(models)
+
+
+```
+
+
+
+# Examining predicitons and residuals for poisson vs linear model vs negbin
+
+```{r}
+
+test_data_cc <- test_data |> 
+  select(ID, studyid, wave, age, starts_with("y"), starts_with("sdq")) |> na.omit() |> data.frame()
+
+
+pred_lm <- predict(model2, newdata = test_data_cc)
+pred_po <- predict(model4, newdata = test_data_cc, type = 'response')
+pred_nb <- predict(model5, newdata = test_data_cc, type = 'response')
+
+preds <- tibble(lm = pred_lm, 
+                poisson = pred_po, 
+                neg_bin = pred_nb,
+                actual = test_data_cc$y_sdq_emot_p) |> 
+  mutate(ID = row_number(),
+         poisson_trucn = case_when(poisson <=10 ~ poisson,
+                                   poisson > 10 ~ 10),
+         neg_bin_trunc = case_when(neg_bin <=10 ~ neg_bin,
+                                   neg_bin > 10 ~ 10)) |> 
+  pivot_longer(cols = -c("actual", ID), names_to = "model", values_to = "pred") 
+
+preds <- preds |> mutate(res = actual - pred , 
+                         sq_error = res^2)
+
+preds |> group_by(model) |> 
+  summarise(MSE = mean(sq_error)) 
+
+
+hist_with_norm <- function(vector, ...) {
+  m<-mean(vector)
+  std<-sqrt(var(vector))
+  hist(vector, prob=TRUE, ...)
+  curve(dnorm(x, mean=m, sd=std), 
+        col="darkblue", lwd=2, add=TRUE, yaxt="n")
+}
+
+hist(train_data$y_sdq_emot_p, main = "Observed outcome", prob=TRUE)
+
+preds_wide <- preds |> pivot_wider(names_from = "model", values_from = c(pred, res, sq_error))
+
+hist_with_norm(preds_wide$res_lm, main = "Residuals from linear model")
+hist(preds_wide$res_poisson, main = "Residuals from poisson", prob=TRUE)
+hist(preds_wide$res_neg_bin, main = "Residuals from Negative Binomial", prob=TRUE)
+
+calibration_plot <- function(actual, pred, ylim= c(0,15), xlab = "Predicted", ylab = "Actual", main = "Calibration Plot",  ...) {
+  plot(pred, actual, ylim =ylim, xlab = xlab, ylab = ylab, main = main, ..., col = "grey")
+  lines(lowess(pred, actual), col='red')
+  abline(a=0, b=1)
+}
+
+
+max(preds_wide$pred_lm)
+max(preds_wide$pred_poisson)
+max(preds_wide$pred_neg_bin)
+
+
+
+max_pred <- max(max(preds_wide$pred_lm),
+                max(preds_wide$pred_poisson),
+                max(preds_wide$pred_neg_bin))
+
+min(preds_wide$pred_lm)
+
+calibration_plot(actual = preds_wide$actual, pred = preds_wide$pred_lm, ylim = c(0, 10), xlim = c(0,10), main = "Calibration:Linear Regression")
+calibration_plot(actual = preds_wide$actual, pred = preds_wide$pred_poisson, ylim = c(0, max_pred), xlim = c(0,max_pred), main = "Calibration:Poisson")
+calibration_plot(actual = preds_wide$actual, pred = preds_wide$pred_neg_bin, ylim = c(0, max_pred), xlim = c(0,max_pred), main = "Calibration:Negative Binomial")
+calibration_plot(actual = preds_wide$actual, pred = preds_wide$pred_poisson_trucn, ylim = c(0, 10), xlim = c(0,10), main = "Calibration:Poisson - truncated")
+calibration_plot(actual = preds_wide$actual, pred = preds_wide$pred_neg_bin_trunc, ylim = c(0, 10), xlim = c(0,10), main = "Calibration:Negative Binomial - truncated")
+
+# Proportion of out of range predictions - it is rare but happens
+sum(preds_wide$pred_poisson>10)/sum(!is.na(preds_wide$pred_poisson)) 
+sum(preds_wide$pred_neg_bin>10)/sum(!is.na(preds_wide$pred_neg_bin)) 
+
+```
+
+
+
+# Out of sample model performance for linear model
+
+```{r}
+
+
+
+# With RE
+ProfacSims:::evaluate_performance_continuous(data.frame(test_data_cc), model1)
+
+ProfacSims:::get_performance_by_study(test_data = test_data_cc, 
+                                      model = model1, 
+                                      evaluate_performance = ProfacSims:::evaluate_performance_continuous)
+
+ProfacSims:::ipdma_prediction_pipeline(test_data = test_data_cc, 
+                                       model = model1, 
+                                       evaluate_performance = ProfacSims:::evaluate_performance_continuous)
+
+
+# With FE
+ProfacSims:::evaluate_performance_continuous(data.frame(test_data_cc), model1)
+
+ProfacSims:::get_performance_by_study(test_data = test_data_cc, 
+                                      model = model1, 
+                                      evaluate_performance = ProfacSims:::evaluate_performance_continuous) |> 
+  select(studyid, everything()) |> 
+  flextable::flextable() |> 
+  flextable::merge_v(j = 1) |> 
+  flextable::border_inner_h()
+
+ProfacSims:::ipdma_prediction_pipeline(test_data = test_data_cc, 
+                                       model = model1, 
+                                       evaluate_performance = ProfacSims:::evaluate_performance_continuous) |> 
+  select(-test_ss)
+
+
+
+```
+
+What is the pipeline I need?
+
+1. Fit model
+2. predict in new data - this may be different for different models I fit
+3. Pass observed and predicted to function to calculate performance by study and give performance metrics
+  - ProfacSims:::evaluate_performance_cont_obs_pred will do it, combine with line above to give desired resutls
+
+```{r}
+
+# What is the pipeline I need
+
+
+
+```
+
+
+# Missing data JOMO 
+- Set sdq_cond_p to be systematically missing
+- sex is missing in mcs 
+
+```{R}
+data_missing <- train_data |> mutate(sdq_cond_p = case_when(studyid == "lsac_b" ~ NA,
+                                                      TRUE ~sdq_cond_p))
+
+data_missing |> filter(studyid == "lsac_b")
+```
+

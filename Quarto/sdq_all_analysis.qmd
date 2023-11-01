@@ -1,0 +1,176 @@
+---
+title: "sdq_all_models"
+format: html
+editor: visual
+---
+
+# Full runthough
+
+## Aim
+
+This document aims to run all the planned models for my meta-analysis using the SDQ
+
+## Data and Libraries
+
+For train data we use a sample of 1000 people non-autistic from four gen popualtion cohorts. The test data is the remainder of the non-autistic participants from these cohorts.  
+
+```{r}
+#| echo: false
+#| warning: false
+#| output: false
+source(here::here("R scripts/config.R"))
+library(lme4)
+library(MASS)
+select <-  dplyr::select
+
+options(digits=3)
+
+data_folder <-  here::here(derived_data, "SDQ_gen_pop")
+
+train_data <- readRDS(file = here(data_folder, "sdq_eda_1tp_train_data.rds"))
+test_data <- readRDS(file = here(data_folder, "sdq_eda_1tp_test_data.rds"))
+
+test_data_cc <- test_data |> 
+  select(ID, studyid, wave, age, starts_with("y"), starts_with("sdq"), fu_length) |> na.omit() |> data.frame()
+
+```
+## Data summaries
+
+### Counts
+```{R}
+train_data |>  summarise(n_complete = sum(!is.na(sdq_emot_p) & !is.na(y_sdq_emot_p)),
+                         N = n()) |> 
+  mutate(missing = N - n_complete,
+         n_prop = n_complete/N)
+train_data |> group_by(studyid) |> summarise(n_complete = sum(!is.na(sdq_emot_p) & !is.na(y_sdq_emot_p)))
+
+test_data |>  summarise(n_complete = sum(!is.na(sdq_emot_p) & !is.na(y_sdq_emot_p)))
+test_data |> group_by(studyid) |> summarise(n_complete = sum(!is.na(sdq_emot_p) & !is.na(y_sdq_emot_p)))
+```
+### Age
+
+```{R}
+# Age at baseline
+train_data  |> group_by(studyid) |> summarise_age()
+
+# Age at follow up
+train_data |> select(studyid, age = y_age) |> group_by(studyid) |> summarise_age()
+```
+
+### Summaries
+
+```{R}
+train_data |> 
+  select(studyid, age, starts_with("sdq")) |> 
+summarise_variables()
+
+train_data |> 
+  select(studyid, starts_with("y")) |> 
+ summarise_variables()
+
+test_data |> 
+  select(studyid, age, starts_with("sdq")) |> 
+summarise_variables()
+
+test_data |> 
+  select(studyid, starts_with("y")) |> 
+ summarise_variables()
+
+hist(train_data$sdq_emot_p, breaks = 10)
+hist(train_data$y_sdq_emot_p, breaks = 10)
+hist(test_data$sdq_emot_p, breaks = 10)
+hist(test_data$y_sdq_emot_p, breaks = 10)
+
+
+```
+# Train data 
+
+
+
+## Single time point analysis
+
+### Complete data
+
+```{r}
+
+evaluate_model_by_study <- function(model) {
+ ProfacSims:::get_performance_by_study(test_data = test_data_cc, 
+                                      model = model, 
+                                      evaluate_performance = ProfacSims:::evaluate_performance_continuous) |>     select(any_of("studyid"), everything()) |> 
+  flextable::flextable() |> 
+  flextable::merge_v(j = 1) |> 
+  flextable::border_inner_h() 
+}
+evaluate_model_overall <- function(model) {
+  ProfacSims:::ipdma_prediction_pipeline(test_data = test_data_cc, 
+                                       model = model, 
+                                       evaluate_performance = ProfacSims:::evaluate_performance_continuous) |> 
+  select(any_of("studyid"), everything(), -any_of("test_ss")) |> 
+  flextable::flextable() |> 
+  flextable::merge_v(j = 1) |> 
+  flextable::border_inner_h() 
+
+}
+  
+
+
+```
+
+
+
+#### Random effects
+```{r}
+
+model <- lme4::lmer("y_sdq_emot_p ~ age  +sdq_emot_p +  sdq_cond_p + sdq_hyp_p + sdq_peer_p + sdq_pro_p + y_age + (1|studyid)", 
+                    data = train_data, REML = TRUE)
+
+evaluate_model_by_study(model)
+evaluate_model_overall(model)
+```
+#### Fixed effects
+```{r}
+
+model = lm("y_sdq_emot_p ~ studyid + age  +sdq_emot_p +  sdq_cond_p + sdq_hyp_p + sdq_peer_p + sdq_pro_p + y_age", data = train_data)
+summary(model)
+evaluate_model_by_study(model)
+evaluate_model_overall(model)
+
+```
+
+#### Fixed effects, adjusting for follow-up length
+
+
+```{r}
+
+model = lm("y_sdq_emot_p ~ studyid + age  +sdq_emot_p +  sdq_cond_p + sdq_hyp_p + sdq_peer_p + sdq_pro_p + y_age + fu_length", data = train_data)
+summary(model)
+evaluate_model_by_study(model)
+evaluate_model_overall(model)
+
+```
+
+Doesn't work - note there is minimal variability in follow up length for not study
+
+```{r}
+train_data |> sum_detail_by_study("fu_length")
+
+```
+
+## Multiple timepoint - Andrew doubts this is possible.
+
+```{r}
+
+train_data <- readRDS(file = here(data_folder, "sdq_gen_pop_non_autistic1000.rds"))
+
+model = lme4::lmer("sdq_emot_p ~ age +studyid  +  base_sdq_cond_p + base_sdq_hyp_p + base_sdq_peer_p + base_sdq_pro_p  + (1|ID)", 
+                    data = train_data, REML = TRUE)
+
+summary(model)
+
+get_prediction_rep_measure <- function(model, number_of_assessments, test_data) {
+  # predict random interepts based on the number of assessments in data
+  int_pred_data <- test_data |> filter(relative_wave <=0 & relative_wave >= 1-number_of_assessments)
+  
+}
+
+```
