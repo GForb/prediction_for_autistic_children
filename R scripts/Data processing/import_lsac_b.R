@@ -1,3 +1,5 @@
+lsac_wave_0_b <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey data/SAS/lsacgrb0.sas7bdat")) |> 
+  select(ID = hicid, acnfsad)
 
 
 lsac_wave_1_b <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey data/SAS/lsacgrb4.sas7bdat"))
@@ -9,6 +11,8 @@ lsac_wave_6_b <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Surve
 lsac_wave_7_b <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey data/SAS/lsacgrb14.sas7bdat"))
 lsac_wave_8_b <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey data/SAS/lsacgrb16.sas7bdat"))
 lsac_wave_9_b <- haven::read_sas(file.path(raw_data, "LSAC/General Release/Survey data/SAS/lsacgrb17.sas7bdat"))
+
+
 
 lsac_wave_1_b <- lsac_wave_1_b |> 
   rename(ID = hicid,
@@ -28,11 +32,11 @@ lsac_wave_1_b <- lsac_wave_1_b |>
          sdq_hyp_t = cthypr, 
          sdq_peer_t = ctpeer, 
          sdq_pro_t = ctpsoc, 
-         sdq_tot_t = ctsdqta) |> 
-  select_analysis_variables()
+         sdq_tot_t = ctsdqta) 
 
 lsac_wave_3_b <- lsac_wave_3_b |> 
   rename(ID = hicid, 
+         base_ld = dpc56b2,
          peabody_pic_vocab = dppvtd,
          peabody_pic_vocab_int = dppvt2,
          matrix = dmatreas,
@@ -49,11 +53,11 @@ lsac_wave_3_b <- lsac_wave_3_b |>
          sdq_hyp_t = dthypr, 
          sdq_peer_t = dtpeer,
          sdq_pro_t = dtpsoc,
-         sdq_tot_t = dtsdqtb) |> 
-  select_analysis_variables()
+         sdq_tot_t = dtsdqtb) 
 
 lsac_wave_4_b <- lsac_wave_4_b |> 
   rename(ID = hicid, 
+         base_ld = epc56b2,
          peabody_pic_vocab = eppvt,
          peabody_pic_vocab_int = eppvt2,
          matrix = ematreas,
@@ -72,13 +76,13 @@ lsac_wave_4_b <- lsac_wave_4_b |>
          sdq_hyp_t = ethypr, 
          sdq_peer_t = etpeer,
          sdq_pro_t = etpsoc,
-         sdq_tot_t = etsdqtb) |> 
-  select_analysis_variables()
+         sdq_tot_t = etsdqtb) 
 
 lsac_wave_5_b <- lsac_wave_5_b |> 
   rename(ID = hicid, 
+         base_ld = fpc56b2a,
          autism = fhs17w,
-         matrix = fmatreas,
+         base_iq_matrix = fmatreas,
          age = ff03m1, 
          sex = zf02m1,
          sdq_emot_p = faemot,
@@ -122,11 +126,11 @@ lsac_wave_5_b <- lsac_wave_5_b |>
          sdq_hyp_f = ffhypr,
          sdq_peer_f = ffpeer,
          sdq_pro_f = ffpsoc,
-         sdq_tot_f = ffsdqtb) |> 
-  select_analysis_variables()
+         sdq_tot_f = ffsdqtb)
 
 lsac_wave_6_b <- lsac_wave_6_b |> 
   rename(ID = hicid,
+         base_ld = gpc56b2,
          autism = ghs17w,
          age = gf03m1, 
          sex = zf02m1,
@@ -171,8 +175,7 @@ lsac_wave_6_b <- lsac_wave_6_b |>
          sdq_hyp_f = gfhypr,
          sdq_peer_f = gfpeer,
          sdq_pro_f = gfpsoc,
-         sdq_tot_f = gfsdqtb) |> 
-  select_analysis_variables()
+         sdq_tot_f = gfsdqtb) 
 
 lsac_wave_7_b <- lsac_wave_7_b |> 
   rename(ID = hicid,
@@ -229,30 +232,95 @@ lsac_wave_7_b <- lsac_wave_7_b |>
          sdq_hyp_f = hfhypr,
          sdq_peer_f = hfpeer,
          sdq_pro_f = hfpsoc,
-         sdq_tot_f = hfsdqtb) |> 
-  select_analysis_variables()
+         sdq_tot_f = hfsdqtb) 
 
-lsac_b_all <- bind_rows(lsac_wave_1_b, lsac_wave_3_b, lsac_wave_4_b, lsac_wave_5_b, lsac_wave_6_b, lsac_wave_7_b)
+lsac_all <- bind_rows(lsac_wave_1_b, lsac_wave_3_b, lsac_wave_4_b, lsac_wave_5_b, lsac_wave_6_b, lsac_wave_7_b)
+
+# Finding predictors --- 
+imd_data <- lsac_wave_6_b |> 
+  select(ID, 
+         base_imd_decile = gcnfsad2d)
+
+iq_data <- lsac_wave_5_b |> 
+  mutate(base_iq_matrix = base_iq_matrix*10) |> 
+  select(ID, base_iq_matrix)
+
+ages_data <- lsac_all |> 
+  select(ID, age, wave) 
+
+ages_data |> group_by(wave) |> sum_detail("age")
+
+ages_data_wide <- ages_data |> 
+  pivot_wider(names_from = wave, values_from = age, names_prefix = "age") |> 
+  mutate(out_wave = 8,
+         fu_length1 = age7 - age8,
+         base_wave = case_when(fu_length1 < 2 ~ 6,
+                               TRUE ~ 7))
+
+
+autism_data <- lsac_all |> select(ID, autism, wave) |> 
+  pivot_wider(names_from = wave, values_from = autism, names_prefix = "autism") |> 
+  left_join(ages_data_wide) |> 
+  mutate(autistic_any_wave = rowSums(across(starts_with("autism")), na.rm = TRUE) > 0) |> 
+  mutate(autism = case_when(autism6 ==1 & base_wave ==6 ~ "childhood, parent report",
+                            autism7 ==1 & base_wave ==7   ~ "childhood, parent report",
+                            base_wave ==6 & (autism7 ==1 |autism8 ==1) ~ "post baseline",
+                            base_wave ==7 & autism8 ==1 ~ "post baseline",
+                            TRUE ~ NA)) |> 
+  filter(!is.na(autism))
+
+id_data <- lsac_all |> select(ID, base_ld, wave) |> 
+  filter(wave %in% c(3,4,5,6) ) |> 
+  pivot_wider(names_from = wave, values_from = base_ld, names_prefix = "base_ld") |> 
+  mutate(ld = case_when(base_ld3 ==1 | base_ld4 ==1 | base_ld5 ==1 | base_ld6 ==1 ~ 1,
+                        TRUE ~ NA)) |> 
+  left_join(iq_data)
+
+ages_data_wide |> right_join(autism_data) |>  count(base_wave)
+autism_data |> count(autism)
+
+lsac_autistic <- lsac_all |> 
+  rename(wave_autism =autism) |> 
+  left_join(autism_data, by = "ID") |> 
+  filter(!is.na(autism))
 
 
 
-lsac_b_all <- lsac_b_all |> 
-  arrange(ID, wave) |> 
-  mutate(autism = case_when(autism ==1 ~ 1,
-                            is.na(autism) ~ NA,
-                                  autism == 0 ~ 0,
-                                  autism == -9 ~ NA))
 
-lsac_b_data <- lsac_b_all |> 
-  add_autistic_any_wave() |> 
+predictors <- autism_data |> 
+  select(ID, autism) |> 
+  left_join(lsac_wave_1_b |> select(ID, sex)) |> 
+  mutate(base_sex = sex - 1) |> 
+  select(ID, 
+         autism,
+         base_sex) |> 
+  left_join(iq_data) |> 
+  left_join(imd_data) |> 
+  rename(base_iq_full_scale = base_iq_matrix) 
+
+sdq_data <- 
+  lsac_autistic |> select(ID, wave, age, sdq_emot_p, sdq_cond_p, sdq_hyp_p, sdq_peer_p, sdq_pro_p) |> 
+  left_join(ages_data_wide |> select(ID, base_wave, out_wave)) 
+
+part_acc <- get_age_range_data_sdq(
+  wave1_data = sdq_data |> filter(wave == base_wave) |> right_join(autism_data, by = "ID"), 
+  wave2_data = sdq_data |> filter(wave == out_wave) |> right_join(autism_data, by = "ID"))
+
+part_acc |> count(include)
+
+lsac_data <-  sdq_data |> 
+  left_join(predictors, by = "ID") |> 
+  left_join(part_acc |> select(ID, include)) |> 
+  filter(include == "include") |> 
   mutate(study = "lsac_b", 
-         country = "Australia")
-
-lsac_b_data <- lsac_b_data |> 
-  arrange(ID, wave) |> 
+         country = "Australia") |> 
   mutate(ID = as.character(ID))
 
-check_values(lsac_b_data)
 
-save(lsac_b_data, file = file.path(derived_data, "lsac_b.Rdata"))
+check_values(lsac_data)
 
+lsac_data |> count(autism)
+
+saveRDS(lsac_data, file = file.path(derived_data, "lsac_b.Rds"))
+
+saveRDS(part_acc, file = file.path(derived_data, "lsac_b_acc.Rds"))

@@ -3,7 +3,7 @@ check_values <- function(data, metadata = var_metadata) {
   
   variables_to_check <- metadata[,1]
   data_to_check <- data |> 
-    dplyr::select(starts_with(variables_to_check))
+    dplyr::select(any_of(variables_to_check))
   
   var_min_max <- metadata[,1:3]
   colnames(var_min_max) <- c("variable_to_check", "min", "max")
@@ -27,12 +27,13 @@ check_values <- function(data, metadata = var_metadata) {
     results_string <- paste("Variables with values out of range:", results_string)
     var_out_of_range <- results
     
-    data_min_max <- min_max <- data |> 
+    data_min_max <- data |> 
       select(all_of(var_out_of_range)) |> 
       pivot_longer(cols = everything(), names_to = "variable", values_to = "value") |> 
       group_by(variable) |> 
-      summarise(min = min(value, na.rm = TRUE),  max = max(value, na.rm = TRUE))
-    print(data_min_max)
+      summarise(data_min = min(value, na.rm = TRUE),  data_max = max(value, na.rm = TRUE)) |> 
+      left_join(metadata |> select(variable = variable_name, min, max), by = "variable") |>  
+    print()
     
   }
   print(results_string)
@@ -44,7 +45,7 @@ check_values <- function(data, metadata = var_metadata) {
 }
 
 check_data <- function(variable_to_check, min, max, data) {
-  columns_to_check <- data |> select(starts_with(variable_to_check))
+  columns_to_check <- data |> select(any_of(variable_to_check))
   failing_vars <- character(0)
   if(ncol(columns_to_check) > 0) {
     failing_vars <- check_columns(columns_to_check, min, max)
@@ -63,7 +64,12 @@ check_column <- function(column, min, max) {
   test_failed <- FALSE
   var_min <- min(column, na.rm = TRUE)
   var_max <- max(column, na.rm = TRUE)
-  if(var_min < min | var_max > max) {
+  
+  if(var_min < min & !is.na(min)) {
+    test_failed <- TRUE
+  }
+     
+ if(var_max > max & !is.na(max)) {
     test_failed <- TRUE
   }
   return(test_failed)

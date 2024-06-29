@@ -1,11 +1,152 @@
 # This script runs the project from start to finish
 
-library(here)
+# Installing predictr package.
+devtools::install_github("GForb/IPDPredictR")
+library(IPDPredictR)
+detach("package:IPDPredictR", unload = TRUE, character.only = TRUE)
 
-source(here("R scripts", set_paths.R))
 
-data_processing_scripts <- here("R scripts", "Data processing")
+ # Functions ----
+process <- function(study_name) {
+  data_processing_scripts <- here("R scripts", "Data processing")
+  source(here(data_processing_scripts, paste0("import_", study_name, ".R")))
 
-# Data processing ----
+}
 
-#file.path(data_processing_scripts, "import_gui.R") |>  source() 
+# Running analysis
+descriptive_template <- here::here("Rmarkdown/descriptive_report_template.rmd")
+
+
+pool <- function(outcome_name) {
+  data_processing_scripts <- here("R scripts", "Data processing")
+  source(here(data_processing_scripts, paste0("pool_", outcome_name, ".R")))
+}
+
+run_models <- function(outcome_name) {
+  data_processing_scripts <- here("R scripts", "Modelling")
+  source(here(data_processing_scripts, paste0("run_", outcome_name, "_models.R")))
+}
+
+report_all <- function(outcome_name) {
+  data_processing_scripts <- here("R scripts", "Modelling")
+  source(here(data_processing_scripts, paste0(outcome_name, "_full_results_report.R")))
+}
+
+
+# Running analysis
+descriptive_template <- here::here("Rmarkdown/descriptive_report_template.rmd")
+
+
+pool <- function(outcome_name) {
+  data_processing_scripts <- here("R scripts", "Data processing")
+  source(here(data_processing_scripts, paste0("pool_", outcome_name, ".R")))
+}
+
+run_models <- function(outcome_name) {
+  data_processing_scripts <- here("R scripts", "Modelling")
+  source(here(data_processing_scripts, paste0("run_", outcome_name, "_models.R")))
+}
+
+report_all <- function(outcome_name) {
+  data_processing_scripts <- here("R scripts", "Modelling")
+  source(here(data_processing_scripts, paste0(outcome_name, "_full_results_report.R")))
+}
+
+## SDQ
+process("ALSPAC")
+process("gui")
+process("TEDS")
+process("mcs")
+process("ThousandFamiliesR")
+process("SNAP")
+process("Quest")
+process("lsac_k")
+process("lsac_b")
+
+rm(list = ls())
+gc()
+source(here::here("R scripts", "config.R"))
+
+
+## VABS & CBCL
+process("ELENA")
+process("EDX")
+process("EpiTED")
+process("TOGO2")
+process("TOGO1")
+process("pathways")
+process("ssc")
+
+
+
+# Descriptive Reports
+## SDQ
+descriptive_template <- here::here("Rmarkdown/descriptive_report_template.rmd")
+
+create_doc(dataset = "ALSPAC", template = descriptive_template, outcome = "sdq")
+create_doc(dataset = "gui", template = descriptive_template, outcome = "sdq")
+create_doc(dataset = "TEDS", template = descriptive_template, outcome = "sdq")
+create_doc(dataset = "mcs", template = descriptive_template, outcome = "sdq")
+create_doc(dataset = "k_families", template = descriptive_template, outcome = "sdq")
+create_doc(dataset = "SNAP", template = descriptive_template, outcome = "sdq")
+create_doc(dataset = "Quest", template = descriptive_template, outcome = "sdq")
+create_doc(dataset = "lsac_k", template = descriptive_template, outcome = "sdq")
+create_doc(dataset = "lsac_b", template = descriptive_template, outcome = "sdq")
+
+## VABS
+create_doc(dataset = "edx_vabs", template = descriptive_template, outcome = "vabs")
+create_doc(dataset = "epited", template = descriptive_template, outcome = "vabs")
+create_doc(dataset = "elena_vabs", template = descriptive_template, outcome = "vabs")
+create_doc(dataset = "pathways_vabs", template = descriptive_template, outcome = "vabs")
+
+## CBCL
+create_doc(dataset = "edx_cbcl", template = descriptive_template, outcome = "cbcl")
+create_doc( dataset = "elena_cbcl", template = descriptive_template, outcome = "cbcl")
+create_doc(dataset = "pathways_cbcl", template = descriptive_template, outcome = "cbcl")
+create_doc(dataset = "togo1", template = descriptive_template, outcome = "cbcl")
+create_doc(dataset = "togo2", template = descriptive_template, outcome = "cbcl")
+create_doc(dataset = "ssc", template = descriptive_template, outcome = "cbcl")
+
+
+
+
+pool("vabs")
+create_doc(dataset = "pooled_vabs", template = descriptive_template, outcome = "vabs")
+run_models("vabs")
+
+results_folder <- here::here(data_and_outputs, "Results", "VABS", "Prelim")
+create_full_results_table(results_folder)
+
+report_all("vabs")
+template = here::here("Rmarkdown/vabs_results.rmd")
+output_file_name  <-  "vabs_results.html"
+run_results_report(template, output_file_name)
+
+
+
+pool("cbcl")
+create_doc(dataset = "pooled_cbcl", template = descriptive_template, outcome = "cbcl")
+run_models("cbcl")
+report_all("cbcl")
+template = here::here("Rmarkdown/cbcl_results.rmd")
+output_file_name  <-  "cbcl_results.html"
+run_results_report(template, output_file_name)
+
+
+pool("sdq")
+create_doc(dataset = "pooled_sdq", template = descriptive_template, outcome = "sdq")
+
+tictoc::tic()
+run_models("sdq")
+tictoc::toc() #4713 seconds
+
+set.seed(12345)
+results_folder <- here::here(data_and_outputs, "Results", "SDQ", "Prelim")
+create_full_results_table(results_folder)
+
+
+#create_full_results_table(results_folder, model_names, outcomes, intercept_est_methods)
+
+template = here::here("Rmarkdown/sdq_results.rmd")
+output_file_name  <-  "sdq_results.html"
+run_results_report(template, output_file_name)

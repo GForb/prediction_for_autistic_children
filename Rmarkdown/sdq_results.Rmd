@@ -1,0 +1,254 @@
+---
+title: "sdq_results"
+output: html_document
+date: "2024-05-21"
+---
+
+```{r global_options, include=FALSE}
+# This is a way to set options for all code chunks at once
+# Note that you can also dynamically control options by setting them to a value
+# copied this from https://stackoverflow.com/questions/33445110/rmarkdown-global-options-vs-opts-chunk we may want to change the figure options
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
+```
+
+```{r,include=FALSE}
+
+  
+source(here::here("R scripts/config.R")) 
+
+data <- readRDS(here(derived_data, "pooled_sdq_wide.Rds")) |> filter(autism != "post baseline")
+
+
+outcome_names <- var_metadata |> filter(outcome ==1) |> pull(variable_name)
+predictor_metadata <- var_metadata |> filter(sdq_predictor == 1, outcome ==0)
+predictor_names <- predictor_metadata |> pull(variable_name)
+
+overall_n <- length(data$ID |> unique())
+
+results_folder <- here::here(data_and_outputs, "Results", "sdq", "Prelim")
+
+
+```
+
+## Summaries
+
+### Counts
+
+```{r}
+
+
+counts_overall <- data |> 
+  select(ID, study, n_obs) |> 
+  pivot_longer(where(is.numeric), names_to = "variable_name", values_to = "value") |> 
+    summarise(N = sum(!is.na(value)),
+              Total_observations = sum(value),
+              Mean_observations = mean(value)) |> 
+  pivot_longer(everything(), names_to = "Count", values_to = "Overall") 
+
+counts_by_study <- data |>  select(ID, study, n_obs) |> 
+  pivot_longer(where(is.numeric), names_to = "variable_name", values_to = "value") |> 
+  group_by(study) |> 
+    summarise(N = sum(!is.na(value)),
+              Total_observations = sum(value),
+              Mean_observations = mean(value)) |> 
+  pivot_longer(where(is.numeric), names_to = "Count", values_to = "Overall") |> 
+  pivot_wider(names_from = study, values_from = Overall) 
+
+
+ table_data <- left_join(counts_by_study, counts_overall) 
+ 
+ cols_to_format <- 2:ncol(table_data)
+ 
+ table_data |> 
+   flextable::flextable() |> 
+   flextable::autofit() |> 
+   flextable::colformat_double(j = cols_to_format, digits = 0, i = 1:2) |> 
+   flextable::colformat_double(j = cols_to_format, digits = 1, i = 3) 
+
+
+```
+
+### Baseline
+Table shows mean (sd).
+```{r}
+
+data_to_summarise <- data |> 
+  select(ID, study, base_age, starts_with("base_sdq"), base_sex)
+
+
+overall <- data_to_summarise |>
+  pivot_longer(where(is.numeric), names_to = "variable_name", values_to = "value") |>
+  group_by(variable_name) |>
+    summarise(Overall = meansd(value)) 
+
+by_study <- data_to_summarise |>
+  pivot_longer(where(is.numeric), names_to = "variable_name", values_to = "value") |>
+  group_by(study, variable_name) |>
+        summarise(mean_sd = meansd(value)) |>
+  pivot_wider(names_from = study, values_from = mean_sd)
+
+
+ table_data <- left_join(by_study, overall) |> 
+     mutate(variable_name = get_label(variable_name))
+
+
+ cols_to_format <- 2:ncol(table_data)
+
+ table_data |>
+   flextable::flextable() |>
+   flextable::autofit()
+
+
+
+```
+### Outcome
+Table shows mean (sd).
+
+```{r}
+
+data_to_summarise <- data |> 
+  select(ID, study, out_age, fu_length, starts_with("out_sdq"))
+
+
+overall <- data_to_summarise |>
+  pivot_longer(where(is.numeric), names_to = "variable_name", values_to = "value") |>
+  group_by(variable_name) |>
+    summarise(Overall = meansd(value)) 
+
+by_study <- data_to_summarise |>
+  pivot_longer(where(is.numeric), names_to = "variable_name", values_to = "value") |>
+  group_by(study, variable_name) |>
+        summarise(mean_sd = meansd(value)) |>
+  pivot_wider(names_from = study, values_from = mean_sd)
+
+
+ table_data <- left_join(by_study, overall) |> 
+     mutate(variable_name = get_label(variable_name))
+
+
+ cols_to_format <- 2:ncol(table_data)
+
+ table_data |>
+   flextable::flextable() |>
+   flextable::autofit()
+
+
+
+```
+## Model results
+
+
+
+
+As pre-specified (rather generously), I have re-estimated intercepts in test data for model validation. This means different things for different models. In the single timepoint model the average outcome and re-estimation leads to perfect calibration in the large. In the random intercept model the intercept is the intercept across all waves, re-estimation does not lead to perfect calibration in the large..
+
+For the random intercept model predictions are made using up to 2 waves of data to estiamte the individual's random intercept. The random intercept is then used to predict the outcome at the outcome wave. Model performance is assessed comparing predicted and observed outcomes at the outcome wave.
+
+Changes from the SAP: The random intercept model includes an interaction between a development quotient calcualted as the mean of the age equivalence scores for the vineland domains divided by actual age. Without this model performance was terrible. TALK ABOUT IQ DATA.
+
+### Summary of model results
+Tbale shows estimate (95% CI) [tau] where tau is the square root of the between study variance in estimates. 
+
+```{r, results = 'asis'}
+model_names <- c("results_reg_init", "results_reg")
+intercept_est_methods <- c("estimate", "average")
+outcomes <- c("sdq_emot_p", "sdq_cond_p", "sdq_hyp_p", "sdq_pro_p", "sdq_peer_p") # 
+
+
+full_results <- readRDS(here::here(results_folder, "results_meta_analysis.rds")) |> 
+  select(-starts_with("tau"), -starts_with("meta_analysis"), -analysis_name) |> 
+  filter(predictor_set == "pred_full")
+
+
+  for(myOut in outcomes){
+    print(get_label(myOut)[[1]])
+    
+    full_results |>   
+      arrange(intercept_est_method) |>
+      filter(outcome == myOut) |> 
+      select(-outcome) |> 
+      select( model ,intercept = intercept_est_method, r_squared, everything() , -predictor_set) |> 
+      flextable::flextable() |>
+      flextable::autofit() |> 
+      flextable_to_rmd()
+  }
+  
+```
+
+
+
+### Multi timepoint regression, re-estimated intercepts, 2 waves of data used to make predictions
+Intercepts are estimated using data from the baseline and (if available) t-1 timepoint. Age is centred at the average baseline age so the intercept for the outcomes is the average outcome at the average baseline age. Calibration in the large will be the difference between the average outcome at the outcome timepoint - this is not equivalent to the intercept (and will not be corrected by simple intercept re-estimation as with single time point models).
+
+#### Summary of model results
+
+
+```{r, results = 'asis'}
+intercept_est <- "estimate"
+model_name <- "mt_ri_study_rs"
+
+    full_results |>   
+      arrange(intercept_est_method) |>
+      filter(intercept_est_method == intercept_est, model == model_name) |> 
+      select(-intercept_est_method, -model, -predictor_set) |> 
+      select( outcome,  r_squared, everything()) |> 
+      flextable::flextable() |>
+      flextable::autofit() |> 
+      flextable_to_rmd()
+
+```
+
+
+
+
+#### Conduct Problems
+```{r}
+
+outcome <- "sdq_cond_p"
+
+model_full_name <- paste0(model_name, "_", outcome, "_int_", intercept_est)
+
+report_model(analysis_name = model_full_name, results_folder = results_folder)
+```
+
+#### Emotional Problems
+```{r}
+
+outcome <- "sdq_emot_p"
+model_full_name <- paste0(model_name, "_", outcome, "_int_", intercept_est)
+
+report_model(analysis_name = model_full_name, results_folder = results_folder)
+```
+
+
+#### Hyperactivity
+```{r}
+
+outcome <- "sdq_hyp_p"
+
+model_full_name <- paste0(model_name, "_", outcome, "_int_", intercept_est)
+
+report_model(analysis_name = model_full_name, results_folder = results_folder)
+```
+
+#### Pro-social
+```{r}
+
+outcome <- "sdq_pro_p" 
+
+model_full_name <- paste0(model_name, "_", outcome, "_int_", intercept_est)
+
+report_model(analysis_name = model_full_name, results_folder = results_folder)
+```
+
+
+#### Peer Problems
+```{r}
+
+outcome <- "sdq_peer_p"
+
+model_full_name <- paste0(model_name, "_", outcome, "_int_", intercept_est)
+
+report_model(analysis_name = model_full_name, results_folder = results_folder)
+```
+

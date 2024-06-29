@@ -3,9 +3,12 @@
 # If using Rstudio, this can be done by adding  Sys.setenv(pfac_path = "*path to data*") to the .Renviron file. To edit the .Renviron file you can use  usethis::edit_r_environ().
 
 data_and_outputs <-  Sys.getenv("pfac_path")
-raw_data <- file.path(data_and_outputs, "Raw data")
-derived_data <- file.path(data_and_outputs, "Derived data")
-outputs <- file.path(data_and_outputs, "Outputs")
+raw_data <- here::here(data_and_outputs, "Raw data")
+derived_data <- here::here(data_and_outputs, "Derived data")
+outputs <- here::here(data_and_outputs, "Outputs")
+
+#devtools::install_github("GForb/IPDPredictR")
+
 
 # Loading required libraries
 library(here)
@@ -23,6 +26,8 @@ library(qwraps2)
 library(cowplot)
 library(patchwork)
 library(grid)
+library(flextable)
+library(rms)
 
 filter <- dplyr::filter
 

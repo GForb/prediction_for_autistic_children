@@ -5,6 +5,11 @@ minmax <- function(value) {
         sep = ", ")
 }
 
+meansd <- function(value) {
+  paste0(mean(value, na.rm = TRUE) |> round(1), " (",
+        sd(value, na.rm  = TRUE)|> round(1), ")")
+}
+
 make_summary_table <- function(data) {
   data_long <- data |> 
     select(where(~!is.character(.)), -ID, -wave) |> 
@@ -65,14 +70,12 @@ sum_detail_by_study <- function(data, column) {
 sum_detail <- function(data, column) {
   data |> 
     summarise(n = sum(!is.na(.data[[column]])),
-              n_distinct = n_distinct(.data[[column]], na.rm = TRUE),
-              mean = mean(.data[[column]], na.rm = TRUE),
-              var = var(.data[[column]], na.rm = TRUE),
-              median = median(.data[[column]], na.rm = TRUE),
-              p25 = quantile(.data[[column]], na.rm = TRUE, probs = 0.25),
-              p75 = quantile(.data[[column]], na.rm = TRUE, probs = 0.75),
+              mean_sd = meansd(.data[[column]]),
               min = min(.data[[column]], na.rm = TRUE),
-              max = max(.data[[column]], na.rm = TRUE)
+              p25 = quantile(.data[[column]], na.rm = TRUE, probs = 0.25),
+              median = median(.data[[column]], na.rm = TRUE),
+              p75 = quantile(.data[[column]], na.rm = TRUE, probs = 0.75),
+              max = max(.data[[column]], na.rm = TRUE),
     )
 }
 
@@ -92,5 +95,14 @@ summarise_age <- function(data) {
   
 } 
 
+baseline_summary_table <- function(data) {
+  data |> 
+  dplyr::filter(wave == base_wave) |> 
+  dplyr::select(-ID, -study,-country, -wave, -base_wave, -out_wave) |> 
+    pivot_longer(cols = everything(), values_to = "value", names_to = "variable") |> 
+    mutate(value = as.numeric(value)) |> 
+    group_by(variable) |> 
+    sum_detail("value")
+}
 
 

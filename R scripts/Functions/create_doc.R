@@ -30,16 +30,13 @@ get_variables <- function(report_type, metadata = var_metadata) {
 
 
 create_doc <- function(dataset, 
-                       report_type, 
-                       title = "document",
-                       colour = "red", 
                        template = here::here("Rmarkdown/descriptive_report_template.rmd"),
-                       output_file = paste0("Dataset summaries/", dataset, ".html")) {
-
+                       output_file = paste0("Dataset summaries/", dataset, ".html"),
+                       outcome = "") {
+  title  <- stringr::str_replace_all(str_to_title(dataset), "_", " ")
   parameters <- list(set_title = title,
-                     name_dataset = dataset, 
-                     variables = get_variables(report_type), 
-                     colour = colour)
+                     name_dataset = dataset,
+                     outcome = outcome)
   
   output_file = file.path(outputs, output_file)
   

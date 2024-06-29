@@ -1,0 +1,254 @@
+---
+title: "vabs_results"
+output: html_document
+date: "2024-05-21"
+---
+
+```{r global_options, include=FALSE}
+# This is a way to set options for all code chunks at once
+# Note that you can also dynamically control options by setting them to a value
+# copied this from https://stackoverflow.com/questions/33445110/rmarkdown-global-options-vs-opts-chunk we may want to change the figure options
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
+```
+
+```{r,include=FALSE}
+
+  
+source(here::here("R scripts/config.R")) 
+
+data <- readRDS(here(derived_data, "pooled_vabs_wide.Rds"))
+
+outcome_names <- var_metadata |> filter(outcome ==1) |> pull(variable_name)
+predictor_metadata <- var_metadata |> filter(vabs_predictor == 1, outcome ==0)
+predictor_names <- predictor_metadata |> pull(variable_name)
+
+overall_n <- length(data$ID |> unique())
+
+results_folder <- here::here(data_and_outputs, "Results", "VABS", "Prelim")
+
+
+```
+
+## Summaries
+Pathwyas and EDX contribute most of the data due to havnig many waves. There is another wave for EpiTED which I don't have the data for yet. 
+EpiTED stands out. Particpants start younger, have longer follow up, have lower scores, and less growth between baseline and follow up.
+
+### Counts
+
+```{r}
+
+
+counts_overall <- data |> 
+  select(ID, study, n_obs) |> 
+  pivot_longer(where(is.numeric), names_to = "variable_name", values_to = "value") |> 
+    summarise(N = sum(!is.na(value)),
+              Total_observations = sum(value),
+              Mean_observations = mean(value)) |> 
+  pivot_longer(everything(), names_to = "Count", values_to = "Overall") 
+
+counts_by_study <- data |>  select(ID, study, n_obs) |> 
+  pivot_longer(where(is.numeric), names_to = "variable_name", values_to = "value") |> 
+  group_by(study) |> 
+    summarise(N = sum(!is.na(value)),
+              Total_observations = sum(value),
+              Mean_observations = mean(value)) |> 
+  pivot_longer(where(is.numeric), names_to = "Count", values_to = "Overall") |> 
+  pivot_wider(names_from = study, values_from = Overall) 
+
+
+ table_data <- left_join(counts_by_study, counts_overall) 
+ 
+ cols_to_format <- 2:ncol(table_data)
+ 
+ table_data |> 
+   flextable::flextable() |> 
+   flextable::autofit() |> 
+   flextable::colformat_double(j = cols_to_format, digits = 0, i = 1:2) |> 
+   flextable::colformat_double(j = cols_to_format, digits = 1, i = 3) 
+
+
+```
+
+### Baseline
+Table shows mean (sd).
+```{r}
+
+data_to_summarise <- data |> 
+  select(ID, study, base_age, base_vabs_dls_ae, base_vabs_soc_ae, base_vabs_com_ae , base_vabs_dq, base_sex)
+
+
+overall <- data_to_summarise |>
+  pivot_longer(where(is.numeric), names_to = "variable_name", values_to = "value") |>
+  group_by(variable_name) |>
+    summarise(Overall = meansd(value)) 
+
+by_study <- data_to_summarise |>
+  pivot_longer(where(is.numeric), names_to = "variable_name", values_to = "value") |>
+  group_by(study, variable_name) |>
+        summarise(mean_sd = meansd(value)) |>
+  pivot_wider(names_from = study, values_from = mean_sd)
+
+
+ table_data <- left_join(by_study, overall) |> 
+     mutate(variable_name = get_label(variable_name))
+
+
+ cols_to_format <- 2:ncol(table_data)
+
+ table_data |>
+   flextable::flextable() |>
+   flextable::autofit()
+
+
+
+```
+### Outcome
+Table shows mean (sd).
+
+```{r}
+
+data_to_summarise <- data |> 
+  select(ID, study, out_age, fu_length, out_vabs_dls_ae, out_vabs_soc_ae, out_vabs_com_ae, base_sex)
+
+
+overall <- data_to_summarise |>
+  pivot_longer(where(is.numeric), names_to = "variable_name", values_to = "value") |>
+  group_by(variable_name) |>
+    summarise(Overall = meansd(value)) 
+
+by_study <- data_to_summarise |>
+  pivot_longer(where(is.numeric), names_to = "variable_name", values_to = "value") |>
+  group_by(study, variable_name) |>
+        summarise(mean_sd = meansd(value)) |>
+  pivot_wider(names_from = study, values_from = mean_sd)
+
+
+ table_data <- left_join(by_study, overall) |> 
+     mutate(variable_name = get_label(variable_name))
+
+
+ cols_to_format <- 2:ncol(table_data)
+
+ table_data |>
+   flextable::flextable() |>
+   flextable::autofit()
+
+
+
+```
+## Model results
+
+
+
+
+As pre-specified (rather generously), I have re-estimated intercepts in test data for model validation. This means different things for different models. In the single timepoint model the average outcome and re-estimation leads to perfect calibration in the large. In the random intercept model the intercept is the intercept across all waves, re-estimation does not lead to perfect calibration in the large..
+
+For the random intercept model predictions are made using up to 2 waves of data to estiamte the individual's random intercept. The random intercept is then used to predict the outcome at the outcome wave. Model performance is assessed comparing predicted and observed outcomes at the outcome wave.
+
+Changes from the SAP: The random intercept model includes an interaction between a development quotient calcualted as the mean of the age equivalence scores for the vineland domains divided by actual age. Without this model performance was terrible. TALK ABOUT IQ DATA.
+
+### Summary of model results
+
+```{r, results = 'asis'}
+model_names <- c("results_reg", "results_ri_int")
+intercept_est_methods <- c("estimate", "average")
+outcomes <- c("vabs_dls_ae", "vabs_soc_ae", "vabs_com_ae")
+
+
+full_results <- readRDS(here::here(results_folder, "results_meta_analysis.rds")) |> 
+  filter(model %in% model_names) |> 
+  rowwise() |> 
+  mutate(model = sub("results_", "", model)) |> 
+  ungroup()
+
+
+  for(myOut in outcomes){
+    print(get_label(myOut)[[1]])
+    
+    full_results |>   
+      arrange(intercept_est_method) |>
+      filter(outcome == myOut) |> 
+      select(-outcome) |> 
+      select( model ,intercept = intercept_est_method, `r-squared`, everything() ) |> 
+      flextable::flextable() |>
+      flextable::autofit() |> 
+      flextable_to_rmd()
+  }
+  
+```
+
+
+```{r}
+results_folder <- here::here(data_and_outputs, "Results", "VABS", "Prelim")
+
+outcome <- "vabs_dls_ae"
+intercept_est <- "estimate"
+
+model_name <- "results_reg"
+model_full_name <- paste0(model_name, "_", outcome, "_int_", intercept_est,".rds")
+results_reg <- readRDS(here::here(results_folder, model_full_name))
+
+model_name <- "results_ri_int"
+model_full_name <- paste0(model_name, "_", outcome, "_int_", intercept_est,".rds")
+results_ri_int <- readRDS(here::here(results_folder, model_full_name))
+
+model_name <- "results_ri"
+model_full_name <- paste0(model_name, "_", outcome, "_int_", intercept_est,".rds")
+results_ri <- readRDS(here::here(results_folder, model_full_name))
+
+```
+
+### Single timepoint regression, re-estimated intercepts
+
+#### Daily living skills
+```{r}
+
+outcome <- "vabs_dls_ae"
+intercept_est <- "estimate"
+model_name <- "results_reg"
+model_full_name <- paste0(model_name, "_", outcome, "_int_", intercept_est,".rds")
+results <- readRDS(here::here(results_folder, model_full_name))
+
+report_model(results)
+```
+
+#### Communication
+```{r}
+outcome <- "vabs_com_ae"
+intercept_est <- "estimate"
+model_name <- "results_reg"
+model_full_name <- paste0(model_name, "_", outcome, "_int_", intercept_est,".rds")
+results <- readRDS(here::here(results_folder, model_full_name))
+
+report_model(results)
+```
+
+#### Socialisation
+```{r}
+outcome <- "vabs_soc_ae"
+intercept_est <- "estimate"
+model_name <- "results_reg"
+model_full_name <- paste0(model_name, "_", outcome, "_int_", intercept_est,".rds")
+results <- readRDS(here::here(results_folder, model_full_name))
+
+report_model(results)
+```
+
+## Other models
+
+### Random intercept model - with interaction between age and DQ
+```{r}
+report_model(results_ri_int)
+
+```
+
+### Random intercept model - no interaction
+
+```{r}
+report_model(results_ri)
+```
+
+
+
+
+

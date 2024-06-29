@@ -21,13 +21,13 @@ howlin_rutter <- howlin_rutter |>
          adi_c_a = totrits)
 
 howlin_rutter_childhood <- howlin_rutter |> 
-  select(ID, sex, age_at_testing, iq_performance_c, iq_verbal_c, language_c) |> 
+  select(ID, base_sex = sex, age_at_testing, iq_performance_c, iq_verbal_c, language_c) |> 
   rename(age = age_at_testing, 
          iq_performance = iq_performance_c, 
          iq_verbal = iq_verbal_c)
 
 howlin_rutter_adulthood <- howlin_rutter |> 
-  select(ID, sex, age_follow_up, iq_performance_a, iq_verbal_a, iq_full_scale_a, work_type, work, friends, qual_of_relations, living, place_of_edu, high_edu_lev, adi_a_a, adi_b_a, adi_c_a) |> 
+  select(ID, base_sex = sex, age_follow_up, iq_performance_a, iq_verbal_a, iq_full_scale_a, work_type, work, friends, qual_of_relations, living, place_of_edu, high_edu_lev, adi_a_a, adi_b_a, adi_c_a) |> 
   rename(age = age_follow_up, 
          iq_perforamnce = iq_performance_a,
          iq_verbal = iq_verbal_a, 

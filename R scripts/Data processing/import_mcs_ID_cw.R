@@ -1,5 +1,9 @@
 # Code adapted from code written by Caitlin Williams, reproducing Vaso Totsika's SPSS code.
 
+# applies method described for identifying interlectual disability described in https://pubmed.ncbi.nlm.nih.gov/31206633/, described in supporting information here:
+
+# https://srcd.onlinelibrary.wiley.com/doi/10.1111/cdev.13273
+
 
 # 04/04/2023
 
@@ -10,13 +14,20 @@ library(haven)
 library(psych)
 
 # Load variables from individual data files
+mcs_data <- here::here(raw_data, "MCS")
+folder_s1 <- here::here(mcs_data, "Sweep 1/UKDA-4683-stata/stata/stata13")
+folder_s2 <- here::here(mcs_data, "Sweep 2/UKDA-5350-stata/stata/stata13")
+folder_s3 <- here::here(mcs_data, "Sweep 3/UKDA-5795-stata/stata/stata13")
+folder_s4 <- here::here(mcs_data, "Sweep 4/UKDA-6411-stata/stata/stata13")
+folder_s5 <- here::here(mcs_data, "Sweep 5/UKDA-7464-stata/stata/stata13")
 
-MCS1 <- read_sav('M:/EA/CEDAR/Caitlin Williams/CW MCS-study 5/MCS Databases (R)/MCS1/mcs1_parent_cm_interview.sav') %>% select(MCSID,ARESP00,ACNUM00) %>% filter(ARESP00 == 1)
-MCS2 <- read_sav('M:/EA/CEDAR/Caitlin Williams/CW MCS-study 5/MCS Databases (R)/MCS2/mcs2_cm_cognitive_assessment.sav') %>% select(MCSID,BCNUM00,BDBASR00,BDBAST00,BDSRCN00)
-MCS3 <- read_sav('M:/EA/CEDAR/Caitlin Williams/CW MCS-study 5/MCS Databases (R)/MCS3/mcs3_cm_cognitive_assessment.sav') %>% select(MCSID,CCNUM00,CCWARN00,CCCSCO00,CCPSCO00,CCNSCO00,CCPCTSCORE,CCNVTSCORE,CCPSTSCORE)
 
-MCS4cog <- read_sav('M:/EA/CEDAR/Caitlin Williams/CW MCS-study 5/MCS Databases (R)/MCS4/mcs4_cm_cognitive_assessment.sav') %>% select(MCSID,DCNUM00,DCWARN00,DCWRSC00,DCWRSD00,DCTOTS00,DCPCTS00,DCMTOTSCOR,DCMATHS7SA)
-MCS4parent <- read_sav('M:/EA/CEDAR/Caitlin Williams/CW MCS-study 5/MCS Databases (R)/MCS4/mcs4_parent_cm_interview.sav') %>% select(MCSID,DRESP00,DCNUM00,DPCSEN00,DPSENS00,DPRASN0A,DPRASN0B,DPRASN0C,DPRASN0D,DPRASN0E, 
+MCS1 <- haven::read_stata(here(folder_s1, 'mcs1_parent_cm_interview.dta')) %>% select(MCSID,ARESP00,ACNUM00) %>% filter(ARESP00 == 1)
+MCS2 <- haven::read_stata(here(folder_s2, 'mcs2_cm_cognitive_assessment.dta')) %>% select(MCSID,BCNUM00,BDBASR00,BDBAST00,BDSRCN00)
+MCS3 <- haven::read_stata(here(folder_s3, 'mcs3_cm_cognitive_assessment.dta')) %>% select(MCSID,CCNUM00,CCWARN00,CCCSCO00,CCPSCO00,CCNSCO00,CCPCTSCORE,CCNVTSCORE,CCPSTSCORE)
+
+MCS4cog <- haven::read_stata(here(folder_s4, 'mcs4_cm_cognitive_assessment.dta')) %>% select(MCSID,DCNUM00,DCWARN00,DCWRSC00,DCWRSD00,DCTOTS00,DCPCTS00,DCMTOTSCOR,DCMATHS7SA)
+MCS4parent <- haven::read_stata(here(folder_s4, 'mcs4_parent_cm_interview.dta')) %>% select(MCSID,DRESP00,DCNUM00,DPCSEN00,DPSENS00,DPRASN0A,DPRASN0B,DPRASN0C,DPRASN0D,DPRASN0E, 
                                                                                                                                      DPRASN0F,DPRASN0G,DPRASN0H,DPRASN0I,DPRASN0J,DPRASN0K,DPRASN0L,DPRASN0M, 
                                                                                                                                      DPRASN0N,DPRASN0O,DPRASN0P,DPRASN0Q,DPRASX0A,DPRASX0B,DPRASX0C,DPRASX0D,
                                                                                                                                      DPRASX0E,DPRASX0F,DPRASX0G,DPRASX0H,DPRASX0I,DPRASX0J,DPRASX0K,DPRASX0L,   
@@ -28,11 +39,11 @@ MCS4parent <- read_sav('M:/EA/CEDAR/Caitlin Williams/CW MCS-study 5/MCS Database
                                                                                                                                      DPRSNX0J,DPRSNX0K,DPRSNX0L,DPRSNX0M,DPRSNX0N,DPRSNX0O,DPRSNX0P,DPRSNX0Q,
                                                                                                                                      DPRSNX0R,DPRSNX0S,DPRSNX0T,DPRSNX0U,DPRSNX0V,DPRSNX0W,DPRSNX0X,DPRSNX0Y,
                                                                                                                                      DPRSNX0Z,DPRSNX1A,DPRSNX1B,DPRSNX1C,DPRSNX1D) %>% filter(DRESP00 == 1)
-MCS4teach <- read_sav('M:/EA/CEDAR/Caitlin Williams/CW MCS-study 5/MCS Databases (R)/MCS4/mcs4_cm_teacher_survey.sav') %>% select(MCSID,DCNUM00,DQ2162,DQ2163,DQ2164,DQ2165,DQ2167,DQ2328,DQ2329,DQ2331)
+MCS4teach <- haven::read_stata(here(folder_s4, 'mcs4_cm_teacher_survey.dta')) %>% select(MCSID,DCNUM00,DQ2162,DQ2163,DQ2164,DQ2165,DQ2167,DQ2328,DQ2329,DQ2331)
 
-MCS5cog <- read_sav('M:/EA/CEDAR/Caitlin Williams/CW MCS-study 5/MCS Databases (R)/MCS5/mcs5_cm_cognitive_assessment.sav') %>% select(MCSID,ECNUM00,ECASSX0R)
-MCS5cmD <- read_sav('M:/EA/CEDAR/Caitlin Williams/CW MCS-study 5/MCS Databases (R)/MCS5/mcs5_cm_derived.sav',user_na = TRUE) %>% select(MCSID,ECNUM00,EVSRAW,EVSTSCO)
-MCS5teach <- read_sav('M:/EA/CEDAR/Caitlin Williams/CW MCS-study 5/MCS Databases (R)/MCS5/mcs5_cm_teacher_survey.sav') %>% select(MCSID,ECNUM00,EQ13B,EQ13R,EQ2A,EQ2B,EQ2C,EQ2D,EQ11,EQ12)
+MCS5cog <- haven::read_stata(here(folder_s5,'mcs5_cm_cognitive_assessment.dta')) %>% select(MCSID,ECNUM00,ECASSX0R)
+MCS5cmD <- haven::read_stata(here(folder_s5, 'mcs5_cm_derived.dta')) %>% select(MCSID,ECNUM00,EVSRAW,EVSTSCO)
+MCS5teach <- haven::read_stata(here(folder_s5,'/mcs5_cm_teacher_survey.dta')) %>% select(MCSID,ECNUM00,EQ13B,EQ13R,EQ2A,EQ2B,EQ2C,EQ2D,EQ11,EQ12)
 
 # Merge separate databases from same wave together e.g., MCS4cog, MCS4parent, MCS4teach become one MCS4 database
 
@@ -93,9 +104,13 @@ MCS1_2 <- merge(MCS1, MCS2_r, by= c("MCSID","CNUM00"), all= TRUE)
 
 # Factor analyses - ID
 
-df1<-MCS3[,c("MCSID","CNUM00","CCCSCO00", "CCPSCO00", "CCNSCO00")]
+df1<-MCS3[,c("MCSID","CNUM00","CCCSCO00", "CCPSCO00", "CCNSCO00")] |> 
+  mutate(CCCSCO00 = na_if(CCCSCO00, -1),
+         CCPSCO00 = na_if(CCPSCO00, -1),
+         CCNSCO00 = na_if(CCNSCO00, -1))
 test_dat1 <- df1[complete.cases(df1), ]
-pca1 <- principal(test_dat1[,-c(1:2)], nfactors = 1, residuals = FALSE, rotate="none", n.obs= length(MCS3[,1]), covar=FALSE,
+
+pca1 <- psych::principal(test_dat1[,-c(1:2)], nfactors = 1, residuals = FALSE, rotate="none", n.obs= length(MCS3[,1]), covar=FALSE,
                  scores=TRUE,missing=FALSE,oblique.scores=FALSE,method="regression")
 scores1 <- pca1$scores
 
@@ -116,7 +131,7 @@ table(MCS3$c_borderlineID)
 
 df2<-MCS3[,c("MCSID","CNUM00","CCPCTSCORE", "CCNVTSCORE", "CCPSTSCORE")]
 test_dat2 <- df2[complete.cases(df2), ]
-pca2 <- principal(test_dat2[,-c(1:2)], nfactors = 1, residuals = FALSE, rotate="none", n.obs= length(MCS3[,1]), covar=FALSE,
+pca2 <- psych::principal(test_dat2[,-c(1:2)], nfactors = 1, residuals = FALSE, rotate="none", n.obs= length(MCS3[,1]), covar=FALSE,
                   scores=TRUE,missing=FALSE,oblique.scores=FALSE,method="regression")
 scores2 <- pca2$scores
 
@@ -198,9 +213,12 @@ table(MCS4$SENDLD)
 
 # Factor analyses - ID
 
-df3<-MCS4[,c("MCSID","CNUM00","DCWRSD00", "DCPCTS00", "DCMTOTSCOR")]
+df3<-MCS4[,c("MCSID","CNUM00","DCWRSD00", "DCPCTS00", "DCMTOTSCOR")] |> 
+  mutate(DCWRSD00 = na_if(DCWRSD00, -1),
+         DCPCTS00 = na_if(DCPCTS00, -1),
+         DCMTOTSCOR = na_if(DCMTOTSCOR, -1))
 test_dat3 <- df3[complete.cases(df3), ]
-pca3 <- principal(test_dat3[,-c(1:2)], nfactors = 1, residuals = FALSE, rotate="none", n.obs= length(MCS4[,1]), covar=FALSE,
+pca3 <- psych::principal(test_dat3[,-c(1:2)], nfactors = 1, residuals = FALSE, rotate="none", n.obs= length(MCS4[,1]), covar=FALSE,
                   scores=TRUE,missing=FALSE,oblique.scores=FALSE,method="regression")
 scores3 <- pca3$scores
 
@@ -219,9 +237,12 @@ table(MCS4$d_borderlineID)
 
 # Factor analyses - ID (Standardised scores)
 
-df4<-MCS4[,c("MCSID","CNUM00","DCWRSD00", "DCPCTS00", "DCMATHS7SA")]
+df4<-MCS4[,c("MCSID","CNUM00","DCWRSD00", "DCPCTS00", "DCMATHS7SA")] |> 
+  mutate(DCWRSD00 = na_if(DCWRSD00, -1),
+         DCPCTS00 = na_if(DCPCTS00, -1),
+         DCMATHS7SA = na_if(DCMATHS7SA, -1))
 test_dat4 <- df4[complete.cases(df4), ]
-pca4 <- principal(test_dat4[,-c(1:2)], nfactors = 1, residuals = FALSE, rotate="none", n.obs= length(MCS4[,1]), covar=FALSE,
+pca4 <- psych::principal(test_dat4[,-c(1:2)], nfactors = 1, residuals = FALSE, rotate="none", n.obs= length(MCS4[,1]), covar=FALSE,
                   scores=TRUE,missing=FALSE,oblique.scores=FALSE,method="regression")
 scores4 <- pca4$scores
 
@@ -611,3 +632,10 @@ with(MCS1_2_3_4_5,xtabs(~zIDbcdextra + age11nonID))
 table(MCS1_2_3_4_5$zIDbcdextra) 
 #     zIDbcdextra =   zID class age7,5,3 & par/teach report @7 (1= ID, 0= Non ID) [n=652]
 # This is the final variable we are using to classify children with ID from the MCS sample
+ID_data <- MCS1_2_3_4_5 |> 
+  tibble() |> 
+  mutate(base_ld = na_if(zIDbcdextra, -1),
+         ID = paste0(MCSID, "_", CNUM00)) |> 
+  select(ID, base_ld) 
+
+saveRDS(ID_data, file = here(mcs_data, "mcs_ID"))
