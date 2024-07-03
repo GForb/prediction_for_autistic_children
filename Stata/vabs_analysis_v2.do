@@ -21,7 +21,7 @@ mixed vabs_dls_ae study_* ///
 	
 	mixed vabs_soc_ae study_* ///
 	c.age_spline1##i.base_sex c.age_spline2##i.base_sex   c.age_spline1#c.base_vabs_dq_dec c.age_spline2#c.base_vabs_dq_dec  base_vabs_dq ///
-	base_vabs_dls_ae base_vabs_com_ae, noconstant  || ID: age_c,  cov(unstructured)
+	base_vabs_dls_ae base_vabs_com_ae, noconstant  || ID: age_c,  cov(unstructured) reml
 	
 	
 	mixed_extract_prog

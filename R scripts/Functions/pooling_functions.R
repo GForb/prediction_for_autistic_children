@@ -62,11 +62,11 @@ pool_datasets <- function(dataset_strings, data_folder = derived_data, include_a
   
   print_age_summaries(age_summaries)
   
-  mean_base_age = mean(pooled_data_wide$base_age, na.rm = TRUE)
+  mean_age = mean(pooled_data_long$age, na.rm = TRUE)
   
 
   pooled_data_long <- pooled_data_long |> 
-    mutate(age_c = age - mean_base_age,
+    mutate(age_c = age - mean_age,
            wave = case_when(
              wave >= out_wave ~ wave - out_wave + 2,
              wave < out_wave ~ wave - base_wave,

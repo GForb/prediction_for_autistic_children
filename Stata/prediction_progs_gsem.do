@@ -2,11 +2,11 @@
 
 cap prog drop get_all_preds_gsem
 prog define get_all_preds_gsem
-syntax varname, ///
+syntax name, ///
 	model_code(passthru) ///
 	pred_var_name(passthru) ///
 	intercept_est(passthru)  ///
-	[ random_split random_study ///
+	[ cross_validation n_cv_folds n_reps(integer 1) random_study ///
 	predict_function(passthru) ///
 	predict_args(passthru) ///
 	model_options(passthru) ///
@@ -17,30 +17,41 @@ syntax varname, ///
 	
 	tempfile data_with_preds
 	
-
-	
-	qui levelsof  `varlist', local(folds)
 	local count = 1
-	foreach fold in `folds' {
 
-		di "Fold:  `fold'"
-		preserve
-		get_hold_out_pred_gsem `varlist', hold_out_fold(`fold') `model_code' ///
-			`pred_var_name' `predict_args' `predict_function' `model_options' ///
-			`random_split' `intercept_est' `random_study' `simple_model' `simple_model_options' `mixed_model' `mixed_model_options' `mixed_model_extract_values'
-		
-		di "completed hold out bit, saving data"
-		keep if `varlist' == "`fold'"
-		if `count' == 1 {
-			save  `data_with_preds'
+	forvalues rep = 1 (1) `n_reps' {
+		if "`cross_validation'" != "" {
+			splitsample, generate(fold)  cluster(ID) nsplit(`n_cv_folds')  
+			local random_split "random_split"
+			local namelist fold
+		}	
+		gen validation_rep = `rep'
+	
+		qui levelsof  `namelist', local(folds)
+		foreach fold in `folds' {
+
+			di "Fold:  `fold'"
+			preserve
+			get_hold_out_pred_gsem `namelist', hold_out_fold(`fold') `model_code' ///
+				`pred_var_name' `predict_args' `predict_function' `model_options' ///
+				`random_split' `intercept_est' `random_study' `simple_model' `simple_model_options' `mixed_model' `mixed_model_options' `mixed_model_extract_values'
+			
+			di "completed hold out bit, saving data"
+			keep if `namelist' == "`fold'"
+			if `count' == 1 {
+				save  `data_with_preds'
+			}
+			else {
+				append using `data_with_preds'
+				save `data_with_preds', replace
+			}
+			restore
+			local count = `count' + 1
 		}
-		else {
-			append using `data_with_preds'
-			save `data_with_preds', replace
-		}
-		restore
-		local count = `count' + 1
+	
 	}
+	
+	
 	di "loading data"
 	use `data_with_preds', clear
 	
@@ -68,8 +79,8 @@ syntax varname, ///
 	intercept_est(passthru) ///
 	[ ///
 		random_split random_study ///
-		predict_function(string) ///
-		predict_args(string) ///
+		predict_function(passthru) ///
+		predict_args(passthru) ///
 		model_options(string) ///
 		intercept_value(passthru) ///
 		simple_model(string) ///
@@ -114,115 +125,112 @@ syntax varname, ///
 	local outcome `e(depvar)'
 
 	gen converged =  e(converged) 
-	
-	
-	*If not random split, estimate intercepts
-	if "`random_split'" == "" & "`random_study'" == "" {
-		di "Fitting constrained gsem model for intercept estimation"
-		fit_hold_out_gsem study, model_code(`model_code') hold_out_fold(`hold_out_fold') model_options(`model_options') `intercept_est' `intercept_value' 
-	}
+	est store model
 
-	`predict_function' `pred_var_name' if `varlist' == "`hold_out_fold'", `intercept_est' `predict_args' `random_study'
+	* This part
+		*Q how to implement CV for interepts
+		* Create folds
+		* make predictions with int_est_marker for each fold
+		*use temp datasets and append as required. 
+	
+	foreach method in `int_est' {
+		if `method' == "estimate_cv" {
+			splitsample if `varlist' == "`hold_out_fold'", generate(int_est_fold)  cluster(ID) nsplit(10)  
+			qui levelsof `int_est_fold', local(folds)
+			foreach `fold' in `folds'{
+				tempvar int_est_marker
+				gen `int_est_marker' = 1 if int_est_fold == `fold'
+			}
+
+		
+		}
+		else {
+			est_intercept_get_pred `varlist', `predict_function' pred_var_name(`pred_var_name') hold_out_fold(`hold_out_fold') ///
+				[random_split random_study model_code(`model_code')) model_options(`model_options') intercept_est `intercept_value' `predict_args']
+		}
+
+	}
+	
+	
+	*For fixed study estimate intercepts 
+
 	
 	gen actual = `outcome'
+	
+	*renaming pred_var_name to pred_var_name if only one method passed.
+	local n_folds = wordcount(`"`int_est'"') 
+	if `n_folds' == 1 {
+		rename `pred_var_name'_`int_est' `pred_var_name'
+	}
 
 	di "finished getting hold out"
 end
 
-
-
-cap prog drop predict_multiwave_gsem_ri
-
-prog define predict_multiwave_gsem_ri
-syntax name (name = pred_var) [if/], predictor_waves(numlist) out_wave(integer) id_var(varname)  wave_var(varname) [intercept_est(string) random_study]
-
-
-	di "`pred_var'"
-	if "`if'" != "" {
-		local extra_if & `if'
+cap prog drop 
+prog est_intercept_get_pred
+syntax varname,  predict_function(string) pred_var_name(name) hold_out_fold(string) ///
+	[random_split random_study model_code(string) hold_out_fold(string) model_options(string) intercept_est intercept_value(passthru) predict_args(string) int_est_marker(passthru)]
+	if "`random_split'" == "" & "`random_study'" == "" {
+		di "Fitting constrained gsem model for intercept estimation"
+		fit_hold_out_gsem study, model_code(`model_code') hold_out_fold(`hold_out_fold') model_options(`model_options') `intercept_est' `intercept_value'  `int_est_marker'
 	}
-	
-	local predictor_waves_csv = subinstr("`predictor_waves'", " ", ", ",.)
-	di "`predictor_waves_csv'"
-	
-	local outcomes `e(eqnames)'
-	local n_outcomes = wordcount("`outcomes'")
-	
-	tempname all random_part fixed_part fixed_outcome  random_part_all study_intercept study_intercept_all
+	`predict_function' `pred_var_name'_`method' if `varlist' == "`hold_out_fold'", `intercept_est' `predict_args' `random_study' `int_est_marker'
 
-	predict `all'* if inlist(`wave_var', `predictor_waves_csv') `extra_if'
-	predict `fixed_part'* if inlist(`wave_var', `predictor_waves_csv') `extra_if',  ///
-		conditional(fixedonly)
-	
-	predict `fixed_outcome'* if `wave_var' == `out_wave' `extra_if', conditional(fixedonly)
-	
-
-	forvalues i = 1 (1) `n_outcomes' {
-		gen `random_part'`i' = `all'`i' - `fixed_part'`i'
-		
-		bysort `id_var': egen `random_part_all'`i' = mean(`random_part'`i') 
-	
-	
-		local outcome_name = word("`outcomes'", `i')
-		gen `pred_var'_`outcome_name' = `fixed_outcome'`i' + `random_part_all'`i'
-	}
-	di "`random_study'" "`intercept_est'"
-	if "`random_study'" != "" & "`intercept_est'" == "average" { 
-		di "`removing study specific intercept estimate'"
-		predict `study_intercept'*  if inlist(`wave_var', `predictor_waves_csv') `extra_if', latent(STUDY[study]) 
-		forvalues i = 1 (1) `n_outcomes' {
-			local outcome_name = word("`outcomes'", `i')
-			
-			bysort `id_var': egen `study_intercept_all'`i' = mean(`study_intercept'`i') 
-
-			
-			replace `pred_var'_`outcome_name' = `pred_var'_`outcome_name' - `study_intercept_all'`i'
-			di "Predicted intercept adjustment"
-			su `study_intercept_all'`i' if `wave_var' == `out_wave'
-		
-		}
-	}
-	
-	drop `all'* `random_part'* `fixed_part'* `fixed_outcome'*  `random_part_all'*
-	
-	keep if `wave_var' == `out_wave'
-	
 end
 
-cap prog drop predict_multiwave_gsem_rs_uv
-prog define predict_multiwave_gsem_rs_uv
+
+
+
+
+cap prog drop predict_multiwave_gsem_uv // to make multivariate loop over outcomes. This is a postestimation command for a gsem.
+prog define predict_multiwave_gsem_uv
 *predictions for univariate random slope models
-syntax name (name = pred_var) [if/], predictor_waves(numlist) out_wave(integer) id_var(varname)  wave_var(varname) [intercept_est(string) random_study]
+syntax name (name = pred_var) [if/], predictor_waves(numlist) out_wave(integer) id_var(varname)  wave_var(varname) [intercept_est(string) random_study random_slope int_est_marker(varname)]
 	di "`pred_var'"
 	if "`if'" != "" {
 		local extra_if & `if'
 	}
 	
+	if "`int_est_marker'" != "" {
+		local not_int_est  & `int_est_marker' != 1 // excluding data used in estiamting intercepts from predictions
+		local if_int_est   & `int_est_marker' == 1 // this is used as the only if statement so includes if 
+	}
+
+	
 	local predictor_waves_csv = subinstr("`predictor_waves'", " ", ", ",.)
 	di "`predictor_waves_csv'"
 	
-
 	
 	tempname fixed_outcome rand_int rand_int_all rand_slope rand_slope_all study_intercept study_intercept_all
 
-	predict `rand_int' if  inlist(`wave_var', `predictor_waves_csv') `extra_if' , latent(M1[`id_var']) 
+	*Fixed part
+	predict `fixed_outcome' if `wave_var' == `out_wave' `not_int_est' `extra_if', conditional(fixedonly)
+
+	*Random intercept
+	di "predicting random intercept values"
+
+	predict `rand_int' if  inlist(`wave_var', `predictor_waves_csv') `extra_if' `not_int_est' , latent(M1[`id_var']) 
 	bysort `id_var': egen `rand_int_all' = mean(`rand_int') 
-
-	predict `rand_slope'  if inlist(`wave_var', `predictor_waves_csv') `extra_if', latent(M2[`id_var']) 
-	bysort `id_var': egen `rand_slope_all' = mean(`rand_slope') 
-
-
-	predict `fixed_outcome' if `wave_var' == `out_wave' `extra_if', conditional(fixedonly)
-	gen `pred_var' = `fixed_outcome' + `rand_int_all' + `rand_slope_all' 
 	
-	if "`random_study'" != "" & "`intercept_est'" == "average" { 
-		di "removing estimated study intercept"
-		predict `study_intercept'  if inlist(`wave_var', `predictor_waves_csv') `extra_if', latent(STUDY[study]) 
-	    bysort `id_var': egen `study_intercept_all' = mean(`study_intercept') 
-		replace `pred_var' = `pred_var' - `study_intercept_all'
-		
-		di "Predicted intercept adjustment"
-		su `study_intercept'
+	gen `pred_var' = `fixed_outcome' + `rand_int_all' 
+
+	*Random slope
+	if "`random_slope'" != "" {
+	di "predicting random slope values"
+		predict `rand_slope'  if inlist(`wave_var', `predictor_waves_csv') `not_int_est' `extra_if', latent(M2[`id_var']) 
+		bysort `id_var': egen `rand_slope_all' = mean(`rand_slope') 
+		replace `pred_var' = `pred_var' + `rand_slope_all'  if `pred_var' !=.
+	
+	}
+	
+	*Study intercept
+		// if intercept_est = average - do not estimate study part - treat as zero
+		// if intercept = estimate - estimate on intercept_est_data
+	if "`intercept_est'" != "average" & "`random_study'" != "" { 
+		di "Estimating random study intercept"
+		predict `study_intercept' if 1==1   `if_int_est'  `extra_if', latent(STUDY[study]) // added truism 1==1 so there is always a n if statement for 
+	    bysort study: egen `study_intercept_all' = mean(`study_intercept') 
+		replace `pred_var' = `pred_var' + `study_intercept_all' if `pred_var' !=.
 	}
 
 	*drop  `rand_int' `rand_int_all' `fixed_outcome'  `rand_slope' `rand_slope_all'
@@ -232,9 +240,16 @@ syntax name (name = pred_var) [if/], predictor_waves(numlist) out_wave(integer) 
 end
 
 
+
+* This command is about intercept estimation
+* It is a post estimation command for gsem.
+* It is to be used when fixed intercepts are used.
+
+
+* Uses hold out data to estimate intercept_est
 cap prog drop fit_hold_out_gsem // only works for univariate case at the moment
 prog define fit_hold_out_gsem
-syntax varname, model_code(string) hold_out_fold(string) intercept_est(string) [intercept_value(real 0) model_options(string)]
+syntax varname, model_code(string) hold_out_fold(string)  intercept_est(string) [intercept_value(real 0) model_options(string) intercept_est_marker(varname)]
 		* This code extracts the model parameters and then sets constraints for each of the variables in the model
 
 	tempname A
@@ -273,7 +288,7 @@ syntax varname, model_code(string) hold_out_fold(string) intercept_est(string) [
 	* if intercept_est is value then intercept_value is taken
 
 	if "`intercept_est'" == "average" {
-qui levelsof `varlist', local(folds)
+			qui levelsof `varlist', local(folds)
 			local n_folds = wordcount(`"`folds'"') 
 			local intercept_total = 0
 			local weight_total = 0
@@ -287,6 +302,7 @@ qui levelsof `varlist', local(folds)
 			}
 			local intercept_value = `intercept_total'/`weight_total' 
 		}
+		
 	if "`intercept_est'" == "average" | "`intercept_est'" == "value" {
 		local i = 1
 		foreach eq_name in `e(eqnames) ' {	// looping over eqnames for multiple outcomes		
@@ -301,8 +317,8 @@ qui levelsof `varlist', local(folds)
 		`model_code', constraints(1 (1) `max_constaint_n') `model_options' noestimate  // use this model for predicting
 
 	}
-	else {
-		`model_code', constraints(1 (1) `max_constaint_n') `model_options'  // use this model for predicting
+	else { // This model is run if intercept est is "estimate - estiamtes the intercept for the hodl out fold, as this is the only fold that is unconstrained"
+		`model_code', constraints(1 (1) `max_constaint_n') if `intercept_est_marker' ==1 `model_options'  // use this model for predicting
 	}
 
 	foreach eq_name in `e(eqnames) ' {	// looping over eqnames for multiple outcomes		
@@ -310,11 +326,12 @@ qui levelsof `varlist', local(folds)
 	}
 
 
-* The constraint for the hold out fold throws an error. This leads to it being unconstrained. The estimate from this model is the same as the residual from the fixed part - ie. the intercept, estimated using the test data.
 	
 
 
 end
+
+
 
 cap prog drop mixed_first_gsem_rs
 prog define mixed_first_gsem_rs

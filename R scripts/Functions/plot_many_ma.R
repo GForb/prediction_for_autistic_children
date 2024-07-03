@@ -21,8 +21,7 @@ plot_many_ma <- function(data, my_colour = "black", diamond_height = 0.05) {
     # Add diamonds for confidence intervals
     geom_polygon(data = diamond_data, aes(x = x, y = y, group = group), fill = my_colour) +
     # Labels and theme adjustments
-    labs(x = "Value", y = "Label") +
-    theme_minimal() +
+    labs(x = "Value", y = "Analysis") +
     scale_y_continuous(breaks = data$position, labels = data$label)
 }
 
