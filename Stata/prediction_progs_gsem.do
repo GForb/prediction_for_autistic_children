@@ -14,8 +14,10 @@ prog define get_all_preds_gsem
 syntax name, ///
 	model_code(passthru) ///
 	intercept_est(passthru)  ///
+	[ ///
+	single_time_point
 	predictor_waves(passthru) out_wave(passthru) ///
-	[ cross_validation n_cv_folds n_reps(integer 1) random_study random_slope ///
+	cross_validation n_cv_folds n_reps(integer 1) random_study random_slope ///
 	model_options(passthru) ///
 	intercept_value(passthru) ///
 	simple_model(passthru) simple_model_options(passthru) ///
@@ -39,10 +41,18 @@ syntax name, ///
 
 			di "Fold:  `fold'"
 			preserve
-			get_hold_out_pred_gsem `namelist', hold_out_fold(`fold') `model_code' ///
-				`pred_var_name' `predictor_waves' `out_wave' `predict_function' `model_options' ///
-				`random_split' `intercept_est' `random_study' `random_slope' `simple_model' `simple_model_options' `mixed_model' `mixed_model_options' `mixed_model_extract_values'
+			if "`single_time_point'" != "" {
+				get_hold_out_pred_single_timepoint `namelist', hold_out_fold(`fold')  ///
+					`model_code' `model_options' `random_split' `intercept_est' `random_study'
+			}
+			else {
+				get_hold_out_pred_gsem `namelist', hold_out_fold(`fold') `model_code' ///
+					`pred_var_name' `predictor_waves' `out_wave' `model_options' ///
+					`random_split' `intercept_est' `random_study' `random_slope' `simple_model' `simple_model_options' `mixed_model' `mixed_model_options' `mixed_model_extract_values'
 			
+			}
+			
+	
 			di "completed hold out bit, saving data"
 			keep if `namelist' == "`fold'"
 			if `count' == 1 {
@@ -70,14 +80,55 @@ end
 
 
 
-cap prog drop get_hold_out_pred_gsem
 *Fit model
 
-*If not random split: estimate intercept for hold out folds
+cap prog drop get_hold_out_pred_single_timepoint
+prog define get_hold_out_pred_single_timepoint
+syntax varname, ///
+	hold_out_fold(string) ///
+	model_code(string) ///
+	intercept_est(string) ///
+	[ ///
+	random_split   ///
+	random_study
+	model_options(string) ///
+	intercept_value(passthru) ///
+	]
+	
+	* Fit model
+	if "`model_options'" != "" local model_options_c , `model_options'
+	`model_code' if `varlist' != "`hold_out_fold'"  `model_options_c'
+	est store model
+	local model_command   `e(cmd) '
+	
+	foreach method in `intercept_est' {
+	di "Predicting using `method' intercepts"
+	est restore model
+	`model_command'
+	
+	if "`method'" == "estimate_cv" {
+		est_intercept_get_pred_cv `varlist', hold_out_fold(`hold_out_fold') model_name(model) model_command(`model_command') ///
+			`random_split' `random_study' `random_slope'  model_code(`model_code') model_options(`model_options') intercept_est(`method') `intercept_value' `predict_args' ///
+			single_time_point
+	}
+	else {
+		est_intercept_get_pred_st `varlist', hold_out_fold(`hold_out_fold') ///
+			 model_name(model) model_command(`model_command') ///
+			 pred_var_name(pred_`method') ///
+			 `random_split' `random_study' ///
+			 model_code(`model_code') model_options(`model_options') 
+			 intercept_est(`method') `intercept_value' 
+	}
 
-* make predictions // can be in the predict fucntion...
+	}
+
+end
 
 
+
+
+
+cap prog drop get_hold_out_pred_gsem
 prog define get_hold_out_pred_gsem
 syntax varname, ///
 	hold_out_fold(string) ///
@@ -169,8 +220,9 @@ end
 
 cap prog drop  est_intercept_get_pred_cv
 prog est_intercept_get_pred_cv
-syntax varname, hold_out_fold(string) predictor_waves(numlist) out_wave(integer) model_name(passthru) ///
-	[random_split random_study random_slope model_code(string) model_options(string) intercept_est(string) intercept_value(passthru)]
+syntax varname, hold_out_fold(string) model_name(passthru) ///
+	[random_split random_study random_slope model_code(string) model_options(string) intercept_est(string) intercept_value(passthru) predictor_waves(numlist) out_wave(integer) ///
+	single_time_point model_command(passthru)]
 	
 	tempfile data
 	local count = 1
@@ -182,8 +234,15 @@ syntax varname, hold_out_fold(string) predictor_waves(numlist) out_wave(integer)
 		tempvar int_est_marker
 		gen `int_est_marker' = 1 if int_est_fold != `fold' | `varlist' != "`hold_out_fold'"
 		
-		est_intercept_get_pred `varlist', hold_out_fold(`hold_out_fold') 	predictor_waves(`predictor_waves') out_wave(`out_wave') `model_name' pred_var_name(pred_estimate_cv) ///
-			`random_split' `random_study'  model_code(`model_code') model_options(`model_options') intercept_est(estimate) `intercept_value' `predict_args' int_est_marker(`int_est_marker')
+			if "`single_time_point'" != "" {
+				est_intercept_get_pred_st `varlist', hold_out_fold(`hold_out_fold') `model_name' pred_var_name(pred_estimate_cv) ///
+					`random_split' `random_study'  model_code(`model_code') `model_command' model_options(`model_options') intercept_est(estimate) `intercept_value'  int_est_marker(`int_est_marker')	
+			}
+			else {
+				est_intercept_get_pred `varlist', hold_out_fold(`hold_out_fold') 	predictor_waves(`predictor_waves') out_wave(`out_wave') `model_name' pred_var_name(pred_estimate_cv) ///
+					`random_split' `random_study'  model_code(`model_code') model_options(`model_options') intercept_est(estimate) `intercept_value'  int_est_marker(`int_est_marker')	
+			}
+
 			
 		keep if int_est_fold == `fold'
 		if `count' == 1 {
@@ -208,7 +267,7 @@ prog est_intercept_get_pred
 syntax varname, hold_out_fold(string) predictor_waves(numlist) out_wave(integer) model_name(name) pred_var_name(name) ///
 	[random_split random_study random_slope model_code(string) model_options(string) intercept_est(string) intercept_value(passthru)  int_est_marker(passthru)]
 	
-	est restore model
+	est restore `model_name'
 	gsem
 	
 	if "`random_split'" == "" & "`random_study'" == "" {
@@ -222,6 +281,26 @@ syntax varname, hold_out_fold(string) predictor_waves(numlist) out_wave(integer)
 	predict_multiwave_gsem_uv `pred_var_name' if `varlist' == "`hold_out_fold'", intercept_est(`intercept_est')  `random_study' `random_slope' `int_est_marker' predictor_waves(`predictor_waves') out_wave(`out_wave') 
 
 end
+
+cap prog drop  est_intercept_get_pred_st
+prog est_intercept_get_pred_st
+syntax varname, hold_out_fold(string)  model_name(name) pred_var_name(name) model_command(string) ///
+	[random_split random_study random_slope model_code(string) model_options(string) intercept_est(string) intercept_value(passthru)  int_est_marker(passthru)]
+	
+	est restore `model_name'
+	`model_command'
+	
+	if  "`random_study'" == "" {
+		di "Predictions for fixed study, outcome modelled with regression"
+		est_intercept_get_pred_reg `varlist', hold_out_fold(`hold_out_fold') pred_var_name(`pred_var_name') intercept_est(`intercept_est') `random_split'  `intercept_value' `int_est_marker'	
+	}
+	else {
+		est_intercept_get_pred_gsem_st `varlist', hold_out_fold(`hold_out_fold') pred_var_name(`pred_var_name') intercept_est(`intercept_est') `random_split'  `intercept_value' `int_est_marker'	
+	}
+
+end
+
+
 
 
 
@@ -374,6 +453,127 @@ syntax varname, model_code(string) hold_out_fold(string)  intercept_est(string) 
 	
 
 
+end
+
+
+
+
+cap prog drop est_intercept_get_pred_reg
+prog define est_intercept_get_pred_reg
+syntax varname, ///
+	hold_out_fold(string) ///
+	pred_var_name(string) ///
+	intercept_est(string) ///
+	[ ///
+		random_split ///
+		predict_function(string) ///
+		intercept_value(real 0) ///
+		int_est_marker(varname)
+	]
+
+	if !inlist("`intercept_est'", "estimate", "average", "value") {
+		di `"`intercept_est'"'
+		di "Intercept est must be one of estimate, average or value"
+	}	
+
+	if "`int_est_marker'" != "" {
+		local and_int_est & `int_est_marker' ==1
+	}
+	
+	local outcome `e(depvar)'
+
+
+	tempname A
+	mat `A' = r(table)
+	
+	* make predictions in hold out fold
+	predict `pred_var_name' if `varlist' == "`hold_out_fold'" 
+	
+	if "`random_split'" == "" {
+		
+		di `"INTERCEPT EST: `intercept_est'"'
+
+		if "`intercept_est'" == "estimate" {
+			
+			di "estimating intercept"
+			su `pred_var_name' if `varlist' == "`hold_out_fold'" `and_int_est'
+			local p_mean = r(mean)
+			su `e(depvar)' if `varlist' == "`hold_out_fold'" `and_int_est'
+			local o_mean = r(mean)
+			local new_intercept = `o_mean' - `p_mean'
+			
+			replace `pred_var_name' = `pred_var_name' + `new_intercept' if `varlist' == "`hold_out_fold'" 
+		}
+		
+		
+		if "`intercept_est'" == "average" {
+			qui levelsof `varlist', local(folds)
+			local n_folds = wordcount(`"`folds'"') 
+			local intercept_total = 0
+			local weight_total = 0
+			forvalues i = 1 (1) `n_folds' {
+				local est = `A'[1,`i']
+				if `est' != 0 {
+					local weight = 1/(`A'[2,`i'])^2 // inverse variance weight
+					local intercept_total = `intercept_total' + `est'*`weight'
+					local weight_total = `weight_total' + `weight' // note one study will be ommited and take value 0
+				}
+			}
+			local intercept_value = `intercept_total'/`weight_total' 
+				
+		}
+		if "`intercept_est'" == "value" | "`intercept_est'" == "average" {
+			di "Adding new intercept: `intercept_value'"
+			replace `pred_var_name' = `pred_var_name' + `intercept_value'
+		}
+
+	}
+	di "Outcome macro is: `outcome'"
+	gen actual = `outcome'
+	
+	
+end
+
+cap prog drop est_intercept_get_pred_gsem_st
+prog define est_intercept_get_pred_gsem_st
+syntax varname, ///
+	hold_out_fold(string) ///
+	pred_var_name(string) ///
+	intercept_est(string) ///
+	[ ///
+		random_split ///
+		predict_function(string) ///
+		int_est_marker(varname)
+	]
+	
+	if !inlist("`intercept_est'", "estimate", "average") {
+		di `"`intercept_est'"'
+		di "Intercept est must be one of estimate or average"
+	}	
+
+	if "`int_est_marker'" != "" {
+		local if_int_est if `int_est_marker' ==1
+	}
+	* Predict fixed
+	predict `pred_var_name' , conditional(fixedonly)
+	
+	if "`intercept_est'" == "estimate" {
+		temp_var `pred_random'
+	} 
+	
+	
+	
+	* Predict intercept
+	if "`intercept_est'" == "estimate" {
+		di "Estimating random study intercept"
+		temp_var study_intercept study_intercept_all
+		predict `study_intercept' `if_int_est', latent(STUDY[study]) // added truism 1==1 so there is always a n if statement for 
+	    bysort study: egen `study_intercept_all' = mean(`study_intercept') 
+		replace `pred_var_name' = `pred_var_name' + `study_intercept_all' if `pred_var_name' !=.
+	}
+	
+	
+	
 end
 
 
