@@ -1,20 +1,4 @@
 
-cap prog drop one_hot_encode
-prog define one_hot_encode
-syntax varname
-
-qui levelsof `varlist', local(levels)
-
-foreach level in `levels' {
-	gen `varlist'_`level' = 0
-	replace `varlist'_`level' = 1 if `varlist' == "`level'"
-}
-
-
-end
-
-
-
 cap prog drop get_all_preds_reg
 prog define get_all_preds_reg
 syntax varname, model_code(passthru) pred_var_name(passthru) intercept_est(passthru)  [ random_split  model_options(passthru) intercept_value(passthru)]
