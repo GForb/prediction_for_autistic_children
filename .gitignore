@@ -51,3 +51,4 @@ Rmarkdown/*/**
 # Rporilfe
 .Rprofile
 
+*.stswp
