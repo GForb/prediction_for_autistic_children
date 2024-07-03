@@ -365,11 +365,6 @@ syntax varname, model_code(string) hold_out_fold(string)  intercept_est(string) 
 		if "`int_est_marker'" != "" {
 		 local if_int_est if `int_est_marker'  == 1
 		}
-		di "`if_int_est'"
-		tab `int_est_marker' study
-		di "`model_code' `if_int_est', constraints(1 (1) `max_constaint_n')   `model_options' "
-		di "running with no estimate"
-		`model_code' `if_int_est', constraints(1 (1) `max_constaint_n')   `model_options'  noestimate // use this model for predicting
 		`model_code' `if_int_est', constraints(1 (1) `max_constaint_n')   `model_options'  // use this model for predicting
 	}
 
