@@ -21,15 +21,12 @@ model_pred_gsem_ri_study_rs_id <- function(data, outcome, predictors, intercept_
   
   analysis_code <- glue::glue("
   get_all_preds_gsem {study_var}, ///
-      pred_var_name(pred) ///
       model_code({model_code}) ///
     	intercept_est({intercept_est}) ///
-    	predict_function(predict_multiwave_gsem_rs_uv) ///
-    	predict_args(wave_var({wave_var}) ///
     	out_wave({out_wave}) ///
     	predictor_waves({pred_waves}) ///
-    	id_var({id_var})) ///
     	random_study ///
+    	random_slope ///
     	simple_model({model_code}) ///
     	simple_model_options({simple_model_options})
     ")
@@ -64,15 +61,11 @@ model_pred_gsem_ri_study_ri_id <- function(data, outcome, predictors, intercept_
   
   analysis_code <- glue::glue("
     get_all_preds_gsem {study_var}, ///
-      pred_var_name(pred) ///
       model_code({model_code}) ///
     	intercept_est({intercept_est}) ///
     	model_options(from(all)) ///
-    	predict_function(predict_multiwave_gsem_ri) ///
-    	predict_args(wave_var({wave_var}) ///
     	out_wave({out_wave}) ///
     	predictor_waves({pred_waves}) ///
-    	id_var({id_var})) ///
     	random_study
     ")
   
@@ -108,15 +101,12 @@ model_pred_gsem_ri_study_rs_id <- function(data, outcome, predictors, intercept_
   
   analysis_code <- glue::glue("
   get_all_preds_gsem {study_var}, ///
-      pred_var_name(pred) ///
       model_code({model_code}) ///
     	intercept_est({intercept_est}) ///
-    	predict_function(predict_multiwave_gsem_rs_uv) ///
-    	predict_args(wave_var({wave_var}) ///
     	out_wave({out_wave}) ///
     	predictor_waves({pred_waves}) ///
-    	id_var({id_var})) ///
     	random_study ///
+    	random_slope ///
     	simple_model({model_code}) ///
     	simple_model_options({simple_model_options})
     ")
@@ -140,15 +130,11 @@ model_pred_vabs_gsem <- function(data, pred_waves, outcome, model_code, model_op
   
   analysis_code <- glue::glue("
     get_all_preds_gsem {study_var}, ///
-      pred_var_name(pred) ///
       model_code({model_code}) ///
     	intercept_est({intercept_est}) ///
     	model_options({model_options}) ///
-    	predict_function(predict_multiwave_gsem_ri) ///
-    	predict_args(wave_var({wave_var}) ///
     	out_wave({out_wave}) ///
     	predictor_waves({pred_waves}) ///
-    	id_var({id_var}))
     ")
   
   run_stata_code(data = data,
