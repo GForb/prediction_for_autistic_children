@@ -165,15 +165,11 @@ model_pred_gsem_fi_study_ri_id <- function(data, outcome, predictors, intercept_
 
   analysis_code <- glue::glue("
     get_all_preds_gsem {study_var}, ///
-      pred_var_name(pred) ///
       model_code({model_code}) ///
     	intercept_est({intercept_est}) ///
     	model_options({model_options}) ///
-    	predict_function(predict_multiwave_gsem_ri) ///
-    	predict_args(wave_var({wave_var}) ///
     	out_wave({out_wave}) ///
     	predictor_waves({pred_waves}) ///
-    	id_var({id_var}))
     ")
   
   run_stata_code(data = data,
@@ -211,15 +207,11 @@ model_pred_gsem_fi_study_rs_id <- function(data, outcome, predictors, intercept_
   
   analysis_code <- glue::glue("
   get_all_preds_gsem {study_var}, ///
-      pred_var_name(pred) ///
       model_code({model_code}) ///
       model_options({model_options}) ///
     	intercept_est({intercept_est}) ///
-    	predict_function(predict_multiwave_gsem_rs_uv) ///
-    	predict_args(wave_var({wave_var}) ///
     	out_wave({out_wave}) ///
     	predictor_waves({pred_waves}) ///
-    	id_var({id_var})) ///
     	mixed_model({mixed_model}) ///
     	mixed_model_options(\"{mixed_model_options}\") 
     ")
