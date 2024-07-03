@@ -98,7 +98,6 @@ syntax varname, ///
 	]
 	
 
-	
 	if "`model_options'" != "" local model_options_c , `model_options'
 	
 	*fit the model using a simpler model for starting values
@@ -142,16 +141,11 @@ syntax varname, ///
 		est restore model
 		gsem
 		if "`method'" == "estimate_cv" {
-			splitsample if `varlist' == "`hold_out_fold'", generate(int_est_fold)  cluster(ID) nsplit(10)  
-			qui levelsof `int_est_fold', local(folds)
-			foreach `fold' in `folds'{
-				tempvar int_est_marker
-				gen `int_est_marker' = 1 if int_est_fold == `fold'	
-			}
-		
+			est_intercept_get_pred_cv `varlist', hold_out_fold(`hold_out_fold') 	predictor_waves(`predictor_waves') out_wave(`out_wave') model_name(model) ///
+				`random_split' `random_study' model_code(`model_code') model_options(`model_options') intercept_est(`method') `intercept_value' `predict_args'
 		}
 		else {
-			est_intercept_get_pred `varlist', hold_out_fold(`hold_out_fold') 	predictor_waves(`predictor_waves') out_wave(`out_wave') ///
+			est_intercept_get_pred `varlist', hold_out_fold(`hold_out_fold') 	predictor_waves(`predictor_waves') out_wave(`out_wave') model_name(model) pred_var_name(pred_`method') ///
 				`random_split' `random_study' model_code(`model_code') model_options(`model_options') intercept_est(`method') `intercept_value' `predict_args'
 		}
 
@@ -175,11 +169,49 @@ syntax varname, ///
 	di "finished getting hold out"
 end
 
+cap prog drop  est_intercept_get_pred_cv
+prog est_intercept_get_pred_cv
+syntax varname, hold_out_fold(string) predictor_waves(numlist) out_wave(integer) model_name(passthru) ///
+	[random_split random_study model_code(string) model_options(string) intercept_est(string) intercept_value(passthru)]
+	
+	tempfile data
+	local count = 1
+
+	splitsample if `varlist' == "`hold_out_fold'", generate(int_est_fold)  cluster(ID) nsplit(10)  
+	qui levelsof int_est_fold, local(folds)
+	foreach fold in `folds'{
+		preserve
+		tempvar int_est_marker
+		gen `int_est_marker' = 1 if int_est_fold != `fold' | `varlist' != "`hold_out_fold'"
+		
+		est_intercept_get_pred `varlist', hold_out_fold(`hold_out_fold') 	predictor_waves(`predictor_waves') out_wave(`out_wave') `model_name' pred_var_name(pred_estimate_cv) ///
+			`random_split' `random_study' model_code(`model_code') model_options(`model_options') intercept_est(estimate) `intercept_value' `predict_args' int_est_marker(`int_est_marker')
+			
+		keep if int_est_fold == `fold'
+		if `count' == 1 {
+			save  `data'
+		}
+		else {
+			append using `data'
+			save `data', replace
+		}
+		restore
+		local count = `count' + 1
+		
+	}
+	use `data', clear
+
+	
+end
+
+
 cap prog drop  est_intercept_get_pred
 prog est_intercept_get_pred
-syntax varname, hold_out_fold(string) predictor_waves(numlist) out_wave(integer) ///
+syntax varname, hold_out_fold(string) predictor_waves(numlist) out_wave(integer) model_name(name) pred_var_name(name) ///
 	[random_split random_study model_code(string) model_options(string) intercept_est(string) intercept_value(passthru)  int_est_marker(passthru)]
 	
+	est restore model
+	gsem
 	
 	if "`random_split'" == "" & "`random_study'" == "" {
 		di "Fitting constrained gsem model for intercept estimation"
@@ -189,7 +221,7 @@ syntax varname, hold_out_fold(string) predictor_waves(numlist) out_wave(integer)
 	di "int est marker: `int_est_marker'"
 	di "int est: `intercept_est'"
 
-	predict_multiwave_gsem_uv pred_`intercept_est' if `varlist' == "`hold_out_fold'", intercept_est(`intercept_est')  `random_study' `int_est_marker' predictor_waves(`predictor_waves') out_wave(`out_wave') 
+	predict_multiwave_gsem_uv `pred_var_name' if `varlist' == "`hold_out_fold'", intercept_est(`intercept_est')  `random_study' `int_est_marker' predictor_waves(`predictor_waves') out_wave(`out_wave') 
 
 end
 
@@ -263,7 +295,7 @@ end
 * Uses hold out data to estimate intercept_est
 cap prog drop fit_hold_out_gsem // only works for univariate case at the moment
 prog define fit_hold_out_gsem
-syntax varname, model_code(string) hold_out_fold(string)  intercept_est(string) [intercept_value(real 0) model_options(string) intercept_est_marker(varname)]
+syntax varname, model_code(string) hold_out_fold(string)  intercept_est(string) [intercept_value(real 0) model_options(string) int_est_marker(varname)]
 		* This code extracts the model parameters and then sets constraints for each of the variables in the model
 
 	tempname A
@@ -332,10 +364,11 @@ syntax varname, model_code(string) hold_out_fold(string)  intercept_est(string) 
 
 	}
 	else { // This model is run if intercept est is "estimate - estiamtes the intercept for the hodl out fold, as this is the only fold that is unconstrained"
-		if "`intercept_est_marker'" != "" {
-		 local if_int_est if `intercept_est_marker'  ==1
+		if "`int_est_marker'" != "" {
+		 local if_int_est if `int_est_marker'  == 1
 		}
 		di "`if_int_est'"
+		tab `int_est_marker' study
 		`model_code' `if_int_est', constraints(1 (1) `max_constaint_n')   `model_options'  // use this model for predicting
 	}
 
