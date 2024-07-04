@@ -122,7 +122,7 @@ get_all_preds_gsem study, ///
 
 	
 	
-** Wanring - sloe to run **
+** Wanring - slow to run **
 	
 *Random study, random slope
 use "pooled_sdq.dta", clear
