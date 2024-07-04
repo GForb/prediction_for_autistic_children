@@ -112,10 +112,15 @@ create_doc(dataset = "ssc", template = descriptive_template, outcome = "cbcl")
 
 pool("vabs")
 create_doc(dataset = "pooled_vabs", template = descriptive_template, outcome = "vabs")
+
+tictoc::tic()
 run_models("vabs")
+tictoc::toc() 
 
 results_folder <- here::here(data_and_outputs, "Results", "VABS", "Prelim")
+tictoc::tic()
 create_full_results_table(results_folder)
+tictoc::toc() 
 
 report_all("vabs")
 template = here::here("Rmarkdown/vabs_results.rmd")
