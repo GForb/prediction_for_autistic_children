@@ -10,6 +10,7 @@ analysis_data_long <- sdq_long_data |> filter(out_all_complete, base_all_complet
 
 results_folder <- here::here(data_and_outputs, "Results", "SDQ", "Prelim")
 log_folder <- here::here(results_folder, "Logs")
+do_folder <- here::here(results_folder, "Do Files")
 # Regression
 
 outcomes <- c("sdq_emot_p", "sdq_cond_p", "sdq_hyp_p", "sdq_pro_p", "sdq_peer_p")

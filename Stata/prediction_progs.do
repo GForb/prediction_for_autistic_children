@@ -9,8 +9,8 @@ fixed studies are study_*
 returns pred var as pred
 */
 
-cap prog drop get_all_preds_gsem
-prog define get_all_preds_gsem
+cap prog drop get_all_preds
+prog define get_all_preds
 syntax name, ///
 	model_code(passthru) ///
 	intercept_est(passthru)  ///
@@ -73,7 +73,8 @@ syntax name, ///
 	use `data_with_preds', clear
 	
 
-	
+	des
+	su pred* actual
 
 	
 end
@@ -98,6 +99,8 @@ syntax varname, ///
 	* Fit model
 	if "`model_options'" != "" local model_options_c , `model_options'
 	`model_code' if `varlist' != "`hold_out_fold'"  `model_options_c'
+	local outcome `e(depvar)'
+
 	est store model
 	local model_command   `e(cmd) '
 	
@@ -120,6 +123,14 @@ syntax varname, ///
 				 intercept_est(`method') `intercept_value' 
 		}
 	}
+	
+	gen actual = `outcome'
+	
+	local n_est_methods = wordcount(`"`intercept_est'"') 
+	if `n_est_methods' == 1 {
+		rename pred_`intercept_est' pred
+	}
+
 
 end
 
@@ -207,9 +218,9 @@ syntax varname, ///
 	gen actual = `outcome'
 	
 	*renaming pred to pred if only one method passed.
-	local n_folds = wordcount(`"`int_est'"') 
-	if `n_folds' == 1 {
-		rename pred_`int_est' pred
+	local n_est_methods = wordcount(`"`intercept_est'"') 
+	if `n_est_methods' == 1 {
+		rename pred_`intercept_est' pred
 	}
 	
 	keep if wave == `out_wave'

@@ -5,8 +5,11 @@
 
 create_full_results_table <- function(results_folder) {
   model_name_spec <- readRDS(here::here(results_folder, "analysis_spec.rds")) |> 
-    mutate(file_name = paste0(analysis_name,".rds"))
+    separate_longer_delim(cols = "intercept_est", delim = " ") |> 
+    mutate(file_name = paste0(analysis_name, "_", intercept_est, ".rds"))
 
+  # process in the case of multiple pred columns
+  
   
   results_all <- get_meta_analysis_df(model_name_spec) 
   

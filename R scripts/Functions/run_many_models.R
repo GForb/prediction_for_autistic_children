@@ -29,14 +29,30 @@ run_model <- function(model_function, analysis_name = NULL, multiple_imputed_dat
   } else {
     results <- do.call(model_function, matched_args)
   }
-
+  results |> colnames() |>  print()
+  
+  results <-  results |> 
+    pivot_longer(cols = starts_with("pred"), names_to = "int_est", values_to = "pred") |> 
+    mutate(int_est = str_remove(int_est, "pred"))
   
   
+  int_est_methods <- results$int_est |> unique()
   
+  print("int est methods:")
+  print(int_est_methods)
   
   if(!is.null(analysis_name)) {
-    results$analysis_name <- analysis_name
-    saveRDS(results, here::here(results_folder, paste0(analysis_name, ".rds")))
+    for (my_int_est in results$int_est |> unique()) {
+      filename = paste0(analysis_name,my_int_est, ".rds")
+      results_filtered <- results |> filter(int_est == my_int_est) |> 
+        mutate(analysis_name = paste0(analysis_name, my_int_est))
+      print(my_int_est)
+      results_filtered$pred |> mean() |> print()
+      results_filtered |> 
+        saveRDS( here::here(results_folder, filename))
+
+    }
+
   } 
   return(results)
 

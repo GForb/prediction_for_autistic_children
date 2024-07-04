@@ -7,7 +7,7 @@ model_pred_gsem_ri_study_rs_id <- function(data, outcome, predictors, intercept_
   wave_var <- "wave"
   id_var <- "ID"
   study_var <- "study"
-  stata_prog_source <- here::here("Stata", "prediction_progs_gsem.do")
+  stata_prog_source <- here::here("Stata", "prediction_progs.do")
   make_spline <- glue::glue("mkspline age_spline = age_c, nknots(3) cubic")
   
   model_code <- glue::glue("gsem ({outcome} <- {predictors} STUDY[study]@1 M1[ID]@1 c.age_c#M2[ID]@1)")
@@ -20,7 +20,7 @@ model_pred_gsem_ri_study_rs_id <- function(data, outcome, predictors, intercept_
   
   
   analysis_code <- glue::glue("
-  get_all_preds_gsem {study_var}, ///
+  get_all_preds {study_var}, ///
       model_code({model_code}) ///
     	intercept_est({intercept_est}) ///
     	out_wave({out_wave}) ///
@@ -46,7 +46,7 @@ model_pred_gsem_ri_study_rs_id <- function(data, outcome, predictors, intercept_
 
 model_pred_gsem_ri_study_ri_id <- function(data, outcome, predictors, intercept_est, log_file, pred_waves, out_wave, do_file = NULL) {
   study_var <- "study"
-  stata_prog_source <- here::here("Stata", "prediction_progs_gsem.do")
+  stata_prog_source <- here::here("Stata", "prediction_progs.do")
   make_spline <- glue::glue("mkspline age_spline = age_c, nknots(3) cubic")
   
   wave_var <- "wave"
@@ -60,7 +60,7 @@ model_pred_gsem_ri_study_ri_id <- function(data, outcome, predictors, intercept_
     ")
   
   analysis_code <- glue::glue("
-    get_all_preds_gsem {study_var}, ///
+    get_all_preds {study_var}, ///
       model_code({model_code}) ///
     	intercept_est({intercept_est}) ///
     	model_options(from(all)) ///
@@ -87,7 +87,7 @@ model_pred_gsem_ri_study_rs_id <- function(data, outcome, predictors, intercept_
   wave_var <- "wave"
   id_var <- "ID"
   study_var <- "study"
-  stata_prog_source <- here::here("Stata", "prediction_progs_gsem.do")
+  stata_prog_source <- here::here("Stata", "prediction_progs.do")
   make_spline <- glue::glue("mkspline age_spline = age_c, nknots(3) cubic")
   
   model_code <- glue::glue("gsem ({outcome} <- {predictors} STUDY[study]@1 M1[ID]@1 c.age_c#M2[ID]@1)")
@@ -100,7 +100,7 @@ model_pred_gsem_ri_study_rs_id <- function(data, outcome, predictors, intercept_
   
   
   analysis_code <- glue::glue("
-  get_all_preds_gsem {study_var}, ///
+  get_all_preds {study_var}, ///
       model_code({model_code}) ///
     	intercept_est({intercept_est}) ///
     	out_wave({out_wave}) ///
@@ -129,7 +129,7 @@ model_pred_vabs_gsem <- function(data, pred_waves, outcome, model_code, model_op
 
   
   analysis_code <- glue::glue("
-    get_all_preds_gsem {study_var}, ///
+    get_all_preds {study_var}, ///
       model_code({model_code}) ///
     	intercept_est({intercept_est}) ///
     	model_options({model_options}) ///
@@ -149,7 +149,7 @@ model_pred_vabs_gsem <- function(data, pred_waves, outcome, model_code, model_op
 
 model_pred_gsem_fi_study_ri_id <- function(data, outcome, predictors, intercept_est, log_file, pred_waves, out_wave, do_file = NULL) {
   study_var <- "study"
-  stata_prog_source <- here::here("Stata", "prediction_progs_gsem.do")
+  stata_prog_source <- here::here("Stata", "prediction_progs.do")
   make_spline <- glue::glue("mkspline age_spline = age_c, nknots(3) cubic")
   
   wave_var <- "wave"
@@ -164,7 +164,7 @@ model_pred_gsem_fi_study_ri_id <- function(data, outcome, predictors, intercept_
     ")
 
   analysis_code <- glue::glue("
-    get_all_preds_gsem {study_var}, ///
+    get_all_preds {study_var}, ///
       model_code({model_code}) ///
     	intercept_est({intercept_est}) ///
     	model_options({model_options}) ///
@@ -186,7 +186,7 @@ model_pred_gsem_fi_study_rs_id <- function(data, outcome, predictors, intercept_
   wave_var <- "wave"
   id_var <- "ID"
   study_var <- "study"
-  stata_prog_source <- here::here("Stata", "prediction_progs_gsem.do")
+  stata_prog_source <- here::here("Stata", "prediction_progs.do")
   make_spline <- glue::glue("mkspline age_spline = age_c, nknots(3) cubic")
   model_options <- "nocons"
   
@@ -206,7 +206,7 @@ model_pred_gsem_fi_study_rs_id <- function(data, outcome, predictors, intercept_
   
   
   analysis_code <- glue::glue("
-  get_all_preds_gsem {study_var}, ///
+  get_all_preds {study_var}, ///
       model_code({model_code}) ///
       model_options({model_options}) ///
     	intercept_est({intercept_est}) ///
@@ -226,24 +226,49 @@ model_pred_gsem_fi_study_rs_id <- function(data, outcome, predictors, intercept_
   
 }
 
-
+# Single timepoint models
 ## Single timepoint, fixed study
 
 model_pred_reg_fi_study <- function(data, outcome, predictors, intercept_est, log_file, do_file = NULL) {
   study_var <- "study"
-  stata_prog_source <- here::here("Stata", "prediction_progs_reg.do")
+  stata_prog_source <- here::here("Stata", "prediction_progs.do")
   make_spline <- glue::glue("mkspline base_spline = base_{outcome}, nknots(3) cubic")
   
-  model_code <- glue::glue("regress (out_{outcome} study_*  {predictors} )")
+  model_code <- glue::glue("regress out_{outcome} study_*  {predictors} ")
   model_options <- "nocons"
   run_model <- glue::glue("{model_code}, {model_options}")
   
   analysis_code <- glue::glue("
-   get_all_preds_reg {study_var}, ///
-      pred_var_name(pred) ///
+   get_all_preds {study_var}, ///
       model_code({model_code}) ///
     	intercept_est({intercept_est}) ///
-    	model_options({model_options}) 
+    	model_options({model_options}) ///
+    	single_time_point
+    ")
+  
+  run_stata_code(data = data,
+                 log_file = log_file,
+                 stata_prog_source = stata_prog_source,
+                 make_spline = make_spline,
+                 analysis_code = analysis_code,
+                 run_model = run_model,
+                 do_file = do_file)
+}
+
+model_pred_gsem_ri_study <- function(data, outcome, predictors, intercept_est, log_file, do_file = NULL) {
+  study_var <- "study"
+  stata_prog_source <- here::here("Stata", "prediction_progs.do")
+  make_spline <- glue::glue("mkspline base_spline = base_{outcome}, nknots(3) cubic")
+  
+  model_code <- glue::glue("gsem (out_{outcome} <- STUDY[study]  {predictors} )")
+  run_model <- model_code
+  
+  analysis_code <- glue::glue("
+   get_all_preds {study_var}, ///
+      model_code({model_code}) ///
+    	intercept_est({intercept_est}) ///
+    	single_time_point ///
+    	random_study
     ")
   
   run_stata_code(data = data,
@@ -257,44 +282,7 @@ model_pred_reg_fi_study <- function(data, outcome, predictors, intercept_est, lo
 
 
 
-## Single timepoint, fixed study
-model_pred_reg_factory <- function(outcome, model_code, model_options, intercept_est, log_file) {
-  function(data) {
-    model_pred_regress(
-      data = data, 
-      outcome = outcome, 
-      model_code = model_code, 
-      model_options = model_options, 
-      intercept_est= intercept_est,
-      log_file = log_file
-    )
-  }
-}
 
-
-model_pred_regress <- function(data, outcome, model_code, model_options, intercept_est, log_file, do_file = NULL) {
-  study_var <- "study"
-  stata_prog_source <- here::here("Stata", "prediction_progs_reg.do")
-  make_spline <- glue::glue("mkspline base_spline = base_{outcome}, nknots(3) cubic")
-  
-  analysis_code <- glue::glue("
-   get_all_preds_reg {study_var}, ///
-      pred_var_name(pred) ///
-      model_code({model_code}) ///
-    	intercept_est({intercept_est}) ///
-    	model_options({model_options}) 
-    ")
-  
-  run_stata_code(data = data,
-                 log_file = log_file,
-                 stata_prog_source = stata_prog_source,
-                 make_spline = make_spline,
-                 analysis_code = analysis_code,
-                 model_code = model_code,
-                 model_options = model_options,
-                 do_file = do_file)
-  
-}
 
 run_stata_code <- function(data, log_file, stata_prog_source, make_spline, run_model, analysis_code, do_file = NULL) {
 
@@ -331,7 +319,7 @@ run_stata_code <- function(data, log_file, stata_prog_source, make_spline, run_m
   
   results <-  RStata::stata(stata_code, data.in = data, data.out = TRUE)
 
-  results  |> select(ID, study, pred = starts_with("pred"), actual = starts_with("actual"), everything())
+  results  |> select(ID, study, starts_with("pred"), actual = starts_with("actual"), everything())
   
 }
 
