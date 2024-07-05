@@ -59,7 +59,7 @@ analysis_spec_multi_timepoint <- tibble(outcome = "sdq_emot_p",
 
 tictoc::tic()
 mt_results <- run_many_models(analysis_spec_multi_timepoint)
-tictoc::t0c()
+tictoc::toc()
 
 
 analysis_spec <- bind_rows(analysis_spec_single_timepoint, analysis_spec_multi_timepoint) |> 
