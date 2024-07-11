@@ -1,138 +1,83 @@
-# devtools::install_github("GForb/IPDPredictR")
-# library(IPDPredictR)
-# detach("package:IPDPredictR", unload = TRUE, character.only = TRUE)
-# 
+set.seed(123456)
 
+# Todo: Add base ados module 1
+# Make analysis spec repeat for multiple datasets.
 
-cbcl_wide_data <- readRDS(here(derived_data, "pooled_cbcl_wide.Rds"))
-cbcl_long_data <- readRDS(here(derived_data, "pooled_cbcl.Rds"))
+analysis_data_wide <- readRDS(here(derived_data, "pooled_cbcl_wide.Rds")) |> filter(base_all_complete, out_all_complete)
+analysis_data_wide_mi <- readRDS(here(derived_data, "cbcl_imputed_wide.Rds")) 
 
-nrow(cbcl_wide_data)
-analysis_data_wide <- cbcl_wide_data |> filter(out_all_complete, base_all_complete)
-nrow(analysis_data_wide)
+analysis_data_no_low_iq <- analysis_data_wide |> filter(base_iq_full_scale > 50 | is.na(base_iq_full_scale) & base_iq_perceptual > 50) # add base ados module 1.
+analysis_data_no_long_follow_up <- analysis_data_wide |> filter(fu_length < 5)
+
 
 results_folder <- here::here(data_and_outputs, "Results", "CBCL", "Prelim")
 log_folder <- here::here(results_folder, "Logs")
-# Regression
+do_folder <- here::here(results_folder, "Do Files")
 
-outcomes <- c("cbcl_aff", "cbcl_anx", "cbcl_som", "cbcl_adhd", "cbcl_odd", "cbcl_con") # 
+# Single timepoint analysis - complete case --------------------------------------------
+
+outcomes <- c("cbcl_aff", "cbcl_anx", "cbcl_som", "cbcl_adhd", "cbcl_odd", "cbcl_con")
 intercept_est_methods <- c("average", "estimate")
 
-for(outcome in outcomes){
-  for(intercept_est in intercept_est_methods){
-    
-    baseline_outcomes_string <- paste0("base_", outcomes) |> paste(collapse = " ")
-    non_outcome_baseline <- stringr::str_remove_all(string = baseline_outcomes_string, pattern = paste0("base_", outcome))
-    
-    model_name <- "results_reg_init"
-    model_full_name <- paste0(model_name, "_", outcome, "_int_", intercept_est)
-    
-    model_pred_reg <- model_pred_reg_factory(
-      intercept_est = intercept_est,
-      model_options = "nocons",
-      model_code = glue::glue("regress out_{outcome} study_* base_age out_age {baseline_outcomes_string} base_sex"),
-      outcome = outcome,
-      log_file = here::here(log_folder, paste0(model_full_name, ".log"))
-    )
-    results_reg_init <- model_pred_reg(analysis_data_wide)
-    saveRDS(results_reg_init, here::here(results_folder, paste0(model_full_name, ".rds")))
-    
-    
-    model_name <- "results_reg"
-    model_full_name <- paste0(model_name, "_", outcome, "_int_", intercept_est)
-    
-    model_pred_reg <- model_pred_reg_factory(
-      intercept_est = intercept_est,
-      model_options = "nocons",
-      model_code = glue::glue("regress out_{outcome} study_* base_spline* c.base_spline1#i.base_sex c.base_spline2#i.base_sex base_age out_age {non_outcome_baseline} base_sex"),
-      outcome = outcome,
-      log_file = here::here(log_folder, paste0(model_full_name, ".log"))
-      
-    )
-    results_reg <- model_pred_reg(analysis_data_wide)
-    saveRDS(results_reg, here::here(results_folder, paste0(model_full_name, ".rds")))
-    
-    
-    
-    model_name <- "results_reg_ri"
-    model_full_name <- paste0(model_name, "_", outcome, "_int_", intercept_est)
-    
-    model_pred_reg <- model_pred_reg_factory(
-      intercept_est = intercept_est,
-      model_options = "nocons",
-      model_code = glue::glue("mixed out_{outcome}  base_spline* c.base_spline1#i.base_sex c.base_spline2#i.base_sex base_age out_age {non_outcome_baseline} base_sex || ID:"),
-      outcome = outcome,
-      log_file = here::here(log_folder, paste0(model_full_name, ".log"))
-      
-    )
-    results_reg <- model_pred_reg(analysis_data_wide)
-    saveRDS(results_reg, here::here(results_folder, paste0(model_full_name, ".rds")))
-    
-    
-    
-    # # Random intercept - no interaction with age
-    # 
-    # model_name <- "results_ri"
-    # model_full_name <- paste0(model_name, "_", outcome, "_int_", intercept_est)
-    # 
-    # model_pred_ri <- model_pred_vabs_gsem_factory(
-    #   pred_waves = "0 -1", 
-    #   outcome = outcome, 
-    #   model_code = glue::glue("gsem ({outcome} <- study_* c.age_spline1##i.base_sex c.age_spline2##i.base_sex ///
-    #                           base_vabs_dq {non_outcome_baseline} M1[ID]@1)"),
-    #   model_options = "nocons",
-    #   intercept_est = intercept_est,
-    #   log_file = here::here(log_folder, paste0(model_full_name, ".log"))
-    #   
-    #   
-    # ) 
-    # 
-    # results_ri <- model_pred_ri(dls_data)
-    # saveRDS(results_ri, here::here(results_folder, paste0(model_full_name, ".rds")))
-    # 
-    # ## Random intercept, including interaction with vabs_dq
-    # 
-    # model_name <- "results_ri_int"
-    # model_full_name <- paste0(model_name, "_", outcome, "_int_", intercept_est)
-    # 
-    # model_pred_ri_int <- model_pred_vabs_gsem_factory(
-    #   pred_waves = "0 -1", 
-    #   outcome = outcome, 
-    #   model_code = glue::glue("gsem ({outcome} <- study_* age_spline1 age_spline2 ///
-    #                           base_vabs_dq base_sex ///
-    #                           c.age_spline1#i.base_sex c.age_spline2#i.base_sex ///
-    #                           c.age_spline1#c.base_vabs_dq c.age_spline2#c.base_vabs_dq ///
-    #                            {non_outcome_baseline} M1[ID]@1)"),
-    #   model_options = "nocons",
-    #   intercept_est = intercept_est,
-    #   log_file = here::here(log_folder, paste0(model_full_name, ".log"))
-    #   
-    # ) 
-    # 
-    # results_ri_int <- model_pred_ri_int(dls_data)
-    # saveRDS(results_ri_int, here::here(results_folder, paste0(model_full_name, ".rds")))
-    # 
-    # # Random slope
-    # 
-    # model_name <- "results_rs"
-    # model_full_name <- paste0(model_name, "_", outcome, "_int_", intercept_est)
-    # 
-    # model_pred_rs_int <- model_pred_vabs_gsem_rs_factory(
-    #   pred_waves = "0 -1", 
-    #   outcome = outcome, 
-    #   model_code = glue::glue("gsem ({outcome} <- study_* age_spline1 age_spline2 ///
-    #                           c.age_spline1#i.base_sex c.age_spline2#i.base_sex ///
-    #                           c.age_spline1#c.base_vabs_dq c.age_spline2#c.base_vabs_dq ///
-    #                           base_vabs_dq {non_outcome_baseline} M1[ID]@1 c.age_c#M2[ID]@1)"),
-    #   model_options = "nocons",
-    #   intercept_est = intercept_est,
-    #   log_file = here::here(log_folder, paste0(model_full_name, ".log"))
-    #   
-    # ) 
-    # 
-    # Don't run as currently no convergence
-    #  results_rs <- model_pred_rs_int(dls_data)
-    # saveRDS(results_rs, here::here(results_folder, "results_rs.rds"))
-    
-  }
-}
+baseline_outcomes_string <- paste0("base_", outcomes) |> paste(collapse = " ")
+
+analysis_spec_single_timepoint <- tibble(outcome = outcomes, 
+                                         intercept_est = "average estimate estimate_cv") |> 
+  rowwise() |> 
+  mutate(
+    non_outcome_baseline = stringr::str_remove_all(string = baseline_outcomes_string, pattern = paste0("base_", outcome)),
+    pred_init = glue::glue("base_age out_age {baseline_outcomes_string} base_sex") |> as.character(),       
+    pred1 = glue::glue("base_spline* c.base_spline1#i.base_sex c.base_spline2#i.base_sex base_age out_age {non_outcome_baseline} base_sex") |> as.character()
+  ) |> 
+  ungroup() |> 
+  pivot_longer(cols = starts_with("pred"), names_to = "predictor_set", values_to = "predictors") |> 
+  mutate(
+    model_function = list(model_pred_reg_fi_study),
+    analysis_name = glue::glue("st_fi_study_{outcome}_{predictor_set}") |> as.character(),
+    log_file = here::here(log_folder, analysis_name),
+    do_file = here::here(do_folder, analysis_name),
+    data = list(analysis_data_wide),
+    model_name = "st_fi_study"
+  )
+
+st_results <- run_many_models(analysis_spec_single_timepoint)
+
+
+# Single timepoint analysis with multiple imputation --------------------------------------------
+analysis_spec_single_timepoint_mi <- tibble(outcome = outcomes, 
+                                            intercept_est = "average estimate estimate_cv") |> 
+  rowwise() |> 
+  mutate(
+    non_outcome_baseline = stringr::str_remove_all(string = baseline_outcomes_string, pattern = paste0("base_", outcome)),
+    pred1 = glue::glue("base_spline* c.base_spline1#i.base_sex c.base_spline2#i.base_sex base_age out_age {non_outcome_baseline} base_sex") |> as.character(),
+    pred2 = glue::glue("{pred1} i.base_adi_65 base_ados_css_rrb base_ados_css_sa c.base_iq_full_scale##i.base_iq_standard base_vabs_abc_ss") |> as.character(),
+    pred3 = glue::glue("{pred2} base_ethnicity base_maternal_education") |> as.character()
+  ) |> 
+  ungroup() |> 
+  pivot_longer(cols = starts_with("pred"), names_to = "predictor_set", values_to = "predictors") |> 
+  mutate(
+    model_function = list(model_pred_reg_fi_study),
+    analysis_name = glue::glue("st_fi_study_{outcome}_{predictor_set}_mi") |> as.character(),
+    log_file = here::here(log_folder, analysis_name),
+    do_file = here::here(do_folder, analysis_name),
+    data = list(analysis_data_wide_mi),
+    model_name = "st_fi_study_mi",
+    multiple_imputed_data = TRUE
+  )
+tictoc::tic()
+st_results_mi <- run_many_models(analysis_spec_single_timepoint_mi)
+tictoc::toc()
+
+
+
+
+# Multi timepoint analysis - complete case --------------------------------------------
+
+analysis_spec <- bind_rows(
+  analysis_spec_single_timepoint, 
+  analysis_spec_single_timepoint_mi,
+) |> 
+  select(-data) 
+
+analysis_spec |> 
+  saveRDS(here::here(results_folder, "analysis_spec.rds")) 

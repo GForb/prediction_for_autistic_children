@@ -33,6 +33,7 @@ get_meta_analysis_df <- function(model_name_spec) {
   return(list(wide_results = wide_results, long_results = long_results))
 }
 
+
 #     pivot_wider(names_from = metric, values_from = all_of(c("summary", "meta_analysis"))) |>
 
 
@@ -49,20 +50,15 @@ run_meta_analysis <- function(results_name, multiple_imputed_data = NULL) {
     multiple_imputed_data <- TRUE
   }
   
-  results_cv <- results |> filter(validation == "cv") 
-  if(results_cv  |> nrow() > 0){
-    meta_analysis_df <- evaluate_cross_validation(results_cv, mi = multiple_imputed_data)
-  }
+
   
-  results_iecv <- results |> filter(validation == "iecv")
-  
-  if(results_iecv |> nrow() > 0) {
-    if(multiple_imputed_data){
-      meta_analysis_df <- run_meta_analysis_mi(results_iecv)
-    } else {
-      meta_analysis_df <- run_meta_analysis_single_data(results_iecv)
-    }
+
+  if(multiple_imputed_data){
+    meta_analysis_df <- run_meta_analysis_mi(results)
+  } else {
+    meta_analysis_df <- run_meta_analysis_single_data(results)
   }
+
   meta_analysis_df <- meta_analysis_df |> mutate(file_name = results_name) 
   
   return(meta_analysis_df)
@@ -84,7 +80,7 @@ run_meta_analysis_mi <- function(results) {
 
 run_meta_analysis_single_data <- function(results) {
   if(!check_results(results)){
-    meta_analysis_df <- tibble(metric = c("calib_slope", "calib_itl", "r_squared" , "rmse"))
+    meta_analysis_df <- tibble(metric = c("calib_slope", "calib_itl", "r_squared", "r_squared_transformed" , "rmse"))
   } else {
     meta_analysis_list <- IPDPredictR:::meta_analyse_predictions_cont(predictions = results, study_var_name = "study") 
     meta_analysis_df <- meta_analysis_list$results_df |> tibble()
@@ -134,32 +130,3 @@ process_results_df  <- function(model_names, intercept_est_methods, outcomes, pr
   }
 }
 
-evaluate_cross_validation <- function(data, mi = FALSE) {
-  if(mi){
-    data |> 
-      group_by(fold, validation_rep, imp_no) |> 
-      aggregate_cv_results()
-  } else {
-    data |> 
-      group_by(fold, validation_rep) |> 
-      aggregate_cv_results()
-  }
-}
-
-aggregate_cv_results <- function(grouped_data) {
-  grouped_data |> 
-    summarise(n = n(),
-              performance = list(summarise_performance(pred, actual))) |> 
-    unnest(cols = c(performance)) |> 
-    ungroup() |> 
-    summarise(across(c(calib_slope, calib_itl, r_squared, rmse), mean)) |> 
-    ungroup() |> 
-    pivot_longer(cols = everything(), names_to = "metric", values_to = "est") 
-}
-
-summarise_performance <- function(pred, actual) {
-  IPDPredictR:::evaluate_performance_cont_obs_pred(actual = actual, pred = pred) |> 
-    select(-se) |> 
-    pivot_wider(names_from = "metric", values_from = "coef")
-}
-    

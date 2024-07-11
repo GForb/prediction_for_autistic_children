@@ -61,7 +61,7 @@ predictors <- data |>   mutate(
          base_iq_perceptual,
          base_visual_impairment,
          base_hearing_impairment,
-         base_vabs_abc_ae = VABS8cp) |> 
+         base_vabs_abc_ss = VABS8cp) |> 
   left_join(ethnicity_rest)
 
 # VABS
@@ -164,7 +164,7 @@ vabs_data_analysis <-
          base_wave = 0,
          study = study_name,
          country = country_name) |> 
-  left_join(predictors |> select(-base_vabs_abc_ae), by = "ID") 
+  left_join(predictors |> select(-base_vabs_abc_ss), by = "ID") 
 
 
 # CBCL

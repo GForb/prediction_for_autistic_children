@@ -13,6 +13,11 @@
 study_name <- "ELENA"
 country_name <- "France"
 
+
+
+data_folder <- here::here(raw_data, "ELENA")
+data_raw <- readxl::read_xlsx(here::here(data_folder, "ELENA_DATA_20240613_protege.xlsx")) 
+
 iq_method_mapping <- tibble(
   test_label = unique(c(data_raw$calcul_bestQDV0, data_raw$calcul_bestQDV2)), 
   standard = c(1,1,1,1,0,0,1,1,0,1,0,0,0,1),
@@ -22,9 +27,6 @@ iq_method_mapping <- tibble(
   treat_as = c("base_iq_full_scale", "base_iq_perceptual", "base_iq_perceptual", "base_iq_full_scale", "base_iq_full_scale", 
                "base_iq_full_scale", "base_iq_perceptual", "base_iq_perceptual", "base_vabs_abc_ss", 
                "base_iq_perceptual", "base_iq_full_scale", "base_iq_full_scale", "base_iq_full_scale", "base_iq_perceptual"))
-
-data_folder <- here::here(raw_data, "ELENA")
-data_raw <- readxl::read_xlsx(here::here(data_folder, "ELENA_DATA_20240613_protege.xlsx")) 
 
 data_raw |> count(calcul_bestQDV0)
 
@@ -129,7 +131,7 @@ wave1_predictors <- data |>
   select(ID, 
          base_ados_css_rrb = ADOS_scoreCOMPRRBV0,
          base_ados_css_sa = ADOS_scoreCOMPSAV0,
-         base_vabs_abc_ae = TOTALCOMPOSITEV0
+         base_vabs_abc_ss = TOTALCOMPOSITEV0
   ) |> 
   left_join(wave1_iq)
 
@@ -137,7 +139,7 @@ wave2_predictors <- data |> select(
   ID,
   base_ados_css_rrb = ADOS_scoreCOMPRRBV2,
   base_ados_css_sa = ADOS_scoreCOMPSAV2,
-  base_vabs_abc_ae = TOTALCOMPOSITEV2
+  base_vabs_abc_ss = TOTALCOMPOSITEV2
 ) |> 
   left_join(wave2_iq)
 

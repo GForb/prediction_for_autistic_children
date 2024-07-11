@@ -7,16 +7,20 @@ x_values <- seq(-1, 0.999, length.out = 1000)
 # Calculate y values for the function -log(1-x)
 y_values <- -log(1 - x_values)
 
+
+
 fisher_z_values <- DescTools::FisherZ(x_values)
 logit <- log(x_values / (1 - x_values))
 # Create a data frame for plotting
-data <- data.frame(x = x_values, y = y_values, z = fisher_z_values, l = logit)
+data <- data.frame(x = x_values, y = y_values, z = fisher_z_values, l = logit, linear = x_values)
 
 # Plot the function using ggplot2
 ggplot(data, aes(x = x, y = y)) +
   geom_line(color = "blue") +
   geom_line(aes(x = x, y = z), color = "red") +
   geom_line(aes(x = x, y = l), color = "black") +
+  geom_line(aes(x = x, y = linear), color = "purple") +
+  
   labs(title = "Plot of -log(1-x)",
        x = "x",
        y = "-log(1-x)") +

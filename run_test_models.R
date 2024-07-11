@@ -28,8 +28,8 @@ analysis_spec_single_timepoint <- tibble(outcome = "sdq_emot_p",
   pivot_longer(cols = starts_with("st"), names_to = "model_name", values_to = "model_function") |>
   mutate(
     analysis_name = glue::glue("{model_name}_{outcome}") |> as.character(),
-    log_file = here::here(log_folder, paste0(analysis_name, ".log")),
-    do_file = here::here(do_folder, paste0(analysis_name, ".do")),
+    log_file = here::here(log_folder, analysis_name),
+    do_file = here::here(do_folder, analysis_name),
     data = list(analysis_data_wide),
     predictor_set = "pred_full"
   )
@@ -73,6 +73,15 @@ analysis_spec |>
 
 create_full_results_table(results_folder)
 
+full_results <- readRDS(here::here(results_folder, "results_meta_analysis.rds"))
+full_results_long <- readRDS(here::here(results_folder, "results_meta_analysis_long.rds"))
+
+full_results_long <- readRDS(here::here(results_folder, "results_meta_analysis_long.rds"))
+full_results_long |> print(n = 100)
+
+full_results |> select(model,intercept_est_method,  starts_with("r_squared"), starts_with("rmse"), starts_with("calib_slope"), starts_with("calib_itl"))
+
+full_results_long |> select(metric, est, est)
 
 single_model <- readRDS(here::here(results_folder, "st_ri_study_sdq_emot_p_average.rds"))
 

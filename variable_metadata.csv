@@ -44,6 +44,6 @@ base_ados_css_sa,0,10,integer,0,ADOD CSS SA,ADOS CSS Social Affect,1,1,1,0,0
 vabs_dls_ae,0,20,any,0,VABS DLS,VABS Daily Living Skills (AE Years),0,0,1,0,1
 vabs_com_ae,0,20,any,0,VABS Com,VABS Communication (AE Years),0,0,1,0,1
 vabs_soc_ae,0,20,any,0,VABS Soc,VABS Socialisation (AE Years),0,0,1,0,1
-base_vabs_abc_ae,1,240,any,0,VABS ABC,VABS Total - Age Equivalent,0,1,0,1,0
+base_vabs_abc_ss,1,240,any,0,VABS ABC,VABS Total - Age Equivalent,0,1,0,1,0
 base_adi_65,0,3,integer,1,Current Friendship,Current Friendship (ADI Item 65),0,1,1,0,0
 iq_cat,0,10,integer,1,IQ (catagorical),IQ (catagorical),0,0,0,1,0

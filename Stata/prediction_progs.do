@@ -32,10 +32,18 @@ syntax name, ///
 		if "`cross_validation'" != "" {
 			di "creating folds"
 			cap drop fold_numeric
-			cap drop fold
+			cap drop fold_string
 			splitsample, generate(fold_numeric)  cluster(ID) nsplit(`n_cv_folds')
 	
-			tostring fold_numeric, gen(fold)
+			tostring fold_numeric, gen(fold_string)
+			
+			if `count' == 1 {
+				gen fold = fold_string
+			} 
+			else {
+				replace fold = fold_string
+			}
+			
 			local random_split "random_split"
 			local namelist fold
 		}	
@@ -115,7 +123,7 @@ syntax varname, ///
 			di "making predictions for random split"
 			est_intercept_get_pred_st `varlist', hold_out_fold(`hold_out_fold') ///
 				 model_name(model) model_command(`model_command') ///
-				 pred_var_name(pred) int_est_marker(`int_est_marker') ///
+				 pred_var_name(pred_cv) int_est_marker(`int_est_marker') ///
 				 `random_split' `random_study' ///
 				 model_code(`model_code') model_options(`model_options') 
 	}
@@ -221,7 +229,7 @@ syntax varname, ///
 		est_intercept_get_pred `varlist', hold_out_fold(`hold_out_fold') ///
 			 predictor_waves(`predictor_waves') out_wave(`out_wave') ///
 			 model_name(model)  ///
-			 pred_var_name(pred) int_est_marker(`int_est_marker') ///
+			 pred_var_name(pred_cv) int_est_marker(`int_est_marker') ///
 			 random_split `random_study' ///
 			 model_code(`model_code') model_options(`model_options')  ///
 			 intercept_est(estimate)

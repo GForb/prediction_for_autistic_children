@@ -18,7 +18,6 @@ model_pred_gsem_ri_study_rs_id <- function(data, outcome, predictors, intercept_
     {model_code}, from(simple)
   ")
   
-  
   analysis_code <- glue::glue("
   get_all_preds {study_var}, ///
       model_code({model_code}) ///
@@ -31,14 +30,16 @@ model_pred_gsem_ri_study_rs_id <- function(data, outcome, predictors, intercept_
     	simple_model_options({simple_model_options})
     ")
   
+
+  
   run_stata_code(data = data,
                  log_file = log_file,
                  stata_prog_source = stata_prog_source,
                  make_spline = make_spline,
                  analysis_code = analysis_code,
+                 int_valid_code = int_valid_code,
                  run_model = run_model,
                  do_file = do_file)
-  
 }
 
 
@@ -279,49 +280,4 @@ model_pred_gsem_ri_study <- function(data, outcome, predictors, intercept_est, l
                  run_model = run_model,
                  do_file = do_file)
 }
-
-
-
-
-
-run_stata_code <- function(data, log_file, stata_prog_source, make_spline, run_model, analysis_code, do_file = NULL) {
-
-  stata_code <- glue::glue("
-    
-    cap log close results_log
-    log using \"{log_file}\", text replace name(results_log)
-    
-    qui do \"{stata_prog_source}\"
-    
-    {make_spline}
-
-*********************** Running model on whole populaiton ***********************
-    {run_model}
-
-*********************** Validating ***********************
-       
-    {analysis_code}
-    
-    log close results_log
-
-  ")
-  
-  if(!is.null(do_file)) {
-    print("writing do file")
-    print(do_file)
-    writeLines(stata_code, do_file)
-  }
-  
-  print("THIS IS THE STATA CODE")
-  print(stata_code)
-  cat("\n \n \n")
-  
-  
-  results <-  RStata::stata(stata_code, data.in = data, data.out = TRUE)
-
-  results  |> select(ID, study, starts_with("pred"), actual = starts_with("actual"), everything())
-  
-}
-
-
 
