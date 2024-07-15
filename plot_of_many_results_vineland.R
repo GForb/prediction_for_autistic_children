@@ -5,7 +5,7 @@ results_folder <- here::here(data_and_outputs, "Results", "VABS", "Prelim")
 full_data <- readRDS(here::here(results_folder, "results_meta_analysis_long.rds")) 
 
 processed_data <- full_data |>
-  filter(intercept_est_method == "average",
+  filter(intercept_est_method == "estimate_cv",
          predictor_set != "pred_init") |> 
   filter(!(model == "st_fi_study_mi" & predictor_set == "pred1")) |> 
   mutate(single_multi = case_when(
@@ -20,7 +20,7 @@ processed_data <- full_data |>
       TRUE ~ single_multi),
     label = paste(single_multi, predictor_set_label, sep = "")) |> 
          arrange(single_multi, predictor_set) |> 
-           mutate(
+    mutate(
              position =  
                label |> 
                factor(
@@ -36,51 +36,29 @@ processed_data <- full_data |>
                as.numeric())
            
 
-
 # Print the processed data
-plot_data <- processed_data |> filter(outcome == "vabs_dls_ae") 
 
-vline_data <- tibble(metric = full_data$metric |> unique(),
-                     vline_x = c(1, 
-                                 0, 
-                                 plot_data |> filter(metric == "r_squared") |> pull(est) |> max(na.rm  = TRUE),
-                                 plot_data |> filter(metric == "rmse") |> pull(est) |> min(na.rm  = TRUE)))
+processed_data |> 
+  plot_many_ma_by_metric(outcome = "vabs_dls_ae", diamond_height = 0.1)
 
-plot_data |> filter(outcome == "vabs_dls_ae") |>  plot_many_ma(diamond_height = 0.1) + facet_grid(cols = vars(metric), scales = "free_x") + 
-  geom_vline(data = vline_data, aes(xintercept = vline_x), linetype = "dashed", color = "red")
+processed_data |> 
+  plot_many_ma_by_metric(outcome = "vabs_soc_ae", diamond_height = 0.1)
 
-plot_data <- processed_data |> filter(outcome == "vabs_com_ae") 
+processed_data |> 
+  plot_many_ma_by_metric(outcome = "vabs_com_ae", diamond_height = 0.1)
 
-vline_data <- tibble(metric = full_data$metric |> unique(),
-                     vline_x = c(1, 
-                                 0, 
-                                 plot_data |> filter(metric == "r_squared") |> pull(est) |> max(na.rm  = TRUE),
-                                 plot_data |> filter(metric == "rmse") |> pull(est) |> min(na.rm  = TRUE)))
+processed_data_by_outcome <- processed_data |> 
+  filter(model == "st_fi_study") |> 
+  mutate( 
+    label = get_label(outcome), 
+    position =  label |>  factor() |>  as.numeric()
+  )
 
-plot_data |> filter(outcome == "vabs_com_ae") |>  plot_many_ma(diamond_height = 0.1) + facet_grid(cols = vars(metric), scales = "free_x") + 
-  geom_vline(data = vline_data, aes(xintercept = vline_x), linetype = "dashed", color = "red")
+processed_data_by_outcome |> 
+  plot_many_ma_by_metric(diamond_height = 0.1)
 
 
+myOutcome = processed_data_by_outcome |> pull(outcome) |> unique()
 
-plot_data <- processed_data |> filter(outcome == "vabs_soc_ae") 
-
-vline_data <- tibble(metric = full_data$metric |> unique(),
-                     vline_x = c(1, 
-                                 0, 
-                                 plot_data |> filter(metric == "r_squared") |> pull(est) |> max(na.rm  = TRUE),
-                                 plot_data |> filter(metric == "rmse") |> pull(est) |> min(na.rm  = TRUE)))
-
-plot_data |> filter(outcome == "vabs_soc_ae") |>  plot_many_ma(diamond_height = 0.1) + facet_grid(cols = vars(metric), scales = "free_x") + 
-  geom_vline(data = vline_data, aes(xintercept = vline_x), linetype = "dashed", color = "red")
-
-
-# Many models
-
-# By outcome
-processed_data <- full_data |>
-  filter(intercept_est_method == "estimate",
-         metric == "r_squared",
-         outcome = "vabs_dls_ae") |> 
-  select(outcome, est, ci.lb, ci.ub, pi.lb, pi.ub) |>
-  mutate(label = get_label(outcome , label_no = 1),
-         position = factor(label) |> as.numeric() )
+processed_data_by_outcome
+   

@@ -8,7 +8,9 @@ quest_w1_data <- haven::read_dta(here::here(data_folder, "QUEST1_masterfile.dta"
 w1_predictors <- quest_w1_data |> 
   select(ID, 
          base_maternal_education = t1_edn_best_Alevels,
-         base_imd_decile = t1_depriv_index ) # find out what index
+         base_imd_decile = t1_depriv_index,
+         base_ld_w1 = t1_IQ_gp,
+         base_iq_full_scale_w1 = t1_rIQ) # find out what index
 
 quest_w2_data <- haven::read_dta(here::here(data_folder, "QUEST2_masterfile.dta")) |> 
   mutate(
@@ -55,7 +57,9 @@ predictors <- quest_w2_data |>
          base_imd_decile = base_imd_decile/10,
          base_iq_standard = case_when(base_iq_standard == 1 ~ 1,
                                       base_iq_standard >1 ~ 0),
-         base_maternal_education = base_maternal_education-1) |> 
+         base_maternal_education = base_maternal_education-1,
+         base_ld = case_when(is.na(base_iq_full_scale) ~  1 - base_ld_w1,
+                             !is.na(base_iq_full_scale) ~ if_else(base_iq_full_scale <70, 1,0))) |> 
   left_join(t2_ados, by = "ID") |> 
   left_join(t2_raw |> select(ID, starts_with("base")), by = "ID")
 

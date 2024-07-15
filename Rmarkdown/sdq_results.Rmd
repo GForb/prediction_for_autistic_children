@@ -137,10 +137,7 @@ by_study <- data_to_summarise |>
 ```
 ## Model results
 
-
-
-
-As pre-specified (rather generously), I have re-estimated intercepts in test data for model validation. This means different things for different models. In the single timepoint model the average outcome and re-estimation leads to perfect calibration in the large. In the random intercept model the intercept is the intercept across all waves, re-estimation does not lead to perfect calibration in the large..
+Intercepts are re-estimated in test data for model validation. I have used cross validation to estmate the intercepts. This means different things for different models. In the single timepoint model the average outcome and re-estimation leads to perfect calibration in the large. In the random intercept model the intercept is the intercept across all waves, re-estimation does not lead to perfect calibration in the large..
 
 For the random intercept model predictions are made using up to 2 waves of data to estiamte the individual's random intercept. The random intercept is then used to predict the outcome at the outcome wave. Model performance is assessed comparing predicted and observed outcomes at the outcome wave.
 
@@ -155,23 +152,6 @@ intercept_est_methods <- c("estimate", "average")
 outcomes <- c("sdq_emot_p", "sdq_cond_p", "sdq_hyp_p", "sdq_pro_p", "sdq_peer_p") # 
 
 
-full_results <- readRDS(here::here(results_folder, "results_meta_analysis.rds")) |> 
-  select(-starts_with("tau"), -starts_with("meta_analysis"), -analysis_name) |> 
-  filter(predictor_set == "pred_full")
-
-
-  for(myOut in outcomes){
-    print(get_label(myOut)[[1]])
-    
-    full_results |>   
-      arrange(intercept_est_method) |>
-      filter(outcome == myOut) |> 
-      select(-outcome) |> 
-      select( model ,intercept = intercept_est_method, r_squared, everything() , -predictor_set) |> 
-      flextable::flextable() |>
-      flextable::autofit() |> 
-      flextable_to_rmd()
-  }
   
 ```
 

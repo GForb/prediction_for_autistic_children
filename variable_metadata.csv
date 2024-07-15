@@ -1,49 +1,49 @@
-﻿variable_name,min,max,values,sum_cat,label1,label2,sdq_predictor,cbcl_predictor,vabs_predictor,imputation_var,outcome
-ID,,,any,0,ID,Participant ID,0,0,0,0,0
-wave,-10,10,integer,0,Wave,Wave,0,0,0,0,0
-base_wave,0,10,integer,0,Baseline,Baseline,0,0,0,0,0
-out_wave,0,10,integer,0,Outcome,Outcome,0,0,0,0,0
-base_sex,0,1,integer,1,Female,Female,1,1,1,0,0
-age,0,50,any,0,Age (years),Age (years),1,1,1,0,0
-fu_length,0,20,any,0,Follow Up,Length of follow up,0,0,0,0,0
-age_out,0,50,any,0,Age (years),Age (years),0,0,0,0,0
-base_ethnicity,0,1,integer,1,Ethnicity,Any white ethnicity,1,1,1,0,0
-autistic_any_wave,0,1,integer,0,Autistic (any wave),Autistic (any wave),0,0,0,0,0
-sdq_tot_p,0,40,any,0,SDQ Total,SDQ Total,0,0,0,0,0
-sdq_cond_p,0,10,any,0,SDQ Cond.,SDQ Conduct problems,1,0,0,0,1
-sdq_peer_p,0,10,any,0,SDQ Peer,SDQ Peer problems,1,0,0,0,1
-sdq_pro_p,0,10,any,0,SDQ Social,SDQ Pro-social,1,0,0,0,1
-sdq_hyp_p,0,10,any,0,SDQ Hyper,SDQ Hyperactivity,1,0,0,0,1
-sdq_emot_p,0,10,any,0,SDQ Emot.,SDQ Emotional,1,0,0,0,1
-iq_performance,1,180,any,0,PIQ,Performance IQ,0,0,0,0,0
-iq_verbal,1,180,any,0,VIQ,Verbal IQ,0,0,0,0,0
-base_iq_full_scale,1,200,any,0,FSIQ,Full Scale IQ,1,1,1,0,0
-base_iq_standard,0,1,integer,1,Standard test,Standard method of asseement,1,1,1,0,0
-base_iq_perceptual,1,180,any,0,IQ Perceptual Reasoning,IQ Perceptual Reasoning,0,1,1,1,0
-base_iq_matrix,1,200,any,0,IQ Matrix Reasoning,IQ Matrix Reasoning,0,0,0,1,0
-cbcl_ext_total,0,100,any,0,CBCL Externalising,CBCL Externalising Total,0,0,0,0,0
-cbcl_ext_tscore,0,100,any,0,CBCL Externalising,CBCL Externalising T-score,0,0,0,0,0
-cbcl_int_total,0,100,any,0,CBCL Internalising,CBCL Internalising Total,0,0,0,0,0
-cbcl_int_tscore,0,100,any,0,CBCL Internalising,CBCL Internalising T-score,0,0,0,0,0
-cbcl_aff,0,26,integer,0,CBCL Affective,CBCL DSM Affective Problems,,1,0,0,1
-cbcl_anx,0,12,integer,0,CBCL Anxiety,CBCL DSM Axiety Problems,,1,0,0,1
-cbcl_som,0,14,integer,0,CBCL Somatic,CBCL DSM Somatic Problems,,1,0,0,1
-cbcl_adhd,0,40,integer,0,CBCL ADHD,CBCL DSM ADHD Problems,,1,0,0,1
-cbcl_odd,0,10,integer,0,CBCL ODD,CBCL DSM Oppositional Defiant Problems,,1,0,0,1
-cbcl_con,0,34,integer,0,CBCL Conduct,CBCL DSM Conduct Problems,,1,0,0,1
-base_hearing_impairment,0,1,integer,1,Hearing Impariment,Hearing Impariment,1,1,1,0,0
-base_visual_impairment,0,1,integer,1,Visual Impairment,Visual Impairment,1,1,1,0,0
-base_subjective_poverty,0,20,integer,0,Subjective poverty,Subjective poverty,1,0,0,0,0
-base_imd_decile,0,10,any,0,IMD - decile,Index of multiple deprevation - decile,1,0,0,0,0
-base_ld,0,1,integer,1,Intelectual Disability,Intelectual Disability,1,0,0,1,0
-learning_disability_cat,0,5,integer,1,Intelectual Disability - Category,Intelectual Disability - Category,0,0,0,1,0
-base_maternal_education,0,1,integer,1,Maternal Eduation,Maternal Eduation beyond high school,1,1,1,0,0
-base_maternal_mh,0,30,integer,0,Maternal K6,Maternal Mental Health (K6),1,0,0,0,0
-base_ados_css_rrb,0,10,integer,0,ADOS CSS RRB,ADOS CSS Restricted Reppetative Behaviours,1,1,1,0,0
-base_ados_css_sa,0,10,integer,0,ADOD CSS SA,ADOS CSS Social Affect,1,1,1,0,0
-vabs_dls_ae,0,20,any,0,VABS DLS,VABS Daily Living Skills (AE Years),0,0,1,0,1
-vabs_com_ae,0,20,any,0,VABS Com,VABS Communication (AE Years),0,0,1,0,1
-vabs_soc_ae,0,20,any,0,VABS Soc,VABS Socialisation (AE Years),0,0,1,0,1
-base_vabs_abc_ss,1,240,any,0,VABS ABC,VABS Total - Age Equivalent,0,1,0,1,0
-base_adi_65,0,3,integer,1,Current Friendship,Current Friendship (ADI Item 65),0,1,1,0,0
-iq_cat,0,10,integer,1,IQ (catagorical),IQ (catagorical),0,0,0,1,0
+﻿variable_name,min,max,values,sum_cat,label1,label2,label3,sdq_predictor,cbcl_predictor,vabs_predictor,imputation_var,outcome
+ID,,,any,0,ID,Participant ID,,0,0,0,0,0
+wave,-10,10,integer,0,Wave,Wave,,0,0,0,0,0
+base_wave,0,10,integer,0,Baseline,Baseline,,0,0,0,0,0
+out_wave,0,10,integer,0,Outcome,Outcome,,0,0,0,0,0
+base_sex,0,1,integer,1,Female,Female,,1,1,1,0,0
+age,0,50,any,0,Age (years),Age (years),,1,1,1,0,0
+fu_length,0,20,any,0,Follow Up,Length of follow up,,0,0,0,0,0
+age_out,0,50,any,0,Age (years),Age (years),,0,0,0,0,0
+base_ethnicity,0,1,integer,1,Ethnicity,Any white ethnicity,,1,1,1,0,0
+autistic_any_wave,0,1,integer,0,Autistic (any wave),Autistic (any wave),,0,0,0,0,0
+sdq_tot_p,0,40,any,0,SDQ Total,SDQ Total,,0,0,0,0,0
+sdq_cond_p,0,10,any,0,SDQ Cond.,SDQ Conduct problems,Conduct,1,0,0,0,1
+sdq_peer_p,0,10,any,0,SDQ Peer,SDQ Peer problems,Peer,1,0,0,0,1
+sdq_pro_p,0,10,any,0,SDQ Pro-social,SDQ Pro-social,Pro-social,1,0,0,0,1
+sdq_hyp_p,0,10,any,0,SDQ Hyper,SDQ Hyperactivity,Hyperactivity,1,0,0,0,1
+sdq_emot_p,0,10,any,0,SDQ Emot.,SDQ Emotional,Emotional,1,0,0,0,1
+iq_performance,1,180,any,0,PIQ,Performance IQ,,0,0,0,0,0
+iq_verbal,1,180,any,0,VIQ,Verbal IQ,,0,0,0,0,0
+base_iq_full_scale,1,200,any,0,FSIQ,Full Scale IQ,,1,1,1,0,0
+base_iq_standard,0,1,integer,1,Standard test,Standard method of asseement,,1,1,1,0,0
+base_iq_perceptual,1,180,any,0,IQ Perceptual Reasoning,IQ Perceptual Reasoning,,0,1,1,1,0
+base_iq_matrix,1,200,any,0,IQ Matrix Reasoning,IQ Matrix Reasoning,,0,0,0,1,0
+cbcl_ext_total,0,100,any,0,CBCL Externalising,CBCL Externalising Total,,0,0,0,0,0
+cbcl_ext_tscore,0,100,any,0,CBCL Externalising,CBCL Externalising T-score,,0,0,0,0,0
+cbcl_int_total,0,100,any,0,CBCL Internalising,CBCL Internalising Total,,0,0,0,0,0
+cbcl_int_tscore,0,100,any,0,CBCL Internalising,CBCL Internalising T-score,,0,0,0,0,0
+cbcl_aff,0,26,integer,0,CBCL Affective,CBCL DSM Affective Problems,Affective,,1,0,0,1
+cbcl_anx,0,12,integer,0,CBCL Anxiety,CBCL DSM Axiety Problems,Anxiety,,1,0,0,1
+cbcl_som,0,14,integer,0,CBCL Somatic,CBCL DSM Somatic Problems,Somatic,,1,0,0,1
+cbcl_adhd,0,40,integer,0,CBCL ADHD,CBCL DSM ADHD Problems,ADHD,,1,0,0,1
+cbcl_odd,0,10,integer,0,CBCL ODD,CBCL DSM Oppositional Defiant Problems,ODD,,1,0,0,1
+cbcl_con,0,34,integer,0,CBCL Conduct,CBCL DSM Conduct Problems,Conduct,,1,0,0,1
+base_hearing_impairment,0,1,integer,1,Hearing Impariment,Hearing Impariment,,1,1,1,0,0
+base_visual_impairment,0,1,integer,1,Visual Impairment,Visual Impairment,,1,1,1,0,0
+base_subjective_poverty,0,20,integer,0,Subjective poverty,Subjective poverty,,1,0,0,0,0
+base_imd_decile,0,10,any,0,IMD - decile,Index of multiple deprevation - decile,,1,0,0,0,0
+base_ld,0,1,integer,1,Intelectual Disability,Intelectual Disability,,1,0,0,1,0
+learning_disability_cat,0,5,integer,1,Intelectual Disability - Category,Intelectual Disability - Category,,0,0,0,1,0
+base_maternal_education,0,1,integer,1,Maternal Eduation,Maternal Eduation beyond high school,,1,1,1,0,0
+base_maternal_mh,0,30,integer,0,Maternal K6,Maternal Mental Health (K6),,1,0,0,0,0
+base_ados_css_rrb,0,10,integer,0,ADOS CSS RRB,ADOS CSS Restricted Reppetative Behaviours,,1,1,1,0,0
+base_ados_css_sa,0,10,integer,0,ADOD CSS SA,ADOS CSS Social Affect,,1,1,1,0,0
+vabs_dls_ae,0,20,any,0,VABS DLS,VABS Daily Living Skills (AE Years),Daily Living Skills,0,0,1,0,1
+vabs_com_ae,0,20,any,0,VABS Com,VABS Communication (AE Years),Communciation,0,0,1,0,1
+vabs_soc_ae,0,20,any,0,VABS Soc,VABS Socialisation (AE Years),Socialisation,0,0,1,0,1
+base_vabs_abc_ss,1,240,any,0,VABS ABC,VABS Total - Age Equivalent,,0,1,0,1,0
+base_adi_65,0,3,integer,1,Current Friendship,Current Friendship (ADI Item 65),,0,1,1,0,0
+iq_cat,0,10,integer,1,IQ (catagorical),IQ (catagorical),,0,0,0,1,0

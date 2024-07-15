@@ -1,0 +1,108 @@
+---
+params: 
+  set_title: ""
+  name_dataset: ""
+  name_var_metadata: "var_metadata"
+  outcome: ""
+title: "`r params$outcome`"
+editor: source
+---
+
+
+
+```{r,include=FALSE}
+
+library(ggplot2)
+library(stringr)
+source(here::here("R scripts/config.R")) 
+
+results_folder <- here::here(data_and_outputs, "Results", outcome, "Prelim")
+full_data <- readRDS(here::here(results_folder, "results_meta_analysis_long.rds")) 
+
+metrics_to_report <- c("calib_slope", "r_squared_transformed", "rmse")
+
+processed_data <- full_data |>
+  filter(intercept_est_method == "estimate_cv",
+         predictor_set != "pred_init") |> 
+  filter(!(stringr::str_ends(model, "mi") & predictor_set == "pred1")) |> 
+  filter(!grepl("3pred$", analysis_name)) |> 
+  filter(metric %in% metrics_to_report) |> 
+  mutate(pi.lb = case_when(pi.lb < 0 ~ 0, 
+                           TRUE ~ pi.lb))
+
+primary_predictor_sets <- c(VABS = "pred3", CBCL = "pred1", SDQ = "pred3")
+
+primary_predictor_set <- primary_predictor_sets[outcome]
+
+coulours <- c(VABS = "turquoise4", CBCL = "darkorange", SDQ = "darkorchid")
+my_colour <- coulours[outcome]
+outcomes  <- processed_data |> pull(outcome) |> unique()
+
+```
+
+## Headline plot - single timepoint
+```{r, echo = FALSE}
+st_models = c(SDQ = "st_ri_study", VABS = "st_fi_study_mi", CBCL = "st_fi_study")
+st_model = st_models[outcome]
+
+processed_data_by_outcome_st <- processed_data |> 
+  filter(model == st_model,
+         predictor_set == primary_predictor_set) |> 
+  mutate( 
+    label = get_label(outcome, label_no = 3), 
+    position =  label |>  factor() |>  as.numeric()
+  )
+outcome_label = ifelse(outcome == "VABS",paste0(outcome, " - age equivalent (years)"),  outcome)
+
+processed_data_by_outcome_st |> 
+  plot_many_ma_by_metric(my_colour = my_colour, diamond_height = 0.2) +
+  labs(title = outcome_label, 
+       subtitle = "Single-timepoint, all predictors")  +
+  theme_linedraw(base_size = 18)
+
+
+```
+
+## R-squared, by outcome and method
+```{r, echo = FALSE}
+processed_data_by_model <- processed_data |> 
+ mutate(single_multi = case_when(
+    grepl("^st", analysis_name)  ~ "Single-timepoint, \n ",
+    grepl("^mt", analysis_name) & grepl("ri$", model)   ~ "Multi-timepoint, \n random intercept, \n ",
+    grepl("^mt", analysis_name) & grepl("rs$", model) ~ "Multi-timepoint, \n random slope, \n "),
+         predictor_set_label = case_when(predictor_set == "pred1" | predictor_set == "pred1_mt" ~ "Base predictors",
+                                         predictor_set == "pred2" ~ "Base + Individual",
+                                         predictor_set == "pred3" ~ "Base + Individual + Contextual"),
+    single_multi = case_when( 
+      grepl("^mt", analysis_name) & grepl("3pred$", analysis_name) ~ paste0(single_multi, "3tp, "),
+      TRUE ~ single_multi),
+    label = paste(single_multi, predictor_set_label, sep = "")) |> 
+         arrange(single_multi, predictor_set) |> 
+    mutate(
+             position =  
+               label |> 
+               factor(
+                 levels = c(
+                   "Multi-timepoint, \n random intercept, \n Base predictors",     
+                   "Multi-timepoint, \n random slope, \n Base predictors",         
+                   "Single-timepoint, \n Base + Individual + Contextual", 
+                   "Single-timepoint, \n Base + Individual"  , 
+                   "Single-timepoint, \n Base predictors"   
+               )) |>   
+               as.numeric())
+
+```
+
+```{r, echo = FALSE}
+processed_data_by_model |> filter(metric == "r_squared_transformed") |> 
+  plot_many_ma_by_outcome() +
+  ggtitle("R-squared, by outcome and model")
+```
+
+## Plots by outcome
+```{r, echo = FALSE}
+walk(outcomes, ~print(plot_many_ma_by_metric(data = processed_data_by_model, outcome= .x)))
+
+```
+
+

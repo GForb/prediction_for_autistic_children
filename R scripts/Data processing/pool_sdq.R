@@ -17,8 +17,13 @@ pooled_data_sdq$pooled_data_long |>
   group_by(study) |> 
   summarise(mean_obs = mean(n_obs))
 
+pooled_data_sdq$pooled_data_long <- pooled_data_sdq$pooled_data_long |> 
+  mutate(base_ld = case_when(is.na(base_ld)  & !is.na(base_iq_full_scale) ~ if_else(base_iq_full_scale <70, 1,0),
+                              TRUE ~ base_ld))
 
-
+pooled_data_sdq$pooled_data_wide <- pooled_data_sdq$pooled_data_wide |> 
+  mutate(base_ld = case_when(is.na(base_ld) & !is.na(base_iq_full_scale) ~ if_else(base_iq_full_scale <70, 1,0),
+                              TRUE ~ base_ld))
 
 # Think about implications of most trajectory information being between individual in the longitiudinal models...
 pooled_data_sdq$pooled_data_wide  |> count(autism)

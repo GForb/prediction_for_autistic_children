@@ -19,12 +19,14 @@ get_meta_analysis_df <- function(model_name_spec) {
   long_results <- results_df |> 
     left_join(model_info, by = "file_name") |>
     select(-file_name) |>
-    mutate(tau2 = sqrt(tau2)) # not changing name as it is used compress columns, name corrected in select statement below
+    mutate(tau = sqrt(tau2)) |> 
+    select(-tau2) |> 
+    back_transform_rsq_cols() 
   
   wide_results <- long_results |> 
     IPDPredictR:::compress_columns() |> 
-    mutate(summary = paste0(round(est, 2), " ", ci, " [", round(tau2, 2), "]")) |> 
-    select(outcome, model,predictor_set, intercept_est_method, metric, summary, meta_analysis, tau = tau2, analysis_name) |> 
+    mutate(summary = paste0(round(est, 2), " ", ci, " [", round(tau, 2), "]")) |> 
+    select(outcome, model,predictor_set, intercept_est_method, metric, summary, meta_analysis, tau, analysis_name) |> 
     pivot_wider(names_from = metric, values_from = all_of(c("summary", "meta_analysis", "tau")))  |> 
     arrange(outcome) |> 
     select(outcome  ,   model ,  predictor_set,    intercept_est_method,  everything() ) |> 
@@ -39,31 +41,31 @@ get_meta_analysis_df <- function(model_name_spec) {
 
 run_meta_analysis <- function(results_name, multiple_imputed_data = NULL) {
   print(results_name)
-  results <- readRDS(here::here(results_folder, results_name))
+  meta_analysis_df <- tibble(metric = c("calib_slope", "calib_itl", "r_squared", "r_squared_transformed" , "rmse"))
   
   
-  if(is.null(multiple_imputed_data))  {
-    multiple_imputed_data <- FALSE
-  } else  if(is.na(multiple_imputed_data))  {
-    multiple_imputed_data <- FALSE
-  } else {
-    multiple_imputed_data <- TRUE
-  }
+  try({
+    results <- readRDS(here::here(results_folder, results_name))
+    if(check_results(results)){
+      if(is.null(multiple_imputed_data))  {
+        multiple_imputed_data <- FALSE
+      } else  if(is.na(multiple_imputed_data))  {
+        multiple_imputed_data <- FALSE
+      } else {
+        multiple_imputed_data <- TRUE
+      }
+      
+      if(multiple_imputed_data){
+        meta_analysis_df <- run_meta_analysis_mi(results)
+      } else {
+        meta_analysis_df <- run_meta_analysis_single_data(results)
+      }
+    }
+  })
   
-
-  
-
-  if(multiple_imputed_data){
-    meta_analysis_df <- run_meta_analysis_mi(results)
-  } else {
-    meta_analysis_df <- run_meta_analysis_single_data(results)
-  }
-
   meta_analysis_df <- meta_analysis_df |> mutate(file_name = results_name) 
-  
   return(meta_analysis_df)
-  
-
+    
 }
 
 run_meta_analysis_mi <- function(results) {
@@ -79,9 +81,6 @@ run_meta_analysis_mi <- function(results) {
 }
 
 run_meta_analysis_single_data <- function(results) {
-  if(!check_results(results)){
-    meta_analysis_df <- tibble(metric = c("calib_slope", "calib_itl", "r_squared", "r_squared_transformed" , "rmse"))
-  } else {
     meta_analysis_list <- IPDPredictR:::meta_analyse_predictions_cont(predictions = results, study_var_name = "study") 
     meta_analysis_df <- meta_analysis_list$results_df |> tibble()
     meta_analysis <- tibble(meta_analysis = meta_analysis_list$results_list)
@@ -89,8 +88,7 @@ run_meta_analysis_single_data <- function(results) {
     by_study <- tibble(by_study = list(meta_analysis_list$by_study))
     
     meta_analysis_df <- meta_analysis_df |> bind_cols(meta_analysis) |> bind_cols(by_study)
-  }
-
+  
     return(meta_analysis_df)
 }
 

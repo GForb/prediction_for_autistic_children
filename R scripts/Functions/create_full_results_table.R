@@ -27,7 +27,7 @@ create_full_results_table <- function(results_folder) {
 
   full_results_long <- results_all$long_results |> 
     left_join(results_cv$long_results, by = c("analysis_name", "metric"), suffix = c("", "_cv")) |> 
-    select(metric, est, est_cv, everything())
+    select(metric, est, est_cv, se, tau,  everything())
   
   
   saveRDS(full_results, file = here::here(results_folder, "results_meta_analysis.rds"))

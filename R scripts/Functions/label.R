@@ -6,15 +6,14 @@ get_label <- Vectorize(function(variable_name, metadata = var_metadata, label_no
   }
   
   if(sum(metadata$variable_name == variable_name) == 0){
-    return(variable_name)
+    label <- variable_name
   } else {
-    if (label_no ==1){
-      metadata$label1[metadata$variable_name == variable_name]
-    } else {
-      metadata$label2[metadata$variable_name == variable_name]
-    }
+     my_var_name <- variable_name
+      var_data <- metadata |> 
+        filter(variable_name == my_var_name)
+     label <-  var_data[,glue::glue("label{label_no}")]
   }
-
+  return(label)
 }, vectorize.args = "variable_name") 
 
 

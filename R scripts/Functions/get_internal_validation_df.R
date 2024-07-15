@@ -19,7 +19,8 @@ get_internal_validation_df  <- function(model_name_spec) {
   long_results <- results_df |> 
     left_join(model_info, by = "file_name") |>
     select(-file_name) |> 
-    mutate(intercept_est_method = "internal validation")
+    mutate(intercept_est_method = "internal validation") |> 
+    back_transform_rsq_cols()
   
   wide_results <- long_results |> 
     mutate(summary = round(est, 2)) |> 
@@ -29,47 +30,48 @@ get_internal_validation_df  <- function(model_name_spec) {
     select(outcome  ,   model ,  predictor_set,    intercept_est_method,  everything() ) |> 
     rename_with(.fn = ~ str_remove(.x, "summary_"), .cols = starts_with("summary")) 
   
+
+  
   return(list(wide_results = wide_results, long_results = long_results))
   
 }
 
 process_cv_results <- function(results_name, multiple_imputed_data = NULL) {
-  print(results_name)
-  results <- readRDS(here::here(results_folder, results_name))
+  results_df <- tibble(metric = c("calib_slope", "calib_itl", "r_squared", "r_squared_transformed" , "rmse"))
   
-  if(is.null(multiple_imputed_data))  {
-    multiple_imputed_data <- FALSE
-  } else  if(is.na(multiple_imputed_data))  {
-    multiple_imputed_data <- FALSE
-  } else {
-    multiple_imputed_data <- TRUE
-  }
-  
-  results_df <- evaluate_cross_validation(results, mi = multiple_imputed_data)|> 
-    mutate(file_name = results_name) 
-  
-  
+  try({
+    results <- readRDS(here::here(results_folder, results_name))
+    if(check_results(results)){
+      if(is.null(multiple_imputed_data))  {
+        multiple_imputed_data <- FALSE
+      } else  if(is.na(multiple_imputed_data))  {
+        multiple_imputed_data <- FALSE
+      } else {
+        multiple_imputed_data <- TRUE
+      }
+      results_df <- evaluate_cross_validation(results, mi = multiple_imputed_data)
+    }
+  })
+  results_df <- results_df |> 
+    mutate(file_name = results_name)
   return(results_df)
   
   
 }
 
 evaluate_cross_validation <- function(results, mi = FALSE) {
-  if(!check_results(results)){
-    results_df <- tibble(metric = c("calib_slope", "calib_itl", "r_squared", "r_squared_transformed" , "rmse"))
+  if(mi){
+    results_df <- results |> 
+      group_by(fold, validation_rep, imp_no) |> 
+      aggregate_cv_results()
   } else {
-    if(mi){
-      results_df <- results |> 
-        group_by(fold, validation_rep, imp_no) |> 
-        aggregate_cv_results()
-    } else {
-      results_df <- results |> 
-        group_by(fold, validation_rep) |> 
-        aggregate_cv_results()
-    }
+    results_df <- results |> 
+      group_by(fold, validation_rep) |> 
+      aggregate_cv_results()
   }
-    
-    return(results_df)
+
+  
+  return(results_df)
 }
 
 aggregate_cv_results <- function(grouped_data) {
@@ -78,7 +80,6 @@ summarised_data <- grouped_data |>
     summarise(performance = list(summarise_performance(pred, actual))) |> 
     unnest(cols = c(performance)) |> 
     ungroup() 
-print(summarised_data)
 
   summarised_data |> 
     pivot_longer(cols = -c(fold, validation_rep), names_to = "metric", values_to = "value") |> 
