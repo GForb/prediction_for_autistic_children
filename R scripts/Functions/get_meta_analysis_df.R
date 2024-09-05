@@ -76,8 +76,19 @@ run_meta_analysis_mi <- function(results) {
     results |> filter(imp_no == my_imp_no) |> run_meta_analysis_single_data() |> mutate(imp_no = my_imp_no)
   }
   results_list <- map(1:n_imp, analse_imp_rep) 
-  bind_rows(results_list) |> pool_est_all_metrics()
+  results_df <- bind_rows(results_list) |> pool_est_all_metrics()
   
+  # 2. Create a by study object and a meta-analysis object - these will *not* match the headline results (i wonder how far out!) but can be used for quick plotting 
+  aggregate_results <- results |> 
+      group_by(ID, study) |>  
+      summarise(pred = mean(pred), actual = mean(actual)) |> 
+      ungroup() |> 
+      as.data.frame()
+  ma_aggregate <- run_meta_analysis_single_data(aggregate_results)
+  
+  results_df <- bind_cols(results_df, ma_aggregate |> select(by_study, meta_analysis))
+  return(results_df)
+
 }
 
 run_meta_analysis_single_data <- function(results) {

@@ -8,13 +8,13 @@ plot_many_ma_by_metric <- function(data, outcome = NULL, my_colour = "black", di
   plot_data <- data |> filter(outcome %in% myOutcome) |>  
     mutate(metric = factor(
       metric, 
-      levels = c("calib_slope", "r_squared_transformed", "rmse"), 
-      labels = c("Calibration \n Slope", "R-squared", "RMSE")))
+      levels = c("calib_itl", "calib_slope", "r_squared_transformed", "rmse"), 
+      labels = c("Calibration \n in the Large", "Calibration \n Slope", "R-squared", "RMSE")))
   
 
 
   vline_data <- tibble(metric = plot_data$metric |> unique(),
-                       vline_x = c(1, 
+                       vline_x = c(1, 0,
                                    data |> filter(metric == "r_squared_transformed", outcome %in% myOutcome) |> pull(est) |> max(na.rm  = TRUE),
                                    data |> filter(metric == "rmse", outcome %in% myOutcome) |> pull(est) |> min(na.rm  = TRUE)))
 

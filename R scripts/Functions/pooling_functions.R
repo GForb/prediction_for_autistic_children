@@ -88,8 +88,7 @@ if(include_acc){
     ~readRDS(here::here(
       data_folder, 
       paste0(.,"_acc.Rds")
-    )) |> mutate(ID = as.character(ID),
-                 study = .)
+    )) |> mutate(ID = as.character(ID))
   ) |> 
     bind_rows() |> 
     mutate(ID = paste0(study, "_", ID)) 

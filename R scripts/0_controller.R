@@ -75,7 +75,7 @@ tictoc::tic()
 create_full_results_table(results_folder)
 tictoc::toc() 
 
-results_folder <- here::here(data_and_outputs, "Results", "CBCL", "Prelim")
+results_folder <- here::here(data_and_outputs, "Results", "SDQ", "Prelim")
 tictoc::tic()
 create_full_results_table(results_folder)
 tictoc::toc() 
@@ -127,3 +127,10 @@ run_results_plot("SDQ")
 run_results_plot("CBCL")
 run_results_plot("VABS")
 
+
+
+# ISCB Charts
+
+template = here::here("Rmarkdown/iscb_charts.Rmd")
+output_file_name  <-  "iscb_charts.html"
+run_results_report(template, output_file_name)

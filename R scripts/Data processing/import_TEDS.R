@@ -25,29 +25,42 @@ data_folder <- here::here(raw_data, "TEDS")
 srs_data <- readRDS(here::here(data_folder, "srs_data.RDS"))
 srs_data |> count(group_splitHTandDx)
 
+
 data  <- haven::read_sav(here::here(data_folder, "TEDS_data_raw.sav")) |> 
   rename(ID = randomtwinid) |> 
   mutate(autism = case_when(
     group_splitHTandDx ==1 ~ "childhood, researcher",
     hdauti1 ==1 | ipldaut1 ==1 | gillaut1 ==1 | gldaut1 ~ "childhood, parent report",
-    u2cexcl05asd1 ==1 | zmhmhddx2h1 ==1 | autism1  >0  ~ "post baseline"
+    u2cexcl05asd1 ==1 | zmhmhddx2h1 ==1 | autism1  >0  ~ "post baseline",
   )) |> 
   filter(!is.na(autism))
 
+in_srs <-  data |> filter(srs ==1, !is.na(SDQ_emotiol)) |> select(ID)
 
+data |> filter(srs ==1, !is.na(SDQ_emotiol)) |> count(autism)
 
-ids_autism_status <- data |> select(
+ids_autism_status_all <- data |> select(
   ID, 
   family = randomfamid,
   pick_twin = random,
   autism
-) 
+) |> 
+  right_join(in_srs) |> group_by(family) |> mutate(n_obs = n()) |> ungroup() 
 
+by_family <- ids_autism_status_all |> pivot_wider(id_cols =family, names_from = pick_twin, values_from = autism, names_prefix = "twin") |> 
+  mutate(my_twin = case_when(is.na(twin1) ~ 0,
+                               is.na(twin0) ~ 1,
+                               twin1 == "post baseline" & twin0 != "post baseline" ~ 0,
+                               twin0 == "post baseline" & twin1 != "post baseline" ~ 1,
+                               TRUE ~ 1
+                               )) 
 
+ids_autism_status <-  ids_autism_status_all |> left_join(by_family |> select(family, my_twin), by = "family") |> filter(pick_twin == my_twin)
 
 ids_autism_status |> count(autism)
+ids_autism_status |> select(family) |> unique()
 
-
+ids_autism_status |> count(autism)
 
 
 cn <- colnames(data)
@@ -166,7 +179,8 @@ sdq_ages |> count(base_wave)
 sdq_ages |> count(out_wave)
 
 sdq_data <- sdq_data |> 
-  left_join(sdq_ages |> select(ID, base_wave, out_wave))
+  left_join(sdq_ages |> select(ID, base_wave, out_wave)) |> 
+  right_join(ids_autism_status |> select(ID, autism))
 
 sdq_acc <- get_age_range_data_sdq(sdq_data |> filter(wave ==base_wave) |> right_join(ids_autism_status), wave2_data = sdq_data |> filter(wave ==out_wave)|> right_join(ids_autism_status))
 
@@ -175,19 +189,13 @@ sdq_acc |> count(include)
 
 TEDS_sdq <- sdq_data |> 
   left_join(sdq_acc |> select(ID, include), by = "ID") |> 
-  left_join(ids_autism_status, by = "ID") |>
   filter(include == "include") |> 
   left_join(predictors, by = "ID") |> 
   mutate(country = "UK",
          study = "TEDS")
 
-TEDS_sdq |> pull(family) |> unique() |> length()
-TEDS_sdq |> pull(ID) |> unique() |> length()
 
-TEDS_sdq |> filter(autism == "childhood, researcher") |> pull(ID) |> unique() |> length()
-TEDS_sdq |> filter(autism == "childhood, researcher") |> pull(family) |> unique() |> length()
 
-TEDS_sdq |> count(base_sex)
 
 check_values(TEDS_sdq)
 

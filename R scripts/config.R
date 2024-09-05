@@ -6,6 +6,8 @@ data_and_outputs <-  Sys.getenv("pfac_path")
 raw_data <- here::here(data_and_outputs, "Raw data")
 derived_data <- here::here(data_and_outputs, "Derived data")
 outputs <- here::here(data_and_outputs, "Outputs")
+thesis_tables <- file.path(outputs, "Thesis Tables")
+thesis_plots <- file.path(outputs, "Thesis Plots")
 
 #devtools::install_github("GForb/IPDPredictR")
 

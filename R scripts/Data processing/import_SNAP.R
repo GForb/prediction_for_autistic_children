@@ -18,7 +18,7 @@ predictors1 <- haven::read_dta(here::here(data_folder, "predictors_12yo.dta")) |
          base_sex = gender-1,
          base_imd_decile = imd_score/10,
          base_vabs_abc_ss = vineland_abc_ss) |> 
-  left_join(iq_data) 
+  left_join(iq_data)
 
 initial_interview <- haven::read_dta(here::here(data_folder, "initial_interview_18apr06.dta")) |> 
   mutate(ID = as.character(idnum)) |>  
@@ -39,7 +39,9 @@ data <- haven::read_dta(here::here(data_folder, "SNAP_12_16_23_forGordon.dta")) 
   mutate(ID = as.character(idnum)) |> 
   left_join(iq_data) |> 
   filter(asdpopsample == 1) 
-  
+
+eligible_ids <- data |> filter(!is.na(SDQ_pemotdis_16)) |> select(ID)
+
 
 hearing_vision <- data |> 
   select(ID) |> 
@@ -81,7 +83,8 @@ predictors2 <- data |>
 
 
 predictors <- predictors1 |> left_join(predictors2)  |> 
-  select(ID, starts_with("base"))
+  select(ID, starts_with("base")) |> 
+  right_join(eligible_ids) 
 
 w0_sdq <- data |>  
   select(
@@ -94,7 +97,8 @@ w0_sdq <- data |>
   ) |> 
   mutate(wave = 0) |> 
   mutate(across(starts_with("sdq"), ~case_when(. == 999 ~ NA, TRUE ~ .))) |> 
-  right_join(predictors1 |> select(ID, age = age12)) 
+  right_join(predictors1 |> select(ID, age = age12)) |> 
+  right_join(eligible_ids) 
 
 
 w1_sdq <- data |>  
@@ -106,10 +110,12 @@ w1_sdq <- data |>
     sdq_peer_p = SDQ_ppeerrel_16 ,
     sdq_pro_p = SDQ_pprosoc_16 
   ) |> 
-  mutate(wave = 1) |> 
   mutate(across(starts_with("sdq"), ~case_when(. == 999 ~ NA, TRUE ~ .))) |> 
   filter(!is.na(sdq_emot_p) | !is.na(sdq_cond_p) | !is.na(sdq_hyp_p) |!is.na(sdq_peer_p) |!is.na(sdq_pro_p)) |> 
-  right_join(age16_data)
+  right_join(age16_data) |> 
+  right_join(eligible_ids) |> 
+  mutate(wave = 1) 
+  
 
 
 

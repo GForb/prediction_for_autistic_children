@@ -83,15 +83,18 @@ Family IDs over 100000 are not TEDS participants, but were included in the SRS s
 
 Notes on data checks: SDQ totals may not be reliable as scores as high as 41 exist. Re-calcualte if used.
 
-There are two sources for SDQ - the main TEDS dta and 
+There are two sources for SDQ - the main TEDS dta and SRS data
 
 Variables that end with 2 often refer to the twin rather than the proband.
 
 There is no data on visual impariment, only hearing impariment. Hearing impariment is taken from age 7.
 
-Not all SDQ items were collected at age 16. The emotional and peer problems subscales were not collected. I'm therefore using the SRS data as final assessment for TEDS. This leads to a lot of people not included. If I inlcude age 16 data I have many more participants but different participants for differen t subscales.
+Not all SDQ items were collected at age 16. The emotional and peer problems subscales were not collected. I'm therefore using the SRS data as final assessment for TEDS. This leads to a lot of people not included. If I include age 16 data I have many more participants but different participants for different sub scales.
 
-I could use different subsets for different subdomains but that will create confusion with results. 
+I could use different subsets for different sub-domains but that will create confusion with results. 
+
+
+I have picked one twin per family where more than one eligible twin. Where one twin has a pre baseline diagnosis I pick that twin. Otherwise pick is random. 
 
 ### Variables measuring cognative function
 lrvtota1 lcg1 lgktota1 lpctot1 lrvtota1 lvctota1

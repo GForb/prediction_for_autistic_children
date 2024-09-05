@@ -59,7 +59,7 @@ data_all <- bind_rows(wave1_data, wave2_data) |> left_join(predictors)
 # Renaming Variables ----
 
 
-k_families_data <- data_all |> mutate(study = "1k_fam",
+k_families_data <- data_all |> mutate(study = "k_families",
                                       country = "UK",
                                       base_wave = 0, 
                                       out_wave = 1,

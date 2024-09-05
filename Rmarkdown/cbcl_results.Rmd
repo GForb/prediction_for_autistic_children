@@ -1,10 +1,11 @@
 ---
-title: "cbcl_results"
+title: "results"
 output: html_document
 date: "2024-05-21"
 ---
 
 ```{r global_options, include=FALSE}
+
 # This is a way to set options for all code chunks at once
 # Note that you can also dynamically control options by setting them to a value
 # copied this from https://stackoverflow.com/questions/33445110/rmarkdown-global-options-vs-opts-chunk we may want to change the figure options
@@ -26,7 +27,7 @@ overall_n <- length(data$ID |> unique())
 
 results_folder <- here::here(data_and_outputs, "Results", "CBCL", "Prelim")
 
-
+myOutcome <- "CBCL"
 ```
 
 ## Summaries
@@ -150,10 +151,8 @@ Changes from the SAP: The random intercept model includes an interaction between
 ### Summary of model results
 
 ```{r, results = 'asis'}
-model_names <- c("results_reg_init", "results_reg")
-intercept_est_methods <- c("estimate", "average")
 outcomes <- c("cbcl_aff", "cbcl_anx", "cbcl_som", "cbcl_adhd", "cbcl_odd", "cbcl_con") # 
-
+model_names <- "st_fi_study"
 
 full_results <- readRDS(here::here(results_folder, "results_meta_analysis.rds")) |> 
   filter(model %in% model_names) |> 
@@ -169,7 +168,7 @@ full_results <- readRDS(here::here(results_folder, "results_meta_analysis.rds"))
       arrange(intercept_est_method) |>
       filter(outcome == myOut) |> 
       select(-outcome) |> 
-      select( model ,intercept = intercept_est_method, `r-squared`, everything() ) |> 
+      select( model ,intercept = intercept_est_method, everything() ) |> 
       flextable::flextable() |>
       flextable::autofit() |> 
       flextable_to_rmd()
@@ -181,16 +180,19 @@ full_results <- readRDS(here::here(results_folder, "results_meta_analysis.rds"))
 
 ### Single timepoint regression, re-estimated intercepts
 
+```{r}
+outcomes <- c("cbcl_aff", "cbcl_anx", "cbcl_som", "cbcl_adhd", "cbcl_odd", "cbcl_con") # 
+
+model_names <- tibble(outcomes = outcomes) |> 
+  mutate(model_name =  paste0("st_fi_study_", outcomes, "_pred1_estimate_cv")
+)
+```
+
 #### Affective problems
 ```{r}
-
 outcome <- "cbcl_aff"
-intercept_est <- "estimate"
-model_name <- "results_reg"
-model_full_name <- paste0(model_name, "_", outcome, "_int_", intercept_est,".rds")
-results <- readRDS(here::here(results_folder, model_full_name))
-
-report_model(results)
+model_full_name <- model_names |> filter(outcomes == outcome) |> pull(model_name)
+report_model(model_full_name, results_folder, outcome = "CBCL")
 ```
 
 
@@ -199,10 +201,9 @@ report_model(results)
 
 outcome <- "cbcl_anx"
 
-model_full_name <- paste0(model_name, "_", outcome, "_int_", intercept_est,".rds")
-results <- readRDS(here::here(results_folder, model_full_name))
+model_full_name <- model_names |> filter(outcomes == outcome) |> pull(model_name)
+report_model(model_full_name, results_folder, outcome = "CBCL")
 
-report_model(results)
 ```
 
 #### Somatic problems
@@ -210,10 +211,9 @@ report_model(results)
 
 outcome <- "cbcl_som"
 
-model_full_name <- paste0(model_name, "_", outcome, "_int_", intercept_est,".rds")
-results <- readRDS(here::here(results_folder, model_full_name))
+model_full_name <- model_names |> filter(outcomes == outcome) |> pull(model_name)
+report_model(model_full_name, results_folder, outcome = "CBCL")
 
-report_model(results)
 ```
 
 #### ADHD problems
@@ -221,10 +221,9 @@ report_model(results)
 
 outcome <- "cbcl_adhd" 
 
-model_full_name <- paste0(model_name, "_", outcome, "_int_", intercept_est,".rds")
-results <- readRDS(here::here(results_folder, model_full_name))
+model_full_name <- model_names |> filter(outcomes == outcome) |> pull(model_name)
+report_model(model_full_name, results_folder, outcome = "CBCL")
 
-report_model(results)
 ```
 
 
@@ -233,10 +232,9 @@ report_model(results)
 
 outcome <- "cbcl_odd"
 
-model_full_name <- paste0(model_name, "_", outcome, "_int_", intercept_est,".rds")
-results <- readRDS(here::here(results_folder, model_full_name))
+model_full_name <- model_names |> filter(outcomes == outcome) |> pull(model_name)
+report_model(model_full_name, results_folder, outcome = "CBCL")
 
-report_model(results)
 ```
 
 
@@ -245,8 +243,7 @@ report_model(results)
 
 outcome <- "cbcl_con"
 
-model_full_name <- paste0(model_name, "_", outcome, "_int_", intercept_est,".rds")
-results <- readRDS(here::here(results_folder, model_full_name))
+model_full_name <- model_names |> filter(outcomes == outcome) |> pull(model_name)
+report_model(model_full_name, results_folder, outcome = "CBCL")
 
-report_model(results)
 ```

@@ -1,0 +1,74 @@
+---
+title: "sdq_results"
+output: html_document
+date: "2024-05-21"
+---
+
+```{r global_options, include=FALSE}
+# This is a way to set options for all code chunks at once
+# Note that you can also dynamically control options by setting them to a value
+# copied this from https://stackoverflow.com/questions/33445110/rmarkdown-global-options-vs-opts-chunk we may want to change the figure options
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
+```
+
+
+```{r}
+outcomes <- c("sdq_cond_p", "sdq_emot_p", "sdq_hyp_p", "sdq_peer_p", "sdq_pro_p") # 
+
+model_names1 <- tibble(outcomes = outcomes) |> 
+  mutate(model_name =  paste0("st_ri_study_", outcomes, "_pred3_mi_estimate_cv")
+)
+
+model_names2 <- tibble(outcomes = outcomes) |> 
+  mutate(model_name =  paste0("st_ri_study_", outcomes, "_pred3_mi_average")
+)
+
+
+```
+#### Conduct Problems
+
+
+```{r}
+outcome <- "sdq_cond_p"
+model_full_name <- model_names |> filter(outcomes == outcome) |> pull(model_name)
+report_model(model_full_name, results_folder, outcome = "SDQ")
+
+model_full_name <- model_names |> filter(outcomes == outcome) |> pull(model_name)
+report_model(model_full_name, results_folder, outcome = "SDQ")
+
+```
+
+#### Emotional Problems
+```{r}
+
+outcome <- "sdq_emot_p"
+model_full_name <- model_names |> filter(outcomes == outcome) |> pull(model_name)
+report_model(model_full_name, results_folder, outcome = "SDQ")
+```
+
+
+#### Hyperactivity
+```{r}
+
+outcome <- "sdq_hyp_p"
+model_full_name <- model_names |> filter(outcomes == outcome) |> pull(model_name)
+report_model(model_full_name, results_folder, outcome = "SDQ")
+```
+
+#### Pro-social
+```{r}
+
+outcome <- "sdq_pro_p" 
+model_full_name <- model_names |> filter(outcomes == outcome) |> pull(model_name)
+report_model(model_full_name, results_folder, outcome = "SDQ")
+```
+
+
+#### Peer Problems
+```{r}
+
+outcome <- "sdq_peer_p"
+model_full_name <- model_names |> filter(outcomes == outcome) |> pull(model_name)
+report_model(model_full_name, results_folder, outcome = "SDQ")
+```
+

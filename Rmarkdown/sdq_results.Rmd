@@ -13,6 +13,7 @@ knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
 
 ```{r,include=FALSE}
 
+
   
 source(here::here("R scripts/config.R")) 
 
@@ -144,16 +145,8 @@ For the random intercept model predictions are made using up to 2 waves of data 
 Changes from the SAP: The random intercept model includes an interaction between a development quotient calcualted as the mean of the age equivalence scores for the vineland domains divided by actual age. Without this model performance was terrible. TALK ABOUT IQ DATA.
 
 ### Summary of model results
-Tbale shows estimate (95% CI) [tau] where tau is the square root of the between study variance in estimates. 
+See other RMD file
 
-```{r, results = 'asis'}
-model_names <- c("results_reg_init", "results_reg")
-intercept_est_methods <- c("estimate", "average")
-outcomes <- c("sdq_emot_p", "sdq_cond_p", "sdq_hyp_p", "sdq_pro_p", "sdq_peer_p") # 
-
-
-  
-```
 
 
 
@@ -162,42 +155,36 @@ Intercepts are estimated using data from the baseline and (if available) t-1 tim
 
 #### Summary of model results
 
+see other plots
 
-```{r, results = 'asis'}
-intercept_est <- "estimate"
-model_name <- "mt_ri_study_rs"
+```{r}
+outcomes <- c("sdq_cond_p", "sdq_emot_p", "sdq_hyp_p", "sdq_peer_p", "sdq_pro_p") # 
 
-    full_results |>   
-      arrange(intercept_est_method) |>
-      filter(intercept_est_method == intercept_est, model == model_name) |> 
-      select(-intercept_est_method, -model, -predictor_set) |> 
-      select( outcome,  r_squared, everything()) |> 
-      flextable::flextable() |>
-      flextable::autofit() |> 
-      flextable_to_rmd()
+model_names <- tibble(outcomes = outcomes) |> 
+  mutate(model_name =  paste0("st_ri_study_", outcomes, "_pred3_mi_estimate_cv")
+)
+
+
+
+
 
 ```
-
-
-
-
 #### Conduct Problems
+
+
 ```{r}
-
 outcome <- "sdq_cond_p"
+model_full_name <- model_names |> filter(outcomes == outcome) |> pull(model_name)
+report_model(model_full_name, results_folder, outcome = "SDQ")
 
-model_full_name <- paste0(model_name, "_", outcome, "_int_", intercept_est)
-
-report_model(analysis_name = model_full_name, results_folder = results_folder)
 ```
 
 #### Emotional Problems
 ```{r}
 
 outcome <- "sdq_emot_p"
-model_full_name <- paste0(model_name, "_", outcome, "_int_", intercept_est)
-
-report_model(analysis_name = model_full_name, results_folder = results_folder)
+model_full_name <- model_names |> filter(outcomes == outcome) |> pull(model_name)
+report_model(model_full_name, results_folder, outcome = "SDQ")
 ```
 
 
@@ -205,20 +192,16 @@ report_model(analysis_name = model_full_name, results_folder = results_folder)
 ```{r}
 
 outcome <- "sdq_hyp_p"
-
-model_full_name <- paste0(model_name, "_", outcome, "_int_", intercept_est)
-
-report_model(analysis_name = model_full_name, results_folder = results_folder)
+model_full_name <- model_names |> filter(outcomes == outcome) |> pull(model_name)
+report_model(model_full_name, results_folder, outcome = "SDQ")
 ```
 
 #### Pro-social
 ```{r}
 
 outcome <- "sdq_pro_p" 
-
-model_full_name <- paste0(model_name, "_", outcome, "_int_", intercept_est)
-
-report_model(analysis_name = model_full_name, results_folder = results_folder)
+model_full_name <- model_names |> filter(outcomes == outcome) |> pull(model_name)
+report_model(model_full_name, results_folder, outcome = "SDQ")
 ```
 
 
@@ -226,9 +209,7 @@ report_model(analysis_name = model_full_name, results_folder = results_folder)
 ```{r}
 
 outcome <- "sdq_peer_p"
-
-model_full_name <- paste0(model_name, "_", outcome, "_int_", intercept_est)
-
-report_model(analysis_name = model_full_name, results_folder = results_folder)
+model_full_name <- model_names |> filter(outcomes == outcome) |> pull(model_name)
+report_model(model_full_name, results_folder, outcome = "SDQ")
 ```
 

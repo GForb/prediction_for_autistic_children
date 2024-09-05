@@ -19,10 +19,10 @@ source(here::here("R scripts/config.R"))
 results_folder <- here::here(data_and_outputs, "Results", outcome, "Prelim")
 full_data <- readRDS(here::here(results_folder, "results_meta_analysis_long.rds")) 
 
-metrics_to_report <- c("calib_slope", "r_squared_transformed", "rmse")
+metrics_to_report <- c("calib_itl", "calib_slope", "r_squared_transformed", "rmse")
 
 processed_data <- full_data |>
-  filter(intercept_est_method == "estimate_cv",
+  filter(intercept_est_method == "average",
          predictor_set != "pred_init") |> 
   filter(!(stringr::str_ends(model, "mi") & predictor_set == "pred1")) |> 
   filter(!grepl("3pred$", analysis_name)) |> 
@@ -95,7 +95,7 @@ processed_data_by_model <- processed_data |>
 
 ```{r, echo = FALSE}
 processed_data_by_model |> filter(metric == "r_squared_transformed") |> 
-  plot_many_ma_by_outcome() +
+  plot_many_ma_by_outcome(my_colour = my_colour) +
   ggtitle("R-squared, by outcome and model")
 ```
 
