@@ -27,6 +27,14 @@ pooled_data_cbcl$pooled_data_long |>
   select(wave, base_wave) |> 
   count(wave)
 
+pooled_data_cbcl$pooled_data_acc <- pooled_data_cbcl$pooled_data_acc |> 
+  mutate(study = case_when(study == "pathways_cbcl" ~ "Pathways",
+                           study == "elena_cbcl" ~ "ELENA",
+                           study == "ssc" ~ "SSC",
+                           study == "togo1" ~ "TOGO1",
+                           study == "togo2" ~ "TOGO2"),
+         ID = paste0(study, "_", old_ID))
+
 
 
 saveRDS(pooled_data_cbcl$pooled_data_long |> select(-"0"), here(derived_data, "pooled_cbcl.Rds"))

@@ -2,8 +2,6 @@ model_R_reg_fi_study <- function(data, outcome, predictors, intercept_est, log_f
   if(!is.null(log_file)){
     sink(paste0(log_file, ".txt"))
   }
-  make_spline <- glue::glue("mkspline base_spline = base_{outcome}, nknots(3) cubic")
-  data <- data |> add_stata_spline(make_spline)
   predictors_string <- get_predictors_fixed_study(data, predictors)
   
   model_formula = as.formula(paste0("out_", outcome, " ~ ", paste(predictors_vector, collapse = "+")))
@@ -88,9 +86,7 @@ get_predictors_fixed_study <- function(data, predictors) {
   return(predictors_string)
 }
 
-add_stata_spline <- function(data, make_spline){
 
-}
 
 add_fold <- function(data, n_folds) {
   n <- nrow(data)

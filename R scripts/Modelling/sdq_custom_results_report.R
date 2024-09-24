@@ -1,4 +1,4 @@
-results_folder <- here::here(data_and_outputs, "Results", "SDQ", "Prelim")
+results_folder <- here::here(data_and_outputs, "Results", "SDQ", "Thesis")
 
 
 model_names <- c("results_reg_init", "results_reg","results_reg_ri")

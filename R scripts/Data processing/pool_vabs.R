@@ -26,7 +26,12 @@ pooled_data_vabs$pooled_data_long <- pooled_data_vabs$pooled_data_long |>
 complete_data_long <- pooled_data_vabs$pooled_data_long  |> filter(base_all_complete, out_all_complete)
 complete_data_wide <- pooled_data_vabs$pooled_data_wide  |> filter(base_all_complete, out_all_complete)
 
-
+pooled_data_vabs$pooled_data_acc <- pooled_data_vabs$pooled_data_acc |> 
+  mutate(study = case_when(study == "pathways_vabs" ~ "Pathways",
+                           study == "elena_vabs" ~ "ELENA",
+                           study == "epited" ~ "EpiTED",
+                           study == "edx_vabs" ~ "EDX"),
+         ID = paste0(study, "_", old_ID))
 
 saveRDS(pooled_data_vabs$pooled_data_long, here(derived_data, "pooled_vabs.Rds"))
 saveRDS(pooled_data_vabs$pooled_data_wide, here(derived_data, "pooled_vabs_wide.Rds"))

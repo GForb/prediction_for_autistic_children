@@ -55,6 +55,8 @@ IQ comes from a veriety of sources. These are outlined in a separate word docume
 
 For some participants ELENA uses the WISC V so the mapping is not perfect. Fluid reasoning is not in the WISC-IV, but is a subset of perceptual reasoning  reasoning. I am treating this as perceptual reasoning. For simplicity, I am treating nonverabl IQ as full scale iq as the numbers with meaures of nonverbal IQ are small and any bias introduced will be minimal.
 
+
+
 ## EDX
 accounting numbers:
 196 individuals

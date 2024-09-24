@@ -147,7 +147,6 @@ saveRDS(ssc_data, file = file.path(derived_data, "ssc.Rds"))
 
 
 particpant_accounting <- age_range_data |> 
-  select(ID, include) |> 
   mutate(study = "SSC")
 saveRDS(particpant_accounting, file = here::here(derived_data, "ssc_acc.Rds"))
 

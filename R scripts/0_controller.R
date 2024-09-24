@@ -70,15 +70,13 @@ tictoc::toc()
 tictoc::tic()
 run_models("vabs")
 tictoc::toc() 
-results_folder <- here::here(data_and_outputs, "Results", "VABS", "Prelim")
+results_folder <- here::here(data_and_outputs, "Results", "VABS", "Thesis")
 tictoc::tic()
 create_full_results_table(results_folder)
 tictoc::toc() 
 
 results_folder <- here::here(data_and_outputs, "Results", "SDQ", "Prelim")
-tictoc::tic()
-create_full_results_table(results_folder)
-tictoc::toc() 
+
 
 
 results_folder <- here::here(data_and_outputs, "Results", "VABS", "Prelim")
@@ -101,21 +99,19 @@ template = here::here("Rmarkdown/cbcl_results.rmd")
 output_file_name  <-  "cbcl_results.html"
 run_results_report(template, output_file_name)
 
-
+# SDQ
 pool("sdq")
 create_doc(dataset = "pooled_sdq", template = descriptive_template, outcome = "sdq")
-
-
 tictoc::tic()
 run_models("sdq")
-tictoc::toc() #4713 seconds
+tictoc::toc() # 4713 seconds- this will now be longer eg. 24 hours.
 
 set.seed(12345)
-results_folder <- here::here(data_and_outputs, "Results", "SDQ", "Prelim")
+results_folder <- here::here(data_and_outputs, "Results", "SDQ", "Thesis")
+tictoc::tic()
 create_full_results_table(results_folder)
+tictoc::toc() 
 
-
-#create_full_results_table(results_folder, model_names, outcomes, intercept_est_methods)
 
 template = here::here("Rmarkdown/sdq_results.rmd")
 output_file_name  <-  "sdq_results.html"
@@ -126,6 +122,16 @@ run_results_report(template, output_file_name)
 run_results_plot("SDQ")
 run_results_plot("CBCL")
 run_results_plot("VABS")
+
+
+# Reporting
+source(here::here(thesis_reporting, "n_fup_tables.R"))
+source(here::here(thesis_reporting, "ages_tables.R"))
+
+source(here::here(thesis_reporting, "cbcl_descriptive_table.R"))
+source(here::here(thesis_reporting, "sdq_descriptive_table.R"))
+source(here::here(thesis_reporting, "vabs_descriptive_table.R"))
+
 
 
 

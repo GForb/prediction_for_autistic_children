@@ -1,7 +1,8 @@
-analysis_data_long <- readRDS(here(derived_data, "pooled_sdq.Rds"))
+analysis_data_long <- readRDS(here(derived_data, "pooled_sdq.Rds")) |> 
+  filter(base_all_complete, out_all_complete, autism != "post baseline", all_complete) # exclude people missing a single value in one outcome.
 
-# Missing data is at level 2: The cluster level (cluster = indivudal)
-
+# Missing data is at level 2: The cluster level (cluster = individual) - this is the script to use to investigate how to impute missing data.
+# 1% of data are partially complete - to drop or not to drop? - wont introduce bias
 
 plots_folder <- here::here(data_and_outputs, "Results", "SDQ", "Imputation Plots")
 
@@ -17,99 +18,95 @@ analysis_data_long |>
   print(n = 50)
 
 analysis_data <- analysis_data_long |> 
-  select(ID, starts_with("sdq"), age_c,
-         base_sex,,
+  select(ID, study,  starts_with("sdq"), age_c,
+         base_sex, starts_with("base_sdq"),
          base_maternal_education, base_imd_decile, base_maternal_mh, base_ethnicity,
-         base_ld,
-         starts_with("study_")) |> 
+         base_ld) |> 
   mutate(across(where(is.numeric), as.numeric)) |> 
   mutate(base_maternal_education = as.factor(base_maternal_education),
          base_ld = as.factor(base_ld),
          base_ethnicity = as.factor(base_ethnicity),
-         base_maternal_education = as.factor(base_maternal_education)) |> 
+         base_maternal_education = as.factor(base_maternal_education),
+         study = as.factor(study)) |> 
   left_join(id_nums) |> 
-  select(ID_num, everything(), -ID)
+  select(ID_num, study, everything(), -ID, )
 
 
-
+spline_stata_code <- "
+    mkspline age_spline = age_c , nknots(3) cubic
+    gen age_spline1Xsex = age_spline1*base_sex
+    gen age_spline2Xsex = age_spline2*base_sex
+    su age_spline*  
+"
+analysis_data <- RStata::stata(spline_stata_code, data.in = analysis_data, data.out = TRUE) |> 
+  select(-age_c) # dropping age_c as will be equal to first spline term
 
 # Setting up model: Following guide in this chapter - https://bookdown.org/mwheymans/bookmi/multiple-imputation-models-for-multilevel-data.html#multilevel-data---example-datasets
 
 ## Set imputation method for all variables (except study)
+ind.clust<- 1
+methods <- analysis_data |> micemd::find.defaultMethod( ind.clust)
+methods[c("base_maternal_education",
+          "base_imd_decile",
+          "base_maternal_mh",
+          "base_ethnicity",
+          "base_ld")] <- "2lonly.pmm"
 
-continuous_to_be_imputed <- analysis_data |> select(-ID_num, -starts_with("study_"), -age_c, -base_ld, -base_maternal_education, -base_sex, -base_ethnicity)
-binary_to_be_imputed <- analysis_data |> select(base_ld, base_maternal_education, base_sex, base_ethnicity)
-data_not_to_be_imputed <- analysis_data |> select(ID_num, starts_with("study_"), age_c)
+# For details if 2lonly imputation function see https://stefvanbuuren.name/fimd/sec-level2pred.html
 
+"age_spline1 age_spline2 ///
+  base_sex ///
+   c.age_spline1#i.base_sex c.age_spline2#i.base_sex ///
+  {non_outcome_baseline}"
 
-impmethod_cont <- rep("2l.lmer", ncol(continuous_to_be_imputed))
-names(impmethod_cont) <- colnames(continuous_to_be_imputed)
-
-imp_method_bin <- rep("2l.bin", ncol(binary_to_be_imputed))
-names(imp_method_bin) <- colnames(binary_to_be_imputed)
-
-impmethod_blank <- character(ncol(data_not_to_be_imputed))
-names(impmethod_blank) <- colnames(data_not_to_be_imputed)
-
-impmethod <- c(impmethod_cont, imp_method_bin, impmethod_blank)
-
-impmethod
-
-impmethod_test <- character(ncol(analysis_data))
-names(impmethod_test) <- colnames(analysis_data)
-
-impmethod_test["sdq_hyp_p"] <- "2l.lmer"
-
-impmethod_test
-
-## Making the prediction matrix
-# see: https://bookdown.org/mwheymans/bookmi/multiple-imputation.html#customizing-the-imputation-model-1
-# The variables in the columns are used to impute the row variables
-# I don't have restricted cuvic splines in the model! AHHHH. At least I am creating splines in complete data - am I - mostly... Uh oh.
-
-pm <- mice::make.predictorMatrix(analysis_data)
-pm1 <- pm
-pm1[, "ID_num"] <- -2
-pm2 <- pm1
-pm2[, "age_c"] <- 2
+# Define appropriate methoods
+# Define appropriate predictor matrix
+# - what if missing data is only at level 2?
+# Define approprieate predictor matrix
+# Run once and see :)
 
 
-pm
-pm1
-pm2
+predictor.matrix <- mice::make.predictorMatrix(analysis_data)
+predictor.matrix[-ind.clust,ind.clust]<- -2
+predictor.matrix[-ind.clust,ind.clust]<- -2
 
+# Include cluster means of all lvl 1 variables
+# Include cluster means of all lvl 1 interactions
+# Include all lvl 2 variables
+# include all lvl 2 interactions
 
 # Run imputations
 set.seed(1234)
 
-length(impmethod_test)
-nrow(pm)
-ncol(pm)
-
-colnames(pm) %in% names(impmethod_test)
-rownames(pm) %in% names(impmethod_test)
-
-names(impmethod_test) %in% colnames(pm)
-names(impmethod_test) %in% rownames(pm)
-
 
 tictoc::tic()
-imputations <- mice::mice(analysis_data, predictorMatrix = pm1, method = impmethod_test , m = 1, maxit = 5)
+imputations <- mice::mice(analysis_data, predictorMatrix = predictor.matrix , method = methods , m = 50, maxit = 20)
 tictoc::toc()
+
+non_imputed_vars <- analysis_data_long |> select(ID, starts_with("study_"), age_c, wave)
+
 imputed_data <- mice::complete(imputations, action = "all", mild = FALSE) |> 
-  map(~bind_cols(., non_imputed_vars))
+  map(~bind_cols(., non_imputed_vars) |> mutate(study = as.character(study)))
 
-saveRDS(imputed_data, here::here(derived_data, "sdq_imputed_wide.Rds"))
+saveRDS(imputed_data, here::here(derived_data, "sdq_imputed_ml.Rds"))
 
 
-
-imp_plot <- plot(imputations)
-imp_plot
-imp_strip_plot <-  mice::stripplot(imputations)
-imp_strip_plot
-
-#imputation_plots <- list(imp_plot, imp_strip_plot)
-
-# saveRDS(imputation_plots, here::here(imputation_plots, "imp_plots.RDS"))
-
+# 
+# imp_plot <- plot(imputations)
+# 
+# png(here::here(imputation_plots, "imp_plot_sdq_ml.png"))
+# imp_plot
+# dev.off()
+# 
+# imp_strip_plot <-  mice::stripplot(imputations, 
+#                                    base_imd_decile +
+#                                      base_maternal_mh +
+#                                      base_maternal_education + 
+#                                      base_ld + 
+#                                      base_ethnicity  ~ .imp)
+# imp_strip_plot
+# 
+# png(here::here(imputation_plots, "imp_strip_plot_sdq_ml.png"))
+# imp_strip_plot
+# dev.off()
 

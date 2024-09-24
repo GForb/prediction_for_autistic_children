@@ -64,16 +64,20 @@ predictors <- data |>
                                         tbauditionprecs4 == "SURDITE PROFONDE" ~ 1,
                                         TRUE ~ 0),
          base_visual_impairment = 0,
-         base_sex = base_sex -1) |> 
+         base_sex = base_sex -1,
+         base_iq_standard = case_when(passationT3 =="wisc" | passationT3 == "wppsi" ~ 1,
+                                      is.na(passationT3) ~ NA,
+                                            TRUE ~ 0)) |> 
   select(ID,
          base_sex,
          base_maternal_education,
          base_iq_full_scale = BestQIT2ch,
          base_hearing_impairment,
-         base_visual_impairment
+         base_visual_impairment,
+         base_iq_standard
   ) |> 
   mutate(base_iq_full_scale = as.numeric(base_iq_full_scale),
-         base_iq_standard = 0) 
+         ) 
 
 # Vineland
 wave0 <- data |> 

@@ -1,11 +1,12 @@
 get_meta_analysis_df <- function(model_name_spec) {
   
-  model_name_spec$file_name |> print()
-  
   if(is.null(model_name_spec$multiple_imputed_data)) {
     list_results <- lapply(model_name_spec$file_name, run_meta_analysis)
   } else {
-    list_results <- map2(model_name_spec$file_name, model_name_spec$multiple_imputed_data, run_meta_analysis)
+    list_results <- map2(
+      model_name_spec$file_name, 
+      model_name_spec$multiple_imputed_data, 
+      run_meta_analysis)
   }
   results_df <- bind_rows(list_results)
 
@@ -72,21 +73,23 @@ run_meta_analysis_mi <- function(results) {
   n_imp = max(results$imp_no)
   
   # 1. Meta-analyse each imputed dataset separately
-  analse_imp_rep <- function(my_imp_no) {
+  analyse_imp_rep <- function(my_imp_no) {
     results |> filter(imp_no == my_imp_no) |> run_meta_analysis_single_data() |> mutate(imp_no = my_imp_no)
   }
-  results_list <- map(1:n_imp, analse_imp_rep) 
+  results_list <- map(1:n_imp, analyse_imp_rep) 
   results_df <- bind_rows(results_list) |> pool_est_all_metrics()
   
-  # 2. Create a by study object and a meta-analysis object - these will *not* match the headline results (i wonder how far out!) but can be used for quick plotting 
-  aggregate_results <- results |> 
-      group_by(ID, study) |>  
-      summarise(pred = mean(pred), actual = mean(actual)) |> 
-      ungroup() |> 
-      as.data.frame()
-  ma_aggregate <- run_meta_analysis_single_data(aggregate_results)
+  # Obtain by study results - pool performance metrics at the study level, then meta-analyse.
+  # Calculate performance metrics on each imputed dataset
+  # Pool
+  # Meta-analyse pooled performance.
   
-  results_df <- bind_cols(results_df, ma_aggregate |> select(by_study, meta_analysis))
+  meta_analysis_list  <- IPDPredictR:::meta_analyse_predictions_cont_mi(predictions = results, study_var_name = "study", imp_indicator_name = "imp_no") 
+  meta_analysis <- tibble(meta_analysis = meta_analysis_list$results_list)
+  by_study <- tibble(by_study = list(meta_analysis_list$by_study))
+  # 2. Create a by study object and a meta-analysis object - these will *not* match the headline results (i wonder how far out!) but can be used for quick plotting 
+  
+  results_df <- bind_cols(results_df, by_study, meta_analysis)
   return(results_df)
 
 }
@@ -139,3 +142,16 @@ process_results_df  <- function(model_names, intercept_est_methods, outcomes, pr
   }
 }
 
+# This funciton is not used. It implements a "pooled prediction" approach to evaluating model performance. 
+# Wood 2015 finds this to lead to substantial positive bias in model performance. May be useful in future for a compariosn of methods.
+#https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4515100/
+
+get_aggregate_results <- function(results) {
+  aggregate_results <- results |> 
+    group_by(ID, study) |>  
+    summarise(pred = mean(pred), actual = mean(actual)) |> 
+    ungroup() |> 
+    as.data.frame()
+  ma_aggregate <- run_meta_analysis_single_data(aggregate_results)
+  
+}

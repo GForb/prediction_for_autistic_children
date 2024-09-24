@@ -122,17 +122,17 @@ create_forrest_plot_vabs <- function(name, tau, meta_analysis, studies) {
                 r_squared = "R-squared",
                 rmse = "Root Mean Squared Error")
   
-  alim <-  list(calib_slope = c(0.25,1.75),
-                calib_itl = c(-1.5,1.5),
+  alim <-  list(calib_slope = c(0.5,1.5),
+                calib_itl = c(-3,3),
                 r_squared = c(0,1),
                 r_squared_transformed = c(0,1),
-                rmse = c(0.7,3))
+                rmse = c(0,4))
   
-  xlim <-  list(calib_slope = c(-0.1, 2.7),
-                calib_itl = c(-2.1, 2.7),
+  xlim <-  list(calib_slope = c(-0.1, 2.2),
+                calib_itl = c(-5.5, 7.2),
                 r_squared = c(-0.2, 1.4),
-                r_squared_transformed = c(-0.2, 1.4),
-                rmse = c(0,4.6))
+                r_squared_transformed = c(-0.5, 1.6),
+                rmse = c(-2.5,7.5))
   
   refline <-  list(calib_slope = 1,
                    calib_itl = 0,
@@ -150,11 +150,11 @@ create_forrest_plot_vabs <- function(name, tau, meta_analysis, studies) {
   metafor::forest(meta_analysis, 
                   addpred = TRUE, 
                   refline = refline[[name]] , 
-                  xlab = xlab[[name]], 
+                  xlab = NA, 
                   alim = alim[[name]] , 
                   xlim = xlim[[name]],
                   transf = transf[[name]],
-                  slab = c("EDX","ELENA" ,"EpiTED" ,"Pathways"),
+                  slab =  c("Pathways","EpiTED","ELENA", "EDX"),
                   header= "Study", 
                   mlab = tau_text)
   
@@ -162,15 +162,19 @@ create_forrest_plot_vabs <- function(name, tau, meta_analysis, studies) {
 }
 
 
-create_forrest_plot_sdq <- function(name, tau, meta_analysis, studies) {
+create_forrest_plot_sdq <- function(name, tau = NULL, meta_analysis, studies) {
   tau_formatted <- tau |>  format(scientific=F, digits = 2)
-  tau_text = glue::glue("tau = {tau_formatted}")
-  
+  if(!is.null(tau)) {
+    tau_text = glue::glue("tau = {tau_formatted}")
+  } else {
+    tau_text = NULL
+  }
+
   print(name)
   
   xlab <-  list(calib_slope = "Calibration Slope",
                 calib_itl = "Calibration in the Large",
-                r_squared_transformed = "R-squared (transformed)",
+                r_squared_transformed = "R-squared",
                 r_squared = "R-squared",
                 rmse = "Root Mean Squared Error")
   
@@ -182,8 +186,8 @@ create_forrest_plot_sdq <- function(name, tau, meta_analysis, studies) {
   
   xlim <-  list(calib_slope = c(-0.1, 2.7),
                 calib_itl = c(-2.1, 2.7),
-                r_squared = c(-0.2, 1.4),
-                r_squared_transformed = c(-0.2, 1.4),
+                r_squared = c(-0.6, 1.4),
+                r_squared_transformed = c(-0.6, 1.4),
                 rmse = c(0.4,4.6))
   
   refline <-  list(calib_slope = 1,
@@ -199,13 +203,14 @@ create_forrest_plot_sdq <- function(name, tau, meta_analysis, studies) {
                  rmse = NULL)
   
   print(studies)
+  print(refline[[name]])
   metafor::forest(meta_analysis, 
                   addpred = TRUE, 
                   refline = refline[[name]] , 
-                  xlab = xlab[[name]], 
+                  xlab = NA, 
                   alim = alim[[name]] , 
                   xlim = xlim[[name]],
-                  slab = c("1k_fam", "ALSPAC", "GUI",    "MCS",    "Quest",  "SNAP",   "TEDS",   "lsac_b", "lsac_k"),
+                  slab = c("LSAC K", "LSAC B", "1K Familes",    "TEDS",    "SNAP",  "Quest",   "MCS",   "GUI", "ALSAPC"),
                   transf = transf[[name]],
                   header= "Study", 
                   mlab = tau_text)

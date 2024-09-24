@@ -12,6 +12,10 @@ get_label <- Vectorize(function(variable_name, metadata = var_metadata, label_no
       var_data <- metadata |> 
         filter(variable_name == my_var_name)
      label <-  var_data[,glue::glue("label{label_no}")]
+     while(label== "" & label_no >1) {
+       label_no = label_no - 1
+       label <- var_data[,glue::glue("label{label_no}")]
+     }
   }
   return(label)
 }, vectorize.args = "variable_name") 

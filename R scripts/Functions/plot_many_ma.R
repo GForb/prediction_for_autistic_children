@@ -1,4 +1,4 @@
-plot_many_ma_by_metric <- function(data, outcome = NULL, my_colour = "black", diamond_height = 0.1) {
+plot_many_ma_by_metric <- function(data, outcome = NULL, my_colour = "black", diamond_height = 0.1, vline_data = NULL, vline_pi = FALSE) {
   myOutcome = outcome
   if(is.null(outcome)) {
     myOutcome = data |> pull(outcome) |> unique()
@@ -8,48 +8,69 @@ plot_many_ma_by_metric <- function(data, outcome = NULL, my_colour = "black", di
   plot_data <- data |> filter(outcome %in% myOutcome) |>  
     mutate(metric = factor(
       metric, 
-      levels = c("calib_itl", "calib_slope", "r_squared_transformed", "rmse"), 
-      labels = c("Calibration \n in the Large", "Calibration \n Slope", "R-squared", "RMSE")))
+      levels = c("calib_itl", "calib_slope", "rmse", "r_squared_transformed"), 
+      labels = c("Calibration \n in the Large", "Calibration \n Slope",  "RMSE", "R-squared")))
   
-
-
-  vline_data <- tibble(metric = plot_data$metric |> unique(),
-                       vline_x = c(1, 0,
-                                   data |> filter(metric == "r_squared_transformed", outcome %in% myOutcome) |> pull(est) |> max(na.rm  = TRUE),
-                                   data |> filter(metric == "rmse", outcome %in% myOutcome) |> pull(est) |> min(na.rm  = TRUE)))
-
-  plot_data |>
+ 
+  if(is.null(vline_data)){
+    vline_data <- tibble(metric = plot_data$metric |> unique(),
+                         vline_x = c(1, 0,
+                                     data |> filter(metric == "r_squared_transformed", outcome %in% myOutcome) |> pull(est) |> max(na.rm  = TRUE),
+                                     data |> filter(metric == "rmse", outcome %in% myOutcome) |> pull(est) |> min(na.rm  = TRUE))) 
+    }
+  
+  
+  plot <- plot_data |>
     plot_many_ma(diamond_height = diamond_height, my_colour = my_colour) + 
     facet_grid(cols = vars(metric), scales = "free_x") + 
     geom_vline(data = vline_data, aes(xintercept = vline_x), linetype = "dashed", color = "red") +
     ggtitle(get_label(myOutcome, label_no = 2)) 
+  
+  
+  if(vline_pi){
+    plot <- plot + 
+      geom_vline(data = vline_data, aes(xintercept = vline_lb), linetype = "dotted", color = "black") + 
+      geom_vline(data = vline_data, aes(xintercept = vline_ub), linetype = "dotted", color = "black") 
+    
+  }
+  
+  return(plot)
 }
 
-plot_many_ma_by_outcome <- function(data, my_colour = "black", diamond_height = 0.1) {
+plot_many_ma_by_outcome <- function(data, my_colour = "black", diamond_height = 0.1, vline_data = NULL, vline_pi = FALSE) {
   
   outcomes <- data |> pull(outcome) |> unique()
   names(outcomes) <- NULL
   outcome_max <- data |> group_by(outcome) |> summarise(vline_x = max(est, na.rm = TRUE))  
-  outcome_labels <- outcomes |> get_label(label_no = 1)
+  outcome_labels <- outcomes |> get_label(label_no = 3)
   
 
   
   plot_data <- data |> 
-    mutate(outcome = factor(get_label(outcome, label_no = 1)))
+    mutate(outcome = factor(get_label(outcome, label_no = 3)))
   
+  if(is.null(vline_data)){
+    vline_data <- tibble(outcome_label = outcome_labels,
+                         outcome = outcomes) |> 
+      left_join(outcome_max) |> 
+      select(-outcome, outcome = outcome_label)
+  }
+ 
 
-  
-  
-  vline_data <- tibble(outcome_label = outcome_labels,
-                       outcome = outcomes) |> 
-    left_join(outcome_max) |> 
-    select(-outcome, outcome = outcome_label)
 
-
-  plot_data |>
+  plot <- plot_data |>
     plot_many_ma(diamond_height = diamond_height, my_colour = my_colour) + 
     facet_grid(cols = vars(outcome), scales = "free_x") + 
     geom_vline(data = vline_data, aes(xintercept = vline_x), linetype = "dashed", color = "red") 
+  
+  if(vline_pi){
+    plot <- plot + 
+      geom_vline(data = vline_data, aes(xintercept = vline_lb), linetype = "dotted", color = "black") + 
+      geom_vline(data = vline_data, aes(xintercept = vline_ub), linetype = "dotted", color = "black") 
+    
+  }
+  
+  return(plot)
 }
 
 

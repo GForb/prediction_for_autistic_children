@@ -2,12 +2,25 @@
 # To set paths the global option "pfac_path" must be set with the path to the data and outputs folder. 
 # If using Rstudio, this can be done by adding  Sys.setenv(pfac_path = "*path to data*") to the .Renviron file. To edit the .Renviron file you can use  usethis::edit_r_environ().
 
+# Data folders
 data_and_outputs <-  Sys.getenv("pfac_path")
 raw_data <- here::here(data_and_outputs, "Raw data")
 derived_data <- here::here(data_and_outputs, "Derived data")
+
+# Output folders
 outputs <- here::here(data_and_outputs, "Outputs")
 thesis_tables <- file.path(outputs, "Thesis Tables")
 thesis_plots <- file.path(outputs, "Thesis Plots")
+
+latex_folder <-  file.path(thesis_tables, "LatexTables")
+
+# R scripts folders
+data_processing_scripts <- here::here("R scripts", "Data processing")
+modelling_scripts <- here::here("R scripts", "Modelling")
+reporting_scripts <- here::here("R scripts", "Reporting")
+thesis_reporting <- here::here("R scripts", "Thesis plots and tables")
+
+
 
 #devtools::install_github("GForb/IPDPredictR")
 

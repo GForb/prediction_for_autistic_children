@@ -1,6 +1,5 @@
 accounting_data <- readRDS(here(derived_data, "pooled_sdq_acc.Rds"))
 analysis_data_wide <- readRDS(here(derived_data, "pooled_sdq_wide.Rds"))
-analysis_data_wide <- readRDS(here(derived_data, "pooled_sdq_wide.Rds"))
 
 analysis_data_wide <- analysis_data_wide |> mutate(out_partially_complete = case_when(
   out_all_complete == TRUE ~ FALSE,

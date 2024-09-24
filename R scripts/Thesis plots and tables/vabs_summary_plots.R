@@ -1,20 +1,17 @@
-analysis_data <- readRDS(here(derived_data, "pooled_sdq.Rds"))|> 
-  filter(base_all_complete, out_all_complete, autism != "post baseline") 
+analysis_data <- readRDS(here(derived_data, "pooled_vabs.Rds"))|> 
+  filter(base_all_complete, out_all_complete) 
 
-analysis_data_wide <- readRDS(here(derived_data, "pooled_sdq_wide.Rds"))|> 
-  filter(base_all_complete, out_all_complete, autism != "post baseline") 
+analysis_data_wide <- readRDS(here(derived_data, "pooled_vabs_wide.Rds"))|> 
+  filter(base_all_complete, out_all_complete) 
 
 analysis_data_base <- analysis_data |> filter(wave == base_wave)
 analysis_data_out <- analysis_data |> filter(wave == out_wave)
 
-sdq_levels <- c("sdq_cond_p", "sdq_emot_p", "sdq_hyp_p", "sdq_peer_p", "sdq_pro_p")
-sdq_labels <- c("Conduct", "Emotional", "Hyperactivity", "Peer", "Pro-social")
+vabs_levels <- c("vabs_com_ae", "vabs_dls_ae", "vabs_soc_ae")
+vabs_labels <- c("Communication", "Daily Living Skills", "Socialisation")
 
-study_levels <- c("ALSPAC", "GUI", "MCS", "Quest", "SNAP", "TEDS", "k_families", "lsac_b", "lsac_k", "zOverall")
-study_labels <- c("ALSPAC", "GUI", "MCS", "Quest", "SNAP", "TEDS", "1K Fam", "LSAC B", "LSAC K", "Overall")
-  
-sdq_cutoffs <- tibble(domain = sdq_levels, 
-                      cutoff = c(4, 5, 8, 4, 6))
+study_levels <- c("EDX", "ELENA", "EpiTED", "Pathways", "zOverall")
+study_labels <- c("EDX", "ELENA", "EpiTED", "Pathways", "Overall")
 
 plot_data_base <- analysis_data_base |> mutate(study = "zOverall") |> 
   bind_rows(analysis_data_base) |> select(ID, study, starts_with("sdq")) |> 
@@ -46,18 +43,16 @@ analysis_data_ages <- analysis_data_wide |> select(ID, study, base_age, out_age,
 
 plot_data_ages <- analysis_data_ages|> mutate(study = "zOverall") |> 
   bind_rows(analysis_data_ages)|> 
-  mutate(
-    study = factor(
-      study, 
-      levels = study_levels,
-      labels = study_labels
-    ),
-  cutoff = NA) |> 
   pivot_longer(c(base_age, out_age, fu_length), names_to = "domain", values_to = "Score") |> 
   mutate(domain = factor(
     domain,
     levels = c("base_age", "out_age", "fu_length"),
-    labels = c("Age at Baseline", "Age at Outcome", "Follow-up Length")))
+    labels = c("Age at Baseline", "Age at Outcome", "Follow-up Length")),
+    study = factor(
+      study, 
+      levels = study_levels,
+      labels = study_labels
+    ))
 
 box_plot_by_study_domain <- function(plot_data) {
   plot_data |> ggplot2::ggplot(aes(y = Score, fill = study)) + 
@@ -91,8 +86,9 @@ ages_plot <- plot_data_ages |>  ggplot2::ggplot(aes(y = Score, fill = study)) +
         axis.line.x = element_blank()) +
   ylab("Years")
 
-ggsave(ages_plot, filename = file.path(thesis_plots, "Main Results",  "sdq_base_plot.png"), width = 14, height = 12, unit = "cm")
-ggsave(sdq_base_plot, filename = file.path(thesis_plots, "Main Results",  "sdq_base_plot.png"), width = 14, height = 18, unit = "cm")
-ggsave(sdq_out_plot, filename = file.path(thesis_plots, "Main Results",  "sdq_out_plot.png"), width = 14, height = 18, unit = "cm")
+ggsave(sdq_base_plot, filename = file.path(thesis_plots, "Main Results",  "vabs_base_plot.png"), width = 14, height = 18, unit = "cm")
+ggsave(sdq_out_plot, filename = file.path(thesis_plots, "Main Results",  "vabs_out_plot.png"), width = 14, height = 18, unit = "cm")
+ggsave(ages_plot, filename = file.path(thesis_plots, "Main Results",  "vabs_ages_plot.png"), width = 14, height = 9, unit = "cm")
 
+ggsave(ages_plot, filename = file.path(thesis_plots, "Main Results",  "vabs_ages_plot_conf.png"), width = 24, height = 13, unit = "cm")
 

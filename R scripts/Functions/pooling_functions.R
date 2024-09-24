@@ -11,6 +11,7 @@ pool_datasets <- function(dataset_strings, data_folder = derived_data, include_a
     mutate(ID = paste0(study, "_", ID)) |> 
     one_hot_encode_study()
   
+
   pooled_data_baseline <- pooled_data |> 
     filter(wave == base_wave) |> 
     select(ID,age,  any_of(c("vabs_dls_ae", "vabs_com_ae", "vabs_soc_ae")), 
@@ -21,19 +22,26 @@ pool_datasets <- function(dataset_strings, data_folder = derived_data, include_a
     
     print(colnames(pooled_data_baseline))
     
+    
                                 
-    pooled_data_outcomes <- pooled_data |> 
-    filter(wave == out_wave) |> 
-    select(ID,age, any_of(c("vabs_dls_ae", "vabs_com_ae", "vabs_soc_ae")), 
+    pooled_data_out_vars <- pooled_data |> 
+    select(ID, age, wave, out_wave,  any_of(c("vabs_dls_ae", "vabs_com_ae", "vabs_soc_ae")), 
            starts_with("cbcl"), starts_with("sdq"), -starts_with("cbcl_item_") )
     
-    pooled_data_outcomes$out_all_complete <-  complete.cases(pooled_data_outcomes)
+    pooled_data_out_vars_only <- pooled_data_out_vars |> select( any_of(c("vabs_dls_ae", "vabs_com_ae", "vabs_soc_ae")), 
+                                                                 starts_with("cbcl"), starts_with("sdq"), -starts_with("cbcl_item_"))
     
-    print(colnames(pooled_data_outcomes))
-  
+    pooled_data_out_vars$all_complete <-  complete.cases(pooled_data_out_vars)
+    pooled_data_out_vars$partially_complete <- rowSums(pooled_data_out_vars_only, na.rm = TRUE) > 0
+    
+    pooled_data_outcomes <- pooled_data_out_vars |> 
+      filter(wave == out_wave) |> 
+      mutate(out_all_complete = all_complete)
+    
+
   pooled_data_wide <- pooled_data |> 
     filter(wave == base_wave) |>
-    left_join(pooled_data_outcomes, by = "ID", suffix = c("_base", "_out")) |> 
+    left_join(pooled_data_outcomes |> select(-wave, -out_wave), by = "ID", suffix = c("_base", "_out")) |> 
     left_join(pooled_data_baseline |> select(ID, base_all_complete, - base_sex), by = "ID") |>
     rename_with( .cols = c(ends_with("_base"), ends_with("_out")), .fn = move_suffix_to_preffix) |> 
     mutate(fu_length = out_age - base_age)  |> 
@@ -74,7 +82,9 @@ pool_datasets <- function(dataset_strings, data_folder = derived_data, include_a
            out_wave = 2,
            base_wave = 0) |>
     select(-starts_with("cbcl_item"), -any_of("fu_length")) |> 
-    left_join(pooled_data_wide |> select(ID, out_all_complete, fu_length))
+    left_join(pooled_data_wide |> select(ID, out_all_complete, fu_length)) |> 
+    left_join(pooled_data_out_vars |> select(ID, age, partially_complete, all_complete), by = c("ID", "age")) |> 
+    filter(all_complete | partially_complete)
   
   
   pooled_data_wide <- pooled_data_wide |> select(-starts_with("cbcl_item"))
@@ -83,20 +93,27 @@ pool_datasets <- function(dataset_strings, data_folder = derived_data, include_a
 data_list <- list(pooled_data_long = pooled_data_long, pooled_data_wide = pooled_data_wide, age_summareis = age_summaries)
 
 if(include_acc){
+  
+  print("running include acc")
   pooled_data_acc <- map(
     dataset_strings, 
     ~readRDS(here::here(
       data_folder, 
       paste0(.,"_acc.Rds")
-    )) |> mutate(ID = as.character(ID))
+    )) |> mutate(ID = as.character(ID),
+                 study = .)
   ) |> 
-    bind_rows() |> 
-    mutate(ID = paste0(study, "_", ID)) 
+    bind_rows()
+  colnames(pooled_data_acc) |> print()
+  pooled_data_acc <-  pooled_data_acc |> 
+    mutate(old_ID = ID,
+           ID = paste0(study, "_", ID)) 
   
   pooled_data_acc |> count(include) |> print()
   data_list <- c(data_list, list(pooled_data_acc = pooled_data_acc))
 }
   
+print(" returning pooled data")
 
 return(data_list)
 }
