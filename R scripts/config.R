@@ -48,6 +48,8 @@ filter <- dplyr::filter
 
 # Loading variable metadata ----
 var_metadata <- utils::read.csv(here::here("variable_metadata.csv"))
+study_labels <- utils::read.csv(here::here("study_labels.csv"))
+
 
 
 
