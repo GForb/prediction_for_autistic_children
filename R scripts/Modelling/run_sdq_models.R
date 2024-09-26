@@ -70,7 +70,7 @@ analysis_spec_single_timepoint_cc <- common_analysis_spec |>
          predictor_set %in% c("pred1", "pred_init")) |> 
   filter(!(predictor_set == "pred_init" & model_name == "st_fi_study")) |>
   add_analysis_name(log_folder = log_folder, do_folder = do_folder) |> 
-  mutate(data = list(analysis_data_wide))
+  mutate(data = list(analysis_data_wide), data_name = "st")
  
 
 analysis_spec_multi_timepoint_cc_datasets <- common_analysis_spec |> 
@@ -87,7 +87,11 @@ analysis_spec_multi_timepoint_cc_datasets <- common_analysis_spec |>
          out_wave = 2,
          suffix = glue::glue("_{data_set}")
   ) |> 
-  add_analysis_name(log_folder = log_folder, do_folder = do_folder, suffix = suffix)
+  add_analysis_name(log_folder = log_folder, do_folder = do_folder, suffix = suffix) |> 
+  mutate(data_name = case_when(data_set == "main" ~ "mt",
+                               data_set == "long_res_aut" ~ "mt_res_aut",
+                               TRUE ~ paste0("mt_" ,data_set)))
+
 
 
 analysis_spec_multi_timepoint_cc_nfu <- common_analysis_spec |> 
@@ -95,6 +99,7 @@ analysis_spec_multi_timepoint_cc_nfu <- common_analysis_spec |>
          predictor_set == "pred1_mt") |>
   mutate(
     data = list(analysis_data_long),
+    data_name = "mt",
     pred_waves1 = "0",
     pred_waves2 = "0 -1",
     pred_waves3 = "0 -1 -2") |> 
@@ -110,6 +115,7 @@ analysis_spec_multi_timepoint_cc_many_models <-  common_analysis_spec |>
          predictor_set == "pred1_mt") |>
   mutate(
     data = list(analysis_data_long),
+    data_name = "mt",
     pred_waves = "0 -1",
     out_wave = 2,
   ) |> 
@@ -122,6 +128,7 @@ analysis_spec_single_timepoint_mi <- common_analysis_spec |>
   add_analysis_name(log_folder = log_folder, do_folder = do_folder, suffix = "_mi") |> 
   mutate(
     data = list(analysis_data_wide_mi),
+    data_name = "st_mi",
     multiple_imputed_data = TRUE
   )
   
@@ -134,6 +141,7 @@ analysis_spec_multi_timepoint_mi_pred2 <- common_analysis_spec |>
          predictor_set == "pred2_mt") |>
   mutate(
     data = list(analysis_data_long_mi),
+    data_name = "mt_mi",
     pred_waves = "0 -1",
     out_wave = 2,
     multiple_imputed_data = TRUE
@@ -145,6 +153,7 @@ analysis_spec_multi_timepoint_mi_pred3 <- common_analysis_spec |>
          predictor_set == "pred3_mt") |>
   mutate(
     data = list(analysis_data_long_mi),
+    data_name = "mt_mi",
     pred_waves = "0 -1",
     out_wave = 2,
     multiple_imputed_data = TRUE
