@@ -111,7 +111,13 @@ analysis_data_wide <- analysis_data_wide |> mutate(
   )
 )
 
-sdq_table <- make_n_fup_table(accounting_data, analysis_data_wide)
+
+
+sdq_table <- make_n_fup_table(accounting_data, analysis_data_wide) |> 
+  left_join(study_labels |> select(study = name, label)) |> 
+  select(-study) |> 
+  select(study = label, everything())
+
 sdq_table |> save_n_fup_hux_table(outcome_str = "sdq")
 
 # CBCL

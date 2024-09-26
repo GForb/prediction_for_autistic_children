@@ -88,20 +88,7 @@ base_predictors_table <- analysis_data_base |>
   ) |>
   create_descriptive_table(order = order_n)
 
-sdq_study_names <- c(
-  "Variable",
-  "Summary",
-  "ALSPAC" ,
-  "GUI"   ,
-  "MCS"      ,
-  "Quest"    ,
-  "SNAP"      ,
-  "TEDS" ,
-  "1K Fam.",
-  "LSAC B",
-  "LSAC K" ,
-  "Overall"
-)
+sdq_study_names <- study_labels$label[match(colnames(base_predictors_table), study_labels$name)]
 
 base_sdq_table |> save_descriptive_hux_table(outcome_str = "sdq",
                                              what = "base",

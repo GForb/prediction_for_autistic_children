@@ -10,7 +10,7 @@ out_table <- analysis_data_out |> select(ID, study, starts_with("cbcl")) |>  cre
 order_n = tibble(
   variable = c("base_sex", 
                "base_iq_full_scale", "base_iq_standard",
-               "base_ados_css_rrb", "base_ados_css_sa",
+               "base_ados_css_rrb", "base_ados_css_sa", "base_vabs_abc_ss",
                "base_adi_65", "base_maternal_education", "base_ethnicity"), 
   order_no = 1:8)
 base_predictors_table <- analysis_data_base |> 

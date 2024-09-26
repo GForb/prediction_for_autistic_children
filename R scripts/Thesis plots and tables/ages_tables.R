@@ -39,7 +39,7 @@ save_ages_hux_table <- function(ages_table, outcome_str) {
     
     outcome_str_caps <- toupper(outcome_str)
     hux_table |> save_hux_table(
-      file_name = paste0(outcome_str, "_fu_table.tex"),
+      file_name = paste0(outcome_str, "_ages_table.tex"),
       caption = glue::glue("Ages at baseline and follow-up for the {outcome_str_caps}. Data shown as median (IQR)."),
       label = paste0(outcome_str, "_ages"))
 }
@@ -52,10 +52,13 @@ analysis_data_long <- readRDS(here(derived_data, "pooled_sdq.Rds")) |>
   filter(base_all_complete, out_all_complete, autism != "post baseline", wave == base_wave) 
   
 
-sdq_ages_table <- make_ages_table(analysis_data_wide, analysis_data_long)
+sdq_ages_table <- make_ages_table(analysis_data_wide, analysis_data_long) |> 
+  left_join(study_labels |> select(study = name, label)) |> 
+  select(-study) |> 
+  select(study = label, everything())
 
-save_ages_hux_table(sdq_ages_table, "sdq")
 
+save_ages_hux_table(sdq_ages_table, "sdq") 
 # CBCL:
 analysis_data_wide <- readRDS(here(derived_data, "pooled_cbcl_wide.Rds"))|> 
   filter(base_all_complete, out_all_complete)
