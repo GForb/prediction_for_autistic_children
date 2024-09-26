@@ -3,7 +3,8 @@ pooled_data_cbcl <- pool_datasets(
     "elena_cbcl", # checked
     "ssc", # checked
     "togo1", # checked
-    "togo2"), # checked
+    "togo2",
+    "TRAILS"), # checked
   include_acc = TRUE)
 
 # leave out "edx_cbcl" until I have item level data.
