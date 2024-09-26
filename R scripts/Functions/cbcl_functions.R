@@ -55,15 +55,17 @@ calc_cbcl_dsmIV_domains <- function(data){
     paste0("cbcl_item_", c(3, 22, 23, 86, 95)),
     paste0("cbcl_item_", c(15, 16, 21, 26, 28, 37, 39, 43, 57, 67, 72, 81, 82, 90, 97, 101, 106))
   )
-  
+  if(is.null(data)){
+    return(tibble(domain = domains |> unlist(), items ))
+  } else {
   print(domains)
   print(items)
   
   for(i in 1:length(domains)){
     data <- score_domain(domains[[i]], items[[i]], data)
   }
-  
   return(data)
+  }
 }
 
 score_domain <- function(domain_name,items, data) {
