@@ -23,10 +23,17 @@ This folder contains notes on the dataset, instructions on how to set up file pa
 ### Data Processing: 
 There should be one import script per study. This should do all the merging and data manipulation required to get the data into the required form. At the end of each script check functions are called before saving to catch any out of range values or duplicate observations.
 ### EDA: 
-Exploratory data analysis, any scripts that run exploratory analysis on the data. This should be restricted to descriptive analysis until the analysis plan is registered.
+Exploratory data analysis, any scripts that run exploratory analysis on the data.
+
 ### Functions: 
-This contains scripts of r functions that 
+This contains scripts of r functions that are used in the analysis
   - Within the funcitons folder there is a Tests folder, this contains tests for the fucntions.
+
+### Modelling: 
+Scripts to implement models
+
+### Thesis plots and reporting
+Scripts to produce the figures and tables used in PhD thesis. Figures are outputted as .png and tables as .tex files.
 
 ## 3. Rmarkdown
 Contains required rmarkdown files. These are knitted by the run_desciprtive_reports function
