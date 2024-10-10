@@ -13,12 +13,12 @@ get_age_range_data_sdq <- function(wave1_data, wave2_data) {
 }
 
 cbcl_check_out_age <- Vectorize(function(age) {
-  check_age(age, 12, 17)
+  check_age(age, 12, 18)
 })
 
 
 cbcl_check_base_age <- Vectorize(function(age) {
-  check_age(age, 8, 13)
+  check_age(age, 8, 15)
 })
 
 
@@ -30,14 +30,16 @@ vabs_check_base_age <- Vectorize(function(age) {
   check_age(age, 7, 14)
 })
 
+sdq_check_base_age <- Vectorize(function(age) {
+  check_age(age, 9.8, 15)
+})
+
 sdq_check_out_age <- Vectorize(function(age) {
   check_age(age, 13, 18)
 })
 
 
-sdq_check_base_age <- Vectorize(function(age) {
-  check_age(age, 9.8, 15)
-})
+
 
 
 check_age <- function(age, min_age, max_age) {

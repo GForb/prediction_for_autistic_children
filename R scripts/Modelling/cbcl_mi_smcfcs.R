@@ -2,7 +2,7 @@ library(micemd) # necessary to load library so calls to micemd imputation method
 library(smcfcs)
 
 analysis_data_wide <- readRDS(here(derived_data, "pooled_cbcl_wide.Rds")) |> filter(base_all_complete, out_all_complete) 
-
+analysis_data_wide |> count(study)
 # Add spline variables for cbcl - think about how this is done with the MI models - do I include in every imputation?
 
 plots_folder <- here::here(data_and_outputs, "Results", "CBCL", "Imputation Plots") # For some reason this doesn't work.
@@ -38,6 +38,8 @@ analysis_data_all <- analysis_data_spline |>
          base_iq_standard, base_iq_perceptual, base_iq_full_scale, base_vabs_abc_ss,
          base_maternal_education , base_ethnicity) |> 
   mutate(across(where(is.numeric), as.numeric),
+         base_iq_standard = case_when(is.na(base_iq_standard) ~ 1,
+                                             TRUE ~base_iq_standard),
          base_iqXstandard = base_iq_standard*base_iq_full_scale) 
 
 # start small and build up 
@@ -87,7 +89,6 @@ get_data_formula <- function(analysis_data, domain) {
   method <- method[-length(method)]
   method[method == "2l.2stage.norm"] <- "norm"
   method[method == "2l.glm.norm"] <- "norm"
-  method$base_iq_standard <- "brlogreg"
   method$base_maternal_education <- "brlogreg"
   method$base_ethnicity <- "brlogreg"
   method$base_iqXstandard <- "base_iq_standard*base_iq_full_scale"
@@ -115,7 +116,7 @@ imps_aff <- smcfcs(
   smtype = "lm",
   smformula = data_formula_aff$formula,
   method = data_formula_aff$method,
-  m = 1,
+  m = 50,
   numit = 20,
   rjlimit = 10000
   )
@@ -123,6 +124,12 @@ tictoc::toc()
 
 imps_aff |> plot()
 
+get_inp_data <- function(imp) {
+  imp_data <- imp$impDatasets
+  return(imp_data)
+}
+
+aff_data <- get_inp_data(imps_aff)
 
 run_imps <- function(domain) {
   data_formula <- analysis_data_all |> get_data_formula(domain)
@@ -137,7 +144,7 @@ run_imps <- function(domain) {
     numit = 20,
     rjlimit = 10000
   )
-  warnings()
+  warnings() |> print()
   plot(imps)
   
   tictoc::toc()
@@ -170,8 +177,21 @@ imps_odd <- run_imps("odd")
 set.seed(11654168)
 imps_con <- run_imps("con")
 
+cbcl_domains <- c("cbcl_aff", "cbcl_anx", "cbcl_som", "cbcl_adhd", "cbcl_odd", "cbcl_con")
 
-imps_list <- list()
+imps_list <- list(
+  cbcl_aff = imps_aff,
+  cbcl_anx = imps_anx,
+  cbcl_som = imps_som,
+  cbcl_adhd = imps_adhd,
+  cbcl_odd = imps_odd,
+  cbcl_con = imps_con
+)
+
+imp_data_list <- map(imps_list, get_inp_data)
+names(imp_data_list) <- cbcl_domains
+
+saveRDS(imp_data_list, file = file.path(derived_data, here::here(derived_data, "cbcl_imputed_smcfcs.Rds")))
 
 
-# 
+

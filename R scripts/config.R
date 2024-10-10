@@ -46,10 +46,10 @@ library(rms)
 
 filter <- dplyr::filter
 
-# Loading variable metadata ----
+# Loading metadata ----
 var_metadata <- utils::read.csv(here::here("variable_metadata.csv"))
 study_labels <- utils::read.csv(here::here("study_labels.csv"))
-
+coef_mapping <- utils::read.csv(here::here("coef_mapping.csv"))
 
 
 

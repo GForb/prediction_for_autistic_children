@@ -89,3 +89,47 @@ run_many_models <- function(specification_tibble) {
     do.call(run_model, c(list(model_function), args))
   })
 }
+
+run_many_models_model_only <- function(specification_tibble) {
+  pmap(specification_tibble, function(...) {
+    args <- list(...)
+    model_function <- args$model_function
+    args$model_function <- NULL
+    do.call(run_model_only, c(list(model_function), args))
+  })
+}
+
+run_model_only <- function(model_function, analysis_name = NULL, multiple_imputed_data = FALSE, ...) {
+  print(analysis_name)
+  arg_list <- list(...)
+  func_args <- names(formals(model_function))
+  if(is.na(multiple_imputed_data)){
+    multiple_imputed_data <- FALSE
+  }
+  if(multiple_imputed_data){
+    mi_data_list_list <- arg_list$data
+    length(mi_data_list_list) |> print()
+    mi_data <- mi_data_list_list |> 
+      imap(\(x, idx) x |> mutate(mi_m = idx |> as.numeric(), mi_id = row_number())) |> 
+      bind_rows()
+
+    arg_list$data <- mi_data
+  }
+  matched_args <- arg_list[names(arg_list) %in% func_args] |> c(model_only = TRUE)
+  
+  print(arg_list$analysis_name)
+  
+  results <- do.call(model_function, matched_args)
+
+
+  return(results)
+  
+}
+# length(arg_list$data) |> print()
+# mi_data_list <- arg_list$data |> 
+#   imap(\(x, idx) x |> mutate(mi_m = idx, mi_id = row_number()))
+# 
+# mi_data <- bind_rows(mi_data_list)
+# arg_list$multiple_imputed_data
+# print(arg_list$data )
+

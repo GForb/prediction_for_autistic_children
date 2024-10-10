@@ -1,9 +1,8 @@
-analysis_data_long <- readRDS(here(derived_data, "pooled_vabs_spline.Rds"))
-
+analysis_data_long <- readRDS(here(derived_data, "pooled_cbcl_spline.Rds")) 
 # Missing data is at level 2: The cluster level (cluster = individual) - this is the script to use to investigate how to impute missing data.
 # 1% of data are partially complete - to drop or not to drop? - wont introduce bias
 
-plots_folder <- here::here(data_and_outputs, "Results", "VABS", "Imputation Plots")
+plots_folder <- here::here(data_and_outputs, "Results", "CBCL", "Imputation Plots")
 
 id_nums <- analysis_data_long |> 
   select(ID) |> 
@@ -16,9 +15,10 @@ analysis_data_long |>
   sum_detail("value") |> 
   print(n = 50)
 
+
 analysis_data <- analysis_data_long |> 
-  select(ID, study,  starts_with("vabs"), starts_with("age_spline"), age_c,
-         base_sex, starts_with("base_vabs"), - base_vabs_abc_ss,
+  select(ID, study,  starts_with("cbcl"), starts_with("age_spline"), age_c,
+         base_sex, starts_with("base_cbcl"), base_vabs_abc_ss,
          base_adi_65, base_ados_css_rrb, base_ados_css_sa, base_iq_full_scale, base_iq_perceptual,
          base_iq_standard, base_maternal_education, base_ethnicity) |> 
   mutate(across(where(is.numeric), as.numeric)) |> 
@@ -54,9 +54,14 @@ predictor.matrix[-ind.clust,ind.clust]<- -2
 # Run imputations
 set.seed(1234)
 
-
 tictoc::tic()
-imputations <- mice::mice(analysis_data, predictorMatrix = predictor.matrix , method = methods , m = 50, maxit = 20)
+imputations <- mice::mice(
+  analysis_data,
+  predictorMatrix = predictor.matrix ,
+  method = methods ,
+  m = 50,
+  maxit = 20
+)
 tictoc::toc()
 
 non_imputed_vars <- analysis_data_long |> select(ID, starts_with("study_"), age_c, wave)
@@ -68,13 +73,13 @@ non_imputed_vars <- analysis_data_long |> select(ID, starts_with("study_"), age_
 imputed_data <- mice::complete(imputations, action = "all", mild = FALSE) |> 
   map(~bind_cols(., non_imputed_vars) |> mutate(study = as.character(study)))
 
-saveRDS(imputed_data, here::here(derived_data, "vabs_imputed_ml.Rds"))
-saveRDS(imputations, here::here(derived_data, "vabs_imputed_ml_raw.Rds"))
+saveRDS(imputed_data, here::here(derived_data, "cbcl_imputed_ml.Rds"))
+saveRDS(imputations, here::here(derived_data, "cbcl_imputed_ml_raw.Rds"))
 
 plot(imputations)
 
+data <- imputed_data[[1]]
 
-# 
 mice::stripplot(imputations, 
                base_adi_65 +
                  base_ados_css_rrb +

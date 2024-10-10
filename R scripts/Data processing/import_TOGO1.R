@@ -157,9 +157,10 @@ bw2_predictors <-  IDs_base_wave |> filter(base_wave ==2) |> left_join(wave1_pre
 predictors <- bind_rows(bw1_predictors, bw2_predictors) |> 
   select(-wave)
 
-cbcl_data <- bind_rows(wave1_cbcl |> right_join(predictors), # right join used to ensure all individuals are included in base_wave
-                       wave2_cbcl |> left_join(predictors), 
-                       wave3_data |> left_join(predictors)) |> 
+cbcl_data <- bind_rows(wave1_cbcl, # right join used to ensure all individuals are included in base_wave
+                       wave2_cbcl, 
+                       wave3_data) |> 
+  right_join(predictors) |> 
   mutate(out_wave= base_wave +1,
          wave = case_when(!is.na(wave) ~ wave - base_wave,
                           is.na(wave) ~ 0))

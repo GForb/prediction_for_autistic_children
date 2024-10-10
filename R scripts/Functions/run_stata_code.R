@@ -7,17 +7,18 @@ run_stata_code <- function(
     run_model, 
     analysis_code, 
     do_file = NULL, 
-    model_only = FALSE) {
+    model_only = FALSE,
+    run_model_only,
+    run_model_only_mi) {
   
   if(model_only){
     run_stata_code_model_only(
     data, 
     log_file, 
-    stata_prog_source, 
     make_spline, 
-    run_model, 
-    analysis_code, 
-    do_file)
+    do_file,
+    run_model_only,
+    run_model_only_mi)
     
   } else {
     
@@ -85,37 +86,36 @@ run_stata_code <- function(
 run_stata_code_model_only <- function(
     data, 
     log_file, 
-    stata_prog_source, 
     make_spline, 
-    run_model, 
-    analysis_code, 
-    do_file = NULL) {
+    do_file = NULL,
+    run_model_only,
+    run_model_only_mi) {
   
   
-  name <- paste0("model_only", name)
   stata_code <- glue::glue("
       
-      cap log close results_log
-      log using \"{log_file}_model_only.log\", text replace name(results_log)
-      
-      qui do \"{stata_prog_source}\"
-      
-      {make_spline}
+    cap log close results_log
+    log using \"{log_file}_model_only.log\", text replace name(results_log)
+    
+    {make_spline}
   
   *********************** Running model on whole populaiton ***********************
-   {run_model}
-    *extract results
+  capture confirm variable mi_m
+  if !_rc {{
+  tempfile temp
+  save  `temp'
+     mi import flong, id(mi_id) m(mi_m)
+     {run_model_only_mi}
+  }}
+  else {{
+      {run_model_only}
+   }}
+
     mat A = r(table)
-    estat sd
-    mat B = r(table)
-
-    matrix coljoinbyname C = A B
-    matrix Ct =  C'	
-
-    *save results
-     clear
+    matrix At =  A'	
+    clear
  
-    svmat2 Ct, names(col)  rnames(coef)
+    svmat2 At, names(col)  rnames(coef)
     gen N = `e(N)'
 
     log close results_log
@@ -125,12 +125,12 @@ run_stata_code_model_only <- function(
   
   if(!is.null(do_file)) {
     print("writing do file")
+    do_file <- glue::glue("{do_file}_model_only.do")
     print(do_file)
-    writeLines(stata_code, glue::glue("{do_file}_model_only.do"))
+    writeLines(stata_code, do_file)
   }
   
-  results <-  RStata::stata(stata_code, data.in = data, data.out = TRUE) |> 
-    mutate(validation = name)
+  results <-  RStata::stata(stata_code, data.in = data, data.out = TRUE) 
   
   return(results)
   

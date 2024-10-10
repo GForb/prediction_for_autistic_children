@@ -115,7 +115,7 @@ vabs_data_all <- data |>
   rowwise() |>
   mutate(years = str_split(score, "-")[[1]][1]|> as.numeric(),
          months = str_split(score, "-")[[1]][2] |> as.numeric(),
-         age = case_when(score == "<0-1" ~ 1/24,
+         age_eqiv = case_when(score == "<0-1" ~ 1/24,
                          score == ">22-0" ~ 22 + 1/12,
                          TRUE ~ years + months/12),
         domain = substr(name, 6,7),
@@ -123,14 +123,14 @@ vabs_data_all <- data |>
   ungroup() |> 
   filter(domain != "mg" & domain != "mf") 
 
-vabs_data_all |> filter(is.na(age)) |> count(score)
+vabs_data_all |> filter(is.na(age_eqiv)) |> count(score)
 vabs_data_all |> count(domain)
 vabs_data_all |> count(wave)
 
 vabs_data <- vabs_data_all |> 
   select(-score,- years, -months, -name) |> 
-  filter(!is.na(age)) |> 
-  pivot_wider(names_from = domain, values_from = age) |> 
+  filter(!is.na(age_eqiv), domain %in% c("cr", "ce", "cw","si", "sp", "sc", "dp", "dd", "dc")) |> 
+  pivot_wider(names_from = domain, values_from = age_eqiv) |> 
   rowwise() |> 
   mutate(vabs_com_ae = mean(c(cr, ce, cw)),
          vabs_soc_ae = mean(c(si, sp, sc)),
@@ -164,7 +164,7 @@ vabs_data_analysis <-
          base_wave = 0,
          study = study_name,
          country = country_name) |> 
-  left_join(predictors |> select(-base_vabs_abc_ss), by = "ID") 
+  left_join(predictors, by = "ID") 
 
 
 # CBCL
@@ -279,6 +279,11 @@ pathways_data_cbcl<- cbcl_data_restricted |>
 
 particpant_accounting_vabs <- 
   age_range_data_vabs |> 
+  mutate(study = study_name)
+
+
+particpant_accounting_cbcl <- 
+  ages_cbcl |> 
   mutate(study = study_name)
 
 vabs_data_analysis |> check_values()

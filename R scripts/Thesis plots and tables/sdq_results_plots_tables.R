@@ -158,10 +158,7 @@ walk(outcomes, make_sens_table)
 sens_labels
 primary_results <- sensitivity_results |> filter(label == "Primary analysis") |> select(outcome, metric, prim_est = est, prim_tau = tau)
 
-modelling_table <- sensitivity_results |> 
-  filter(order %in% c(9,8,7)) |> 
-  make_sens_delta_table(primary_results = primary_results, table_name = "sdq_modelling") |> 
-  
-timepoints_table <- sensitivity_results |> filter(order %in% c(6,5,4)) |> make_sens_delta_table(primary_results = primary_results,table_name = "sdq_timepoints")
-population_table <- sensitivity_results |> filter(order %in% c(3,2,1)) |> make_sens_delta_table(primary_results = primary_results, table_name = "sdq_population")
+modelling_table <- sensitivity_results |> filter(order %in% c(9,8,7)) |> make_sens_table3(primary_results = primary_results, table_name = "sdq_modelling")
+timepoints_table <- sensitivity_results |> filter(order %in% c(6,5,4)) |> make_sens_table3(primary_results = primary_results,table_name = "sdq_timepoints")
+population_table <- sensitivity_results |> filter(order %in% c(3,2,1)) |> make_sens_table3(primary_results = primary_results, table_name = "sdq_population")
 

@@ -11,7 +11,12 @@ pool_datasets <- function(dataset_strings, data_folder = derived_data, include_a
     mutate(ID = paste0(study, "_", ID)) |> 
     one_hot_encode_study()
   
+if(is.null(pooled_data$base_iq_full_scale) & is.null(pooled_data$base_iq_perceptual)){
+  pooled_data <- pooled_data |> mutate(base_iq_recorded = case_when(!is.na(base_iq_full_scale) ~ base_iq_full_scale,
+                               TRUE ~ base_iq_perceptual))
+}
 
+  
   pooled_data_baseline <- pooled_data |> 
     filter(wave == base_wave) |> 
     select(ID,age,  any_of(c("vabs_dls_ae", "vabs_com_ae", "vabs_soc_ae")), 

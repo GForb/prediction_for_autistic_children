@@ -33,6 +33,16 @@ model_pred_gsem_ri_study_rs_id <- function(data,
   "
   )
   
+  run_model_only <- run_model
+  run_model_only_mi <- glue::glue(
+    "
+    mi estimate, cmdok: model_code}, var(STUDY[study]  M1[ID] M2[ID]@0.001) cov(M1[ID]*M2[ID]@0)
+    mat simple = e(b)
+    mi estimate, cmdok: {model_code}, from(simple)
+  "
+  ) 
+  
+  
   analysis_code <- glue::glue(
     "
   get_all_preds {study_var}, ///
@@ -58,7 +68,9 @@ model_pred_gsem_ri_study_rs_id <- function(data,
     int_valid_code = int_valid_code,
     run_model = run_model,
     do_file = do_file,
-    model_only = model_only
+    model_only = model_only,
+    run_model_only = run_model_only,
+    run_model_only_mi = run_model_only_mi
   )
 }
 
@@ -92,6 +104,13 @@ model_pred_gsem_ri_study_ri_id <- function(data,
     matrix all = e(b)
     ")
   
+  run_model_only <- run_model
+  run_model_only_mi <- glue::glue(
+    "
+    mi estimate, cmdok:{model_code}
+  "
+  ) 
+  
   analysis_code <- glue::glue(
     "
     get_all_preds {study_var}, ///
@@ -112,7 +131,9 @@ model_pred_gsem_ri_study_ri_id <- function(data,
     analysis_code = analysis_code,
     run_model = run_model,
     do_file = do_file,
-    model_only = model_only
+    model_only = model_only,
+    run_model_only = run_model_only,
+    run_model_only_mi = run_model_only_mi
   )
   
 }
@@ -150,6 +171,15 @@ model_pred_gsem_ri_study_rs_id <- function(data,
   "
   )
   
+  run_model_only <- run_model
+  run_model_only_mi <- glue::glue(
+    "
+    mi estimate, cmdok: {model_code}, var(STUDY[study]  M1[ID] M2[ID]@0.001) cov(M1[ID]*M2[ID]@0)
+    mat simple = e(b)
+    mi estimate, cmdok: {model_code}, from(simple)
+  "
+  )
+  
   
   analysis_code <- glue::glue(
     "
@@ -173,7 +203,9 @@ model_pred_gsem_ri_study_rs_id <- function(data,
     analysis_code = analysis_code,
     run_model = run_model,
     do_file = do_file,
-    model_only = model_only
+    model_only = model_only,
+    run_model_only = run_model_only,
+    run_model_only_mi = run_model_only_mi
   )
   
 }
@@ -181,41 +213,7 @@ model_pred_gsem_ri_study_rs_id <- function(data,
 
 ## Multi-timepoint model with random intercept, fixed study
 
-model_pred_vabs_gsem <- function(data,
-                                 pred_waves,
-                                 outcome,
-                                 model_code,
-                                 model_options,
-                                 intercept_est,
-                                 log_file,
-                                 do_file = NULL,
-                                 model_only = FALSE) {
-  out_wave <- 1
-  
-  
-  analysis_code <- glue::glue(
-    "
-    get_all_preds {study_var}, ///
-      model_code({model_code}) ///
-    	intercept_est({intercept_est}) ///
-    	model_options({model_options}) ///
-    	out_wave({out_wave}) ///
-    	predictor_waves({pred_waves}) ///
-    "
-  )
-  
-  run_stata_code(
-    data = data,
-    log_file = log_file,
-    stata_prog_source = stata_prog_source,
-    make_spline = make_spline,
-    analysis_code = analysis_code,
-    model_code = model_code,
-    model_options = model_options,
-    do_file = do_file,
-    model_only = model_only
-  )
-}
+
 
 model_pred_gsem_fi_study_ri_id <- function(data,
                                            outcome,
@@ -245,6 +243,15 @@ model_pred_gsem_fi_study_ri_id <- function(data,
     {model_code}, {model_options}
     ")
   
+  run_model_only <- run_model
+  run_model_only_mi <- glue::glue(
+    "
+    mi estimate, cmdok: {model_code}, {model_options}
+  "
+  )
+  
+
+  
   analysis_code <- glue::glue(
     "
     get_all_preds {study_var}, ///
@@ -264,7 +271,9 @@ model_pred_gsem_fi_study_ri_id <- function(data,
     analysis_code = analysis_code,
     run_model = run_model,
     do_file = do_file,
-    model_only = model_only
+    model_only = model_only,
+    run_model_only = run_model_only,
+    run_model_only_mi = run_model_only_mi
   )
 }
 ## Fixed study, random slope for ID
@@ -305,6 +314,9 @@ model_pred_gsem_fi_study_rs_id <- function(data,
   "
   )
   
+  run_model_only <- glue::glue(" {mixed_model}, {mixed_model_options}")
+  run_model_only_mi <- glue::glue("mi estimate: {run_model_only}")
+  
   
   analysis_code <- glue::glue(
     "
@@ -327,7 +339,9 @@ model_pred_gsem_fi_study_rs_id <- function(data,
     analysis_code = analysis_code,
     run_model = run_model,
     do_file = do_file,
-    model_only = model_only
+    model_only = model_only,
+    run_model_only = run_model_only,
+    run_model_only_mi = run_model_only_mi
   )
   
 }
@@ -350,6 +364,10 @@ model_pred_reg_fi_study <- function(data,
   model_options <- "nocons"
   run_model <- glue::glue("{model_code}, {model_options}")
   
+  run_model_only <- run_model
+  run_model_only_mi <- glue::glue("mi estimate: {run_model_only}")
+  
+  
   analysis_code <- glue::glue(
     "
    get_all_preds {study_var}, ///
@@ -368,7 +386,9 @@ model_pred_reg_fi_study <- function(data,
     analysis_code = analysis_code,
     run_model = run_model,
     do_file = do_file,
-    model_only = model_only
+    model_only = model_only,
+    run_model_only = run_model_only,
+    run_model_only_mi = run_model_only_mi
   )
 }
 
@@ -385,6 +405,10 @@ model_pred_gsem_ri_study <- function(data,
   
   model_code <- glue::glue("gsem (out_{outcome} <- STUDY[study]  {predictors} )")
   run_model <- model_code
+  
+  run_model_only <- run_model
+  run_model_only_mi <- glue::glue("mi estimate, cmdok: {run_model_only}")
+  
   
   analysis_code <- glue::glue(
     "
@@ -404,6 +428,8 @@ model_pred_gsem_ri_study <- function(data,
     analysis_code = analysis_code,
     run_model = run_model,
     do_file = do_file,
-    model_only = model_only
+    model_only = model_only,
+    run_model_only = run_model_only,
+    run_model_only_mi = run_model_only_mi
   )
 }

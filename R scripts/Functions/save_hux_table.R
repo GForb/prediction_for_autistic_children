@@ -1,4 +1,4 @@
-save_hux_table <- function(hux_table, file_name, label, caption){
+save_hux_table <- function(hux_table, file_name, label, caption, font_size = 11){
   huxtable::set_default_properties(
     font = "mathptmx",
     left_padding = 0.5,
@@ -14,7 +14,7 @@ save_hux_table <- function(hux_table, file_name, label, caption){
     huxtable::set_caption(caption) |> 
     huxtable::set_label(paste0("tab:", label)) |> 
     huxtable::set_escape_contents(value = FALSE) |> 
-    huxtable::set_font_size(value = 11)
+    huxtable::set_font_size(value = font_size)
   
   
   

@@ -98,6 +98,11 @@ I could use different subsets for different sub-domains but that will create con
 
 I have picked one twin per family where more than one eligible twin. Where one twin has a pre baseline diagnosis I pick that twin. Otherwise pick is random. 
 
+## TRAILS:
+Selection of baseline and outcome waves:
+
+- Baseline wave is selected to be the second wave of available data, collected at approximately age 13.
+
 ### Variables measuring cognative function
 lrvtota1 lcg1 lgktota1 lpctot1 lrvtota1 lvctota1
 

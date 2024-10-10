@@ -28,6 +28,7 @@ t2_intensive_raw <- haven::read_dta(here::here(data_folder, "t2_intensive_raw_qu
   
 t2_extensive_raw <- haven::read_dta(here::here(data_folder, "t2_extensive_questionnaires_raw 05-03-17.dta")) |> 
   mutate(ID = as.character(idnum)) |> 
+  filter(DEM1 != "" | DEM1_other != "") |> 
   select(ID, starts_with("k10"), , FIMH_1, FIMH_2)
 
 t2_raw <- bind_rows(t2_intensive_raw, t2_extensive_raw) |> 

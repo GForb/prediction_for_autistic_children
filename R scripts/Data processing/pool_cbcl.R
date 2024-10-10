@@ -10,7 +10,6 @@ pooled_data_cbcl <- pool_datasets(
 # leave out "edx_cbcl" until I have item level data.
 
 
-# what a shit show
 pooled_data_cbcl$pooled_data_long |> 
   group_by(study) |> 
   summarise(mean_obs = mean(n_obs))
@@ -44,3 +43,26 @@ saveRDS(pooled_data_cbcl$pooled_data_acc, here(derived_data, "pooled_cbcl_acc.Rd
 
 haven::write_dta(pooled_data_cbcl$pooled_data_long |> select(-"0"), here(derived_data, "pooled_cbcl.dta"))
 haven::write_dta(pooled_data_cbcl$pooled_data_wide |> select(-"0"), here(derived_data, "pooled_cbcl_wide.dta"))
+
+
+# Saving data with splines
+
+analysis_data_long <- pooled_data_cbcl$pooled_data_long |> 
+  filter(base_all_complete, out_all_complete, all_complete) |> 
+  select(-`0`)
+
+spline_stata_code_cbcl <- "
+    mkspline age_spline = age_c , nknots(3) cubic
+    gen age_spline1Xsex = age_spline1*base_sex
+    gen age_spline2Xsex = age_spline2*base_sex
+    su age_spline*"
+
+spline_stata_code_cbcl2 <- "di 1"
+
+analysis_data_long_spline <- RStata::stata(
+   spline_stata_code_cbcl, 
+   data.in = analysis_data_long, 
+   data.out = TRUE)
+
+
+saveRDS(analysis_data_long_spline, here::here(derived_data, "pooled_cbcl_spline.Rds"))

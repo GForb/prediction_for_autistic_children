@@ -11,14 +11,40 @@ make_sens_table <- function(myOutcome) {
     pivot_wider(names_from = metric, values_from = value) |> 
     mutate(summary = case_when(
       summary == "est_str" ~ "Estimate",
-      summary == "ci_str" ~ "95% CI",
-      summary == "pi_str" ~ "95% PI"
+      summary == "ci_str" ~ "95\\% CI",
+      summary == "pi_str" ~ "95\\% PI"
     )) |> 
     arrange(-order) |> 
-    select(label, summary, calib_itl, calib_slope, rmse,  everything(), -order) 
+    select(label, summary, rmse, r_squared_transformed, calib_itl, calib_slope, -order) 
   
-  write_csv(sens_table, file.path(tables_folder, paste0("sens_", myOutcome, ".csv")))
-  return(table)
+  return(sens_table)
+}
+
+save_sens_hux_table <- function(sens_table, outcome){
+  n_rows <- nrow(sens_table)
+  n_analysis <- (n_rows-1)/3
+  border_rows <- 1:n_analysis*3+1
+  sens_table <- rbind(
+    c("", "", "RMSE", "$R^2$", "Calibration In-The-Large", "Calibration Slope"),
+    sens_table
+  )
+  
+  hux_table <-  sens_table |> 
+    huxtable::hux(add_colnames = FALSE) |> 
+    huxtable::set_bottom_border(row = 1, value = 0.5) |>
+    huxtable::set_bottom_border(row = border_rows, value = 0.5) |>
+    huxtable::merge_repeated_rows(col = 1)  
+  
+  outcome_label <- get_label(outcome)
+  
+  print(glue::glue("Saving table for model validation for sensitivity analysis of {outcome_label}."))
+  ht <- hux_table |> save_hux_table(
+    file_name = paste0(outcome,"_sens_results.tex"),
+    caption = glue::glue("Results for model validation for sensitivity analysis of {outcome_label}."),
+    label = paste0(outcome,"_sens_results"))
+  
+  print(ht)
+  return(ht)
 }
 
 
@@ -50,44 +76,6 @@ make_sens_table2 <- function(table_data, primary_results, table_name) {
   write_csv(sens_table, file.path(tables_folder, paste0("sens_", table_name, ".csv")))
   return(sens_table)
 }
-
-make_sens_table3 <- function(table_data, primary_results, table_name) {
-  round1dp_metrics_est <- c("calib_itl", "rmse")
-  round1dp_metrics_tau <- c("")
-  
-  sens_table <- table_data |> 
-    left_join(primary_results) |> 
-    mutate(
-      delta_est = case_when(
-        metric %in% round1dp_metrics_est ~ (est - prim_est) |> round(1),
-        TRUE ~ (est - prim_est) |> round(2)),
-      delta_tau = case_when(
-        metric %in% round1dp_metrics_tau ~ (tau - prim_tau) |> round(1),
-        TRUE ~ (tau - prim_tau) |> round(2)),
-      est = case_when(
-        metric %in% round1dp_metrics_est ~ (est) |> round(1),
-        TRUE ~ (est) |> round(2)),
-      tau = case_when(
-        metric %in% round1dp_metrics_tau ~ (tau) |> round(1),
-        TRUE ~ (tau) |> round(2)),
-    ) |> 
-    mutate(sum_str_est = paste0(est, " (", delta_est, ")"),
-           sum_str_tau = paste0(tau, " (", delta_tau, ")")) |>
-    select(label, outcome, order, metric, est = sum_str_est, tau = sum_str_tau) |> 
-    pivot_wider(names_from = metric, values_from = c("est", "tau"), names_glue = "{metric}_{.value}") |> 
-    mutate(outcome_label = get_label(outcome, label_no = 3)) |>
-    select(label, outcome_label, order, 
-           starts_with("calib_itl"),
-           starts_with("calib_slope"),
-           starts_with("rmse"),
-           starts_with("r_squared_transformed")) |>
-    arrange(desc(order), outcome_label) |> 
-    select(-order)
-  
-  write_csv(sens_table, file.path(tables_folder, paste0("sens_", table_name, ".csv")))
-  return(sens_table)
-}
-
 
 make_sensitivty_analysis_plot <- function(myOutcome) {
   plot_data <- sensitivity_results |> 

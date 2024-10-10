@@ -1,0 +1,58 @@
+coef,label,order
+n,N,1
+base_age,Age at Baseline,3
+out_age,Age at Outcome,3
+base_sdq_pro_p,SDQ Pro-social,5
+base_sdq_hyp_p,SDQ Hyperactivity,5
+base_sdq_emot_p,SDQ Emotional,5
+base_sdq_cond_p,SDQ Conduct,5
+base_sdq_peer_p,SDQ Peer,5
+base_sex,Sex,3
+_cons,Intercept,2
+var(STUDY[study]),Var Intercept,7
+var(e),Residual Variance,9
+study_ALSPAC,ALSPAC,2
+study_GUI,GUI,2
+study_k_families,1k Fam.,2
+study_lsac_b,LSAC B,2
+study_lsac_k,LSAC K,2
+study_MCS,MCS,2
+study_Quest,Quest,2
+study_SNAP,SNAP,2
+study_TEDS,TEDS,2
+base_spline1,Baseline outcome (spline 1),4
+base_spline2,Baseline outcome (spline 2),4
+1.base_sex#c.base_spline1,Sex by baseline outcome (spline 1),4
+1.base_sex#c.base_spline2,Sex by baseline outcome (spline 2),4
+base_ld,Learning Disability,6
+base_ethnicity,Ethnicity,6
+base_maternal_education,Maternal Education,6
+base_imd_decile,IMD (Decile),6
+base_maternal_mh,Maternal Mental Health (K6),6
+Model did not run,Model did not run,-1
+age_spline1,Age (spline 1),3
+age_spline2,Age (spline 2),3
+1.base_sex#c.age_spline1,Sex by Age (spline 1),3
+1.base_sex#c.age_spline2,Sex by Age (spline 2),3
+var(age_c),Var Slope,7
+var(_cons),Var Intercept,7
+"cov(age_c,_cons)",Cov Slope v Intercept,8
+var(M1[ID]),Var Intercept,7
+var(M2[ID]),Var Slope,7
+"cov(M1[ID],M2[ID])",Cov Slope v Intercept,8
+study_k_fa~s,1k Fam.,2
+base_sex c. age_spline1 1,Sex by Age (spline 1),3
+base_sex c. age_spline2 1,Sex by Age (spline 2),3
+base_sdq_h~p,SDQ Hyperactivity,5
+base_sdq_e~p,SDQ Emotional,5
+base_sdq_c~p,SDQ Conduct,5
+base_sdq~r_p,SDQ Peer,5
+base_ethni~y,Ethnicity,6
+base_mater~n,Maternal Education,6
+base_imd_d~e,IMD (Decile),6
+base_mater~h, Maternal MH (K6),6
+sd(age_c),SD Slope,7
+sd(_cons),SD Intercept,7
+"corr(age_c,_cons)",Corr Slope v intercept,8
+sd(Residual),SD residual,9
+base_sdq~o_p,SDQ Pro-social,5

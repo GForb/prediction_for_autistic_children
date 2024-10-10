@@ -232,7 +232,8 @@ edx_data_vabs <- vabs_data  |>
          out_wave,
          vabs_dls_ae,
          vabs_com_ae,
-         vabs_soc_ae) |> 
+         vabs_soc_ae, 
+         EXAMTYPE) |> 
   left_join(predictors, by = "ID") |> 
   mutate(study = study_name)
 
@@ -279,7 +280,9 @@ cbcl_ages <- cbcl_data_all |>
     id_eligible_base = max(eligible_base),
     base_wave = max(base_wave, na.rm = TRUE),
     out_wave = max(out_wave, na.rm = TRUE)) |> 
-  ungroup() 
+  ungroup() |> 
+  mutate(base_wave = case_when(base_wave == out_wave ~ base_wave - 1,
+         TRUE ~ base_wave))
 
 diplicate_waves <- cbcl_ages |> filter(id_eligible_out == 1, base_wave == out_wave)
 if(nrow(diplicate_waves) > 0){
@@ -343,13 +346,3 @@ saveRDS(vabs_accounting, file = here::here(derived_data, "edx_vabs_acc.Rds"))
 
 # -------------------------------------------------------------------------
 
-# Delete: not sure why here
-# ages |> left_join(vabs_accounting, by = "ID") |> 
-#   filter(include == "include") |> 
-#   summarise(iq9 = sum(vabs_check_base_age(ageiq)),
-#                   vabs9 = sum(vabs_check_base_age(agevabs)),
-#                   adosrrb9 = sum(vabs_check_base_age(ageadosrrb)),
-#                   adossa9 = sum(vabs_check_base_age(ageadossa)),
-#                   adi65_9 = sum(vabs_check_base_age(ageadi), na.rm = TRUE)) 
-# 
-# 

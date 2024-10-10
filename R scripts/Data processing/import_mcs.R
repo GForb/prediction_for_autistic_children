@@ -54,7 +54,7 @@ parent_data <- parent_interview_raw |>
   select(MCSID,EPNUM00, base_maternal_mh, base_subjective_poverty) |> 
   mutate(mother_id =  paste0(MCSID, "_", EPNUM00))
 
-ld_data <-  readRDS(file = here(mcs_data, "mcs_ID"))
+ld_data <-  readRDS(file = here(raw_data,"MCS",  "mcs_ID"))
 
 # subjective poverty: EPMAFI00 
 

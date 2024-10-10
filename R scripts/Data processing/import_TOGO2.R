@@ -8,10 +8,7 @@ data  <- haven::read_sav(here::here(data_folder, "ASS_W1_W2_cohort2-2.zsav")) |>
 
 comorbid_data <- haven::read_sav(here::here(data_folder, "ASS_W1_W2_cohort2_W1ComorOther.zsav"))
 
-comorbid_data |> dplyr::count(w1_comor_other) |> print(n = 50)
-data |> dplyr::count(W2Diagn_comor_other)
 
-colnames(data)
 data |> select(dplyr::starts_with("W1CBCL")) |> colnames() 
 print("CBCL Columns")
 af_items <- 13 # i get 11

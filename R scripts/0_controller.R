@@ -1,6 +1,5 @@
 # See file controller_functions for helper functions
 
-
 ## SDQ
 process("ALSPAC")
 process("gui")
@@ -12,6 +11,8 @@ process("Quest")
 process("lsac_k")
 process("lsac_b")
 
+
+# Running garbage clean after processing data as it is memory intensive
 rm(list = ls())
 gc()
 source(here::here("R scripts", "config.R"))
@@ -25,13 +26,17 @@ process("TOGO2")
 process("TOGO1")
 process("pathways")
 process("ssc")
+process("TRAILS")
 
+# Running garbage clean after processing data as it is memory intensive
+rm(list = ls())
+gc()
+source(here::here("R scripts", "config.R"))
 
 
 # Descriptive Reports
-## SDQ
 descriptive_template <- here::here("Rmarkdown/descriptive_report_template.rmd")
-
+## SDQ
 create_doc(dataset = "ALSPAC", template = descriptive_template, outcome = "sdq")
 create_doc(dataset = "gui", template = descriptive_template, outcome = "sdq")
 create_doc(dataset = "TEDS", template = descriptive_template, outcome = "sdq")
@@ -42,87 +47,110 @@ create_doc(dataset = "Quest", template = descriptive_template, outcome = "sdq")
 create_doc(dataset = "lsac_k", template = descriptive_template, outcome = "sdq")
 create_doc(dataset = "lsac_b", template = descriptive_template, outcome = "sdq")
 
-## VABS
-create_doc(dataset = "edx_vabs", template = descriptive_template, outcome = "vabs")
-create_doc(dataset = "epited", template = descriptive_template, outcome = "vabs")
-create_doc(dataset = "elena_vabs", template = descriptive_template, outcome = "vabs")
-create_doc(dataset = "pathways_vabs", template = descriptive_template, outcome = "vabs")
-
 ## CBCL
-create_doc(dataset = "edx_cbcl", template = descriptive_template, outcome = "cbcl")
+#create_doc(dataset = "edx_cbcl", template = descriptive_template, outcome = "cbcl")
 create_doc( dataset = "elena_cbcl", template = descriptive_template, outcome = "cbcl")
 create_doc(dataset = "pathways_cbcl", template = descriptive_template, outcome = "cbcl")
 create_doc(dataset = "togo1", template = descriptive_template, outcome = "cbcl")
 create_doc(dataset = "togo2", template = descriptive_template, outcome = "cbcl")
-create_doc(dataset = "ssc", template = descriptive_template, outcome = "cbcl")
+create_doc(dataset = "TRAILS_CC", template = descriptive_template, outcome = "cbcl")
+create_doc(dataset = "TRAILS_POP", template = descriptive_template, outcome = "cbcl")
 
 
 
 
+
+
+
+# VABS Pipeline   ----
+
+## Pooling ----
 pool("vabs")
 create_doc(dataset = "pooled_vabs", template = descriptive_template, outcome = "vabs")
 
-
+## Multiple Imputaiton ----
 tictoc::tic()
-run_models("cbcl")
+source(here(modelling_scripts, "vabs_mi_multilevel.R"))
 tictoc::toc() 
 
+##  Running models with validation ----
 tictoc::tic()
 run_models("vabs")
 tictoc::toc() 
+
+##  Meta-analysing results ----
 results_folder <- here::here(data_and_outputs, "Results", "VABS", "Thesis")
 tictoc::tic()
+set.seed(42345234)
 create_full_results_table(results_folder)
 tictoc::toc() 
 
-results_folder <- here::here(data_and_outputs, "Results", "SDQ", "Prelim")
+# Running models for model reporting  ----
+##  Running models for model reporting
+source(here::here(modelling_scripts, "run_model_only_vabs.R"))
 
 
+# CBCL Pipeline ----
 
-results_folder <- here::here(data_and_outputs, "Results", "VABS", "Prelim")
-tictoc::tic()
-create_full_results_table(results_folder)
-tictoc::toc() 
-
-report_all("vabs")
-template = here::here("Rmarkdown/vabs_results.rmd")
-output_file_name  <-  "vabs_results.html"
-run_results_report(template, output_file_name)
-
-
-
+## Pooling ----
 pool("cbcl")
 create_doc(dataset = "pooled_cbcl", template = descriptive_template, outcome = "cbcl")
+
+## Multiple Imputaiton ----
+tictoc::tic()
+source(here(modelling_scripts, "cbcl_mi_multilevel.R"))
+tictoc::toc() 
+
+##  Running models with validation ----
+
+
+source(here(data_processing_scripts, "save_analysis_datasets_cbcl.R"))
+
+tictoc::tic()
 run_models("cbcl")
-report_all("cbcl")
-template = here::here("Rmarkdown/cbcl_results.rmd")
-output_file_name  <-  "cbcl_results.html"
-run_results_report(template, output_file_name)
+tictoc::toc() 
 
-# SDQ
-pool("sdq")
-create_doc(dataset = "pooled_sdq", template = descriptive_template, outcome = "sdq")
-tictoc::tic()
-run_models("sdq")
-tictoc::toc() # 4713 seconds- this will now be longer eg. 24 hours.
+##  Meta-analysing results ----
+results_folder <- here::here(data_and_outputs, "Results", "CBCL", "Thesis")
 
-set.seed(12345)
-results_folder <- here::here(data_and_outputs, "Results", "SDQ", "Thesis")
 tictoc::tic()
+set.seed(366345634)
 create_full_results_table(results_folder)
 tictoc::toc() 
 
+##  Running models for model reporting
+tictoc::tic()
+source(here::here(modelling_scripts, "run_model_only_cbcl.R"))
+tictoc::toc() 
 
-template = here::here("Rmarkdown/sdq_results.rmd")
-output_file_name  <-  "sdq_results.html"
-run_results_report(template, output_file_name)
+# SDQ Pipeline  ----
 
+# Pooling   ----  
+pool("sdq")
+create_doc(dataset = "pooled_sdq", template = descriptive_template, outcome = "sdq")
 
+## Multiple Imputation ----
+tictoc::tic()
+source(here(modelling_scripts, "sdq_mi_fcs_glm.R"))
+tictoc::toc() 
+tictoc::tic()
+source(here(modelling_scripts, "sdq_mi_multilevl.R"))
+tictoc::toc() 
 
-run_results_plot("SDQ")
-run_results_plot("CBCL")
-run_results_plot("VABS")
+##  Running models with validation ----
+tictoc::tic()
+run_models("sdq")
+tictoc::toc() 
 
+##  Meta-analysing results ----
+results_folder <- here::here(data_and_outputs, "Results", "SDQ", "Thesis")
+tictoc::tic()
+set.seed(949493)
+create_full_results_table(results_folder)
+tictoc::toc() 
+
+##  Running models for model reporting
+source(here::here(modelling_scripts, "run_model_only_sdq.R"))
 
 # Reporting
 source(here::here(thesis_reporting, "n_fup_tables.R"))
@@ -132,6 +160,11 @@ source(here::here(thesis_reporting, "cbcl_descriptive_table.R"))
 source(here::here(thesis_reporting, "sdq_descriptive_table.R"))
 source(here::here(thesis_reporting, "vabs_descriptive_table.R"))
 
+source(here::here(thesis_reporting, "report_model_only.R"))
+
+source(here::here(thesis_reporting, "main_results_table.R"))
+
+source(here::here(thesis_reporting, "sensitivity_analysis_plots_and_tables.R"))
 
 
 

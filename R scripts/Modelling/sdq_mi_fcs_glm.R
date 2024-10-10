@@ -40,14 +40,14 @@ analysis_data <- analysis_data_spline |>
          base_ld) |> 
   select(-base_sdq_cond_p, -base_sdq_emot_p, -base_sdq_peer_p, -base_sdq_pro_p, -base_sdq_hyp_p) |> # removing main terms for sdq as spline terms will be used instead
   mutate(across(where(is.numeric), as.numeric)) |> 
-  mutate(base_maternal_education = as.factor(base_maternal_education),
-         base_ld = as.factor(base_ld),
+  mutate(base_ld = as.factor(base_ld),
          base_ethnicity = as.factor(base_ethnicity),
          base_maternal_education = as.factor(base_maternal_education))
 
 ind.clust <- 1
 predictor.matrix <- mice::mice(analysis_data,m=1,maxit=0)$pred
 predictor.matrix[ind.clust,ind.clust] <- 0
+predictor.matrix[-ind.clust,ind.clust] <- -2
 
 method<-micemd::find.defaultMethod(analysis_data, ind.clust)
 method["base_ethnicity"] <-  "2l.glm.bin"
@@ -55,11 +55,14 @@ set.seed(1234)
 
 non_imputed_vars <- analysis_data_wide |> select(ID, study, wave, base_sdq_cond_p, base_sdq_emot_p, base_sdq_peer_p, base_sdq_pro_p, base_sdq_hyp_p)
 tictoc::tic()
+set.seed(1234)
 imputations <- mice::mice(analysis_data, 
                                 predictorMatrix = predictor.matrix,
                                 method = method,
                                 maxit = 20, print=TRUE, m = 50) 
 tictoc::toc()
+
+
 imputed_data <- mice::complete(imputations, action = "all", mild = FALSE) |> 
   map(~bind_cols(., non_imputed_vars))
 
