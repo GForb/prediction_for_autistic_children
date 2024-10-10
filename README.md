@@ -17,7 +17,7 @@ This folder contains notes on the dataset, instructions on how to set up file pa
 ## 2. Rscripts
 ### Top level files:
   - config.R: Sets up paths and loads libraries and functions. Some of this could be taken out if fucntions were in a package
-  - 0_controller.R: Will run the whole analysis from start to finish - currently not updated
+  - 0_controller.R: Will run the whole analysis from start to finish
   - run_descriptive_reports.R: Generates rmarkdown reports for each study containing descriptive graphs and summary tables. 
 
 ### Data Processing: 
