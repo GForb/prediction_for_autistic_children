@@ -1,5 +1,7 @@
 # Prediction for autistic chilren 
 
+**NEEDS MORE DESCRIPTION ADDING**
+
 The Prediction for autistic children project aims to develop statsitical models that describe the uncertainty of outcomes based on an autistic child's individual characteristics.
 
 Find more information on our [study page](https://www.kcl.ac.uk/research/predictions-of-outcomes-for-autistic-children)
