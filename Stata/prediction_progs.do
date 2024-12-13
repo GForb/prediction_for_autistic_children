@@ -286,8 +286,8 @@ syntax varname, hold_out_fold(string) model_name(passthru) ///
 	tempfile data
 	local count = 1
 
-	splitsample if `varlist' == "`hold_out_fold'", generate(int_est_fold)  cluster(ID) nsplit(10)  
-	qui levelsof int_est_fold, local(folds)
+	splitsample if `varlist' == "`hold_out_fold'", generate(int_est_fold)  cluster(ID) nsplit(10)  // nsplit(10) defines the number of folds used in estimate_cv
+	qui levelsof int_est_fold, local(folds) 
 	foreach fold in `folds' {
 		di "Intercept est fold: `fold'"
 		

@@ -20,6 +20,9 @@ modelling_scripts <- here::here("R scripts", "Modelling")
 reporting_scripts <- here::here("R scripts", "Reporting")
 thesis_reporting <- here::here("R scripts", "Thesis plots and tables")
 
+results_folder_sdq <- here::here(data_and_outputs, "Results", "SDQ", "Thesis")
+results_folder_cbcl <- here::here(data_and_outputs, "Results", "CBCL", "Thesis")
+results_folder_vabs <- here::here(data_and_outputs, "Results", "VABS", "Thesis")
 
 
 #devtools::install_github("GForb/IPDPredictR")
@@ -48,9 +51,32 @@ filter <- dplyr::filter
 
 # Loading metadata ----
 var_metadata <- utils::read.csv(here::here("variable_metadata.csv"))
-study_labels <- utils::read.csv(here::here("study_labels.csv"))
+study_metadata <- utils::read.csv(here::here("study_labels.csv"))
 coef_mapping <- utils::read.csv(here::here("coef_mapping.csv"))
 
+sdq_cutoffs <- var_metadata |> 
+  filter(variable_name %in% c("sdq_emot_p", "sdq_cond_p", "sdq_hyp_p", "sdq_peer_p", "sdq_pro_p")) |> 
+  select(outcome = variable_name,
+         outcome_label = label3,
+         cutoff,
+         min, 
+         max)
+
+cbcl_cutoffs <- var_metadata |> 
+  filter(variable_name %in% c(
+    "cbcl_aff",
+    "cbcl_anx",
+    "cbcl_som",
+    "cbcl_adhd",
+    "cbcl_odd",
+    "cbcl_con"
+  )) |> 
+  select(outcome = variable_name,
+         outcome_label = label3,
+         cutoff,
+         min, 
+         max,
+         n_items)
 
 
 # Sourcing functions ----

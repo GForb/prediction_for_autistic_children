@@ -16,6 +16,8 @@ get_meta_analysis_df <- function(model_name_spec) {
            outcome, predictor_set, 
            file_name, analysis_name)
   
+  print(results_df, n = 100)
+  
   # Extract df
   long_results <- results_df |> 
     left_join(model_info, by = "file_name") |>

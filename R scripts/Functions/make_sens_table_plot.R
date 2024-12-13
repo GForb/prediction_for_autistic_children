@@ -1,4 +1,4 @@
-make_sens_table <- function(myOutcome) {
+make_sens_table <- function(myOutcome,sensitivity_results, dp = 3) {
   sens_table <- sensitivity_results |> 
     filter(outcome == myOutcome) |> 
     mutate(
@@ -15,7 +15,7 @@ make_sens_table <- function(myOutcome) {
       summary == "pi_str" ~ "95\\% PI"
     )) |> 
     arrange(-order) |> 
-    select(label, summary, rmse, r_squared_transformed, calib_itl, calib_slope, -order) 
+    select(label, summary, any_of("rmse"), any_of("rmse_stand"), r_squared_transformed, calib_itl, calib_slope, -order) 
   
   return(sens_table)
 }
@@ -33,7 +33,12 @@ save_sens_hux_table <- function(sens_table, outcome){
     huxtable::hux(add_colnames = FALSE) |> 
     huxtable::set_bottom_border(row = 1, value = 0.5) |>
     huxtable::set_bottom_border(row = border_rows, value = 0.5) |>
-    huxtable::merge_repeated_rows(col = 1)  
+    huxtable::merge_repeated_rows(col = 1)  |> 
+    huxtable::set_width(value = 1) |>
+    huxtable::set_wrap(row = 1, value = TRUE) |>
+    huxtable::set_wrap(col = 1, value = TRUE) |> 
+    huxtable::set_valign(col = 1, value = "middle")
+    
   
   outcome_label <- get_label(outcome)
   
@@ -41,7 +46,8 @@ save_sens_hux_table <- function(sens_table, outcome){
   ht <- hux_table |> save_hux_table(
     file_name = paste0(outcome,"_sens_results.tex"),
     caption = glue::glue("Results for model validation for sensitivity analysis of {outcome_label}."),
-    label = paste0(outcome,"_sens_results"))
+    label = paste0(outcome,"_sens_results"),
+    padding = 1)
   
   print(ht)
   return(ht)

@@ -1,4 +1,4 @@
-process_model_results <- function(name, results, results_folder, p_value_stars) {
+process_model_results <- function(name, results, results_folder, p_value_stars, sqrt_var = FALSE) {
   if(!is.null(results$base_sex)){
     return(tibble(analysis_name = name, coef = "Model did not run" ,summary = ""))
   } else  if(!is.null(results$r1)){
@@ -7,15 +7,17 @@ process_model_results <- function(name, results, results_folder, p_value_stars) 
     results <- extract_log_tables(name, results_folder) 
     processed_results <- process_stata_rtable(results,name, n_tibble, p_value_stars) 
     return(processed_results)
-    
   } else {
     n_str <- results |> slice(1) |> pull(N) |> as.character()
     n_tibble <- tibble(coef = "n", analysis_name = name,  summary = paste0("n = ", n_str))
     processed_results <- results |>
       filter(coef != "STUDY[study]", (b !=0 & !is.na(se)) ) |> 
-      process_stata_rtable(name, n_tibble, p_value_stars)
+      process_stata_rtable(name, n_tibble, p_value_stars, sqrt_var = sqrt_var)
     return(processed_results)
+    
   }
+
+  
   
 }
 # This function is necessary because stata does not save the results from mixed after multiple imputaiton to r(table), the matrix used to extract results. 
@@ -96,8 +98,36 @@ replace_coef_empty_b <- function(data) {
 }
 
 
-process_stata_rtable <- function(rtable,name,  n_tibble, p_value_stars) {
-  results <- rtable |>
+process_stata_rtable <- function(rtable,name,  n_tibble, p_value_stars, sqrt_var = FALSE) {
+  rtable_coef_corr <- rtable |> mutate( coef = case_when(grepl("var\\(e", coef) ~ "var(e)",
+                                     TRUE ~ coef))
+  if(sqrt_var){ # Changing reporting of residual variances and random intercept variances to be square roots for consistent reporting between mixed and gsem.
+    rtable_coef_corr <- rtable_coef_corr |>
+      mutate( 
+        b = case_when(coef == "var(e)" ~ sqrt(b),
+                      TRUE ~ b),
+        ll = case_when(coef == "var(e)" ~ NA,
+                       TRUE ~ ll),
+        ul = case_when(coef == "var(e)" ~ NA,
+                       TRUE ~ ul),
+        coef = case_when(coef == "var(e)" ~ "sd(Residual)",
+                         TRUE ~ coef)
+      ) |> 
+      mutate( 
+        b = case_when(coef == "var(M1[ID])" ~ sqrt(b),
+                      TRUE ~ b),
+        ll = case_when(coef == "var(M1[ID])" ~ NA,
+                       TRUE ~ ll),
+        ul = case_when(coef == "var(M1[ID])" ~ NA,
+                       TRUE ~ ul),
+        coef = case_when(coef == "var(M1[ID])" ~ "sd(_cons)",
+                         TRUE ~ coef)
+      )
+  }
+ 
+  
+  
+  results <- rtable_coef_corr |>
     mutate(
       analysis_name = name,
       p_str = format_p(pvalue, p_value_stars),
@@ -108,11 +138,11 @@ process_stata_rtable <- function(rtable,name,  n_tibble, p_value_stars) {
         !is.na(ll) ~ paste0(b_str, " (", ll_str, ", ", ul_str, ")", p_str),
         !is.na(b) ~ b_str,
         TRUE ~ ""
-      ),
-      coef = case_when(grepl("var\\(e", coef) ~ "var(e)",
-                       TRUE ~ coef)
+      )
     ) |>
     select(analysis_name, coef, summary)
+  
+  
   bind_rows(n_tibble, results)
   
 }

@@ -90,8 +90,7 @@ get_performance <- function(rep_no){
   model_neg_bin <-  MASS::glm.nb("y_sdq_emot_p ~ gui + lsac_b + lsac_k + mcs + age + sdq_emot_p +  sdq_cond_p + sdq_hyp_p + sdq_peer_p + sdq_pro_p + y_age", 
                                  data = train_data)
   
-  get_model_evaluate_df(model_name = "NegativeBinomial", model = model_neg_bin, test_data = test_data)
-  
+
   model_performance <- bind_rows(
     get_model_evaluate_df(model_name = "Linear", model = model_linear, test_data = test_data),
     get_model_evaluate_df(model_name = "Poisson", model = model_poisson, test_data = test_data),
@@ -118,16 +117,29 @@ tictoc::toc()
 
 saveRDS(model_performance, here::here(data_and_outputs,"Results", "Pilot Analysis", "sdq_emot_p_skewed_model_performance.rds"))
 
+model_performance |> filter(model == "Linear", metric == "calib_itl") |> pull(coef) |> quantile(coef, probs = 0.025) > round(2)
+
+
 
 model_performance_summary <- model_performance |> group_by(model, metric) |> 
   summarise(mean = t.test(coef,conf.level = 0.95)  |>  broom::tidy() |>  pull(estimate) |> round(2), 
-            conf.low = t.test(coef,conf.level = 0.95) |>   broom::tidy() |>  pull(conf.low)|> round(2), 
-            conf.high =  t.test(coef,conf.level = 0.95) |>  broom::tidy() |>  pull(conf.high)|> round(2)) |> 
+            conf.low = quantile(coef, probs = 0.025) |>  round(2), 
+            conf.high = quantile(coef, probs = 0.975) |> round(2)) |> 
   mutate(summary = paste0(mean, " (" , conf.low , ", ",conf.high, ")")) |> 
   select(model, metric, summary) |> 
+  filter(metric %in% c("calib_itl", "calib_slope", "r-squared"))|> 
   pivot_wider(names_from = metric, values_from = summary) 
 
-model_performance_summary
+headers <- c("Model", "Calibration In-the-large", "Calibration Slope", "$R^2$")
+headers |> rbind(model_performance_summary |> as.data.frame()) |> 
+  huxtable::hux(add_colnames = FALSE) |> 
+  huxtable::set_top_border(row = 2, value = 0.5) |>
+  save_hux_table(file_name = "Ch3_pilot1.tex",
+                 caption = "Estimates (95\\% CI) of calibration and $R^2$ for different models 
+                 for the emotional problems domain of the SDQ, developed on data from non-autistic 
+                 participants from four general population cohorts. Results are calculated on 
+                 hold-out data not used in model development.",
+                 label = "pilot1_res")
 
 selected_rep <- model_performance |> 
   select(model, metric, coef, rep_no) |> 
@@ -196,7 +208,28 @@ my_calib_plot
 plot_folder <- here::here(outputs,"Thesis Plots")
 ggsave( filename = here::here(plot_folder, "Ch3_ipdma_skewed_sdq_calib.png"), plot = my_calib_plot, device = "png", units = "cm",height = 8, width = 18)
 
-table_folder <- here::here(outputs,"Thesis Tables")
+# Plotting resiudals
 
-write.csv(model_performance_summary, here::here(table_folder, "Ch3_ipdma_pilot_calibration.csv"))
+# REset seed:
+set.seed(61464641)
 
+train_data <- data |> slice_sample(n = 200, by = studyid)
+test_data <- data |> filter(!(ID %in% train_data$ID))
+
+model_linear <- glm("y_sdq_emot_p ~ gui + lsac_b + lsac_k + mcs + age + sdq_emot_p +  sdq_cond_p + sdq_hyp_p + sdq_peer_p + sdq_pro_p + y_age", 
+                    data = train_data, family = gaussian)
+
+preds_in_sample <- predict(model_linear, newdata = train_data, type = "response")
+Residuals <- train_data$y_sdq_emot_p - preds_in_sample 
+png(file = here::here(plot_folder, "Ch3_pilot_1_residuals.png"), width = 18, height = 8, "cm", res = 300)
+hist(Residuals, main =)
+dev.off()
+summary(Residuals)
+
+preds_out_sample <- predict(model_linear, newdata = test_data, type = "response")
+res_out <-  test_data$y_sdq_emot_p - preds_out_sample
+hist(res_out)
+summary(res_out)
+
+moments::skewness(res_out)
+moments::skewness(Residuals)

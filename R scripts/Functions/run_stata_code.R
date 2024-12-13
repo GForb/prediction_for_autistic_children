@@ -7,7 +7,7 @@ run_stata_code <- function(
     run_model, 
     analysis_code, 
     do_file = NULL, 
-    model_only = FALSE,
+    model_only = FALSE, cv_only = FALSE,
     run_model_only,
     run_model_only_mi) {
   
@@ -20,6 +20,15 @@ run_stata_code <- function(
     run_model_only,
     run_model_only_mi)
     
+  } else if(cv_only) {
+    run_stata_code_cv_only(
+    data, 
+    log_file, 
+    stata_prog_source, 
+    make_spline, 
+    run_model, 
+    analysis_code, 
+    do_file)
   } else {
     
 
@@ -133,5 +142,60 @@ run_stata_code_model_only <- function(
   results <-  RStata::stata(stata_code, data.in = data, data.out = TRUE) 
   
   return(results)
+  
+}
+
+run_stata_code_cv_only <- function(  data, 
+                                     log_file, 
+                                     stata_prog_source, 
+                                     make_spline, 
+                                     run_model, 
+                                     analysis_code, 
+                                     do_file){
+  
+  
+  int_valid_code <- glue::glue(
+    "{analysis_code} ///
+    cross_validation ///
+    	n_cv_folds(10) ///
+	    n_reps(10)")
+   name <- "cv"
+    stata_code <- glue::glue("
+      
+      cap log close results_log
+      log using \"{log_file}_{name}.log\", text replace name(results_log)
+      
+      qui do \"{stata_prog_source}\"
+      
+      {make_spline}
+  
+  *********************** Running model on whole populaiton ***********************
+      {run_model}
+  
+  *********************** Validating ***********************
+         
+      {int_valid_code}
+      
+      log close results_log
+  
+    ")
+    
+    
+    if(!is.null(do_file)) {
+      print("writing do file")
+      print(do_file)
+      writeLines(stata_code, glue::glue("{do_file}_{name}.do"))
+    }
+    
+    print("THIS IS THE STATA CODE")
+    print(stata_code)
+    cat("\n \n \n")
+    
+    
+    results <-  RStata::stata(stata_code, data.in = data, data.out = TRUE) |> 
+      mutate(validation = name)
+    
+    results  |> select(ID, validation, study, starts_with("pred"), actual = starts_with("actual"), everything())
+  
   
 }

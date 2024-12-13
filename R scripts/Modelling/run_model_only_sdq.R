@@ -59,11 +59,10 @@ cc_analysis_sepc <-  analysis_spec |> filter(is.na(multiple_imputed_data))
 
 
 tictoc::tic()
-model_results <- analysis_spec  |> run_many_models_model_only()
+model_results <- analysis_spec  |>   run_many_models_model_only()
 tictoc::toc()
 
 saveRDS(model_results, here::here(results_folder, "sdq_model_only.rds"))
 
 
 # Loading results from log files.
-

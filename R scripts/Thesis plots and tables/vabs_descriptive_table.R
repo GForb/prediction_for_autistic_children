@@ -5,8 +5,8 @@ analysis_data_base <- analysis_data |> filter(wave == base_wave)
 analysis_data_out <- analysis_data |> filter(wave == out_wave)
 
 
-base_table <- analysis_data_base |> select(ID, study, starts_with("vabs")) |>  create_descriptive_table()
-out_table <- analysis_data_out |> select(ID, study, starts_with("vabs")) |>  create_descriptive_table()
+base_table <- analysis_data_base |> select(ID, study, starts_with("vabs")) |>  create_descriptive_table_outcome()
+out_table <- analysis_data_out |> select(ID, study, starts_with("vabs")) |>  create_descriptive_table_outcome()
 
 order_n = tibble(
   variable = c("base_sex", 
@@ -20,9 +20,9 @@ base_predictors_table <- analysis_data_base |>
     base_adi_65, base_ados_css_rrb, base_ados_css_sa, base_iq_full_scale, base_iq_standard, base_maternal_education, base_ethnicity) |>  
   create_descriptive_table(order = order_n) 
 
-base_table |> save_descriptive_hux_table(outcome_str = "vabs", what = "base")
-base_predictors_table |> save_descriptive_hux_table(outcome_str = "vabs", what = "pred")
-out_table |> save_descriptive_hux_table(outcome_str = "vabs", what = "out")
+base_table |> save_descriptive_hux_table(outcome_str = "vabs", what = "base", outcome_table = TRUE, col1_width = 0.2)
+base_predictors_table |> save_descriptive_hux_table(outcome_str = "vabs", what = "pred",  col1_width = 0.2)
+out_table |> save_descriptive_hux_table(outcome_str = "vabs", what = "out", outcome_table = TRUE, col1_width = 0.2)
 
 
 # 

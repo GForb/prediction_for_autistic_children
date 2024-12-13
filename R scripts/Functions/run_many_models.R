@@ -108,9 +108,13 @@ run_model_only <- function(model_function, analysis_name = NULL, multiple_impute
   }
   if(multiple_imputed_data){
     mi_data_list_list <- arg_list$data
+    names(mi_data_list_list) <- 1:length(mi_data_list_list)
     length(mi_data_list_list) |> print()
     mi_data <- mi_data_list_list |> 
-      imap(\(x, idx) x |> mutate(mi_m = idx |> as.numeric(), mi_id = row_number())) |> 
+      imap(\(x, idx) x |> 
+             mutate(mi_m = as.numeric(idx) - 1, 
+                                 mi_id = row_number()) |>
+      mutate(across(where(is.factor), as.numeric))) |> 
       bind_rows()
 
     arg_list$data <- mi_data

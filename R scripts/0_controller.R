@@ -65,30 +65,30 @@ create_doc(dataset = "TRAILS_POP", template = descriptive_template, outcome = "c
 # VABS Pipeline   ----
 
 ## Pooling ----
-pool("vabs")
-create_doc(dataset = "pooled_vabs", template = descriptive_template, outcome = "vabs")
-
-## Multiple Imputaiton ----
-tictoc::tic()
-source(here(modelling_scripts, "vabs_mi_multilevel.R"))
-tictoc::toc() 
-
-##  Running models with validation ----
-tictoc::tic()
-run_models("vabs")
-tictoc::toc() 
-
-##  Meta-analysing results ----
-results_folder <- here::here(data_and_outputs, "Results", "VABS", "Thesis")
-tictoc::tic()
-set.seed(42345234)
-create_full_results_table(results_folder)
-tictoc::toc() 
-
-# Running models for model reporting  ----
-##  Running models for model reporting
-source(here::here(modelling_scripts, "run_model_only_vabs.R"))
-
+  pool("vabs")
+  create_doc(dataset = "pooled_vabs", template = descriptive_template, outcome = "vabs")
+  
+  ## Multiple Imputaiton ----
+  tictoc::tic()
+  source(here(modelling_scripts, "vabs_mi_multilevel.R"))
+  tictoc::toc() 
+  
+  ##  Running models with validation ----
+  tictoc::tic()
+  run_models("vabs")
+  tictoc::toc() 
+  
+  ##  Meta-analysing results ----
+  results_folder <- here::here(data_and_outputs, "Results", "VABS", "Thesis")
+  tictoc::tic()
+  set.seed(42345234)
+  create_full_results_table(results_folder)
+  tictoc::toc() 
+  
+  # Running models for model reporting  ----
+  ##  Running models for model reporting
+  source(here::here(modelling_scripts, "run_model_only_vabs.R"))
+  
 
 # CBCL Pipeline ----
 
@@ -152,20 +152,33 @@ tictoc::toc()
 ##  Running models for model reporting
 source(here::here(modelling_scripts, "run_model_only_sdq.R"))
 
+
+
 # Reporting
 source(here::here(thesis_reporting, "n_fup_tables.R"))
 source(here::here(thesis_reporting, "ages_tables.R"))
+
+source(here::here(thesis_reporting, "sdq_summary_plots.R"))
+source(here::here(thesis_reporting, "cbcl_summary_plots.R"))
+source(here::here(thesis_reporting, "vabs_summary_plots.R"))
+
 
 source(here::here(thesis_reporting, "cbcl_descriptive_table.R"))
 source(here::here(thesis_reporting, "sdq_descriptive_table.R"))
 source(here::here(thesis_reporting, "vabs_descriptive_table.R"))
 
-source(here::here(thesis_reporting, "report_model_only.R"))
-
+source(here::here(thesis_reporting, "cr_main_results.R"))
 source(here::here(thesis_reporting, "main_results_table.R"))
+
+source(here::here(thesis_reporting, "thesis_forrest_plots_and_calibration.R"))
+
+
+source(here::here(thesis_reporting, "report_model_only.R"))
 
 source(here::here(thesis_reporting, "sensitivity_analysis_plots_and_tables.R"))
 
+source(here(modelling_scripts, "cr_pi_data.R"))
+source(here::here(thesis_reporting, "prediction_intervals.R"))
 
 
 # ISCB Charts

@@ -57,16 +57,21 @@ common_analysis_spec <- tibble(outcome = outcomes, intercept_est = "average esti
         base_age out_age {non_outcome_baseline}"
     ) |> as.character(),
     pred1_mt = glue::glue(
-      "age_spline* ///
-      c.age_spline1#i.base_sex c.age_spline2#i.base_sex base_sex ///
-      age_spline1Xdq age_spline2Xdq base_vabs_dq ///
-     {non_outcome_baseline} "
+      "age_spline1 age_spline2 ///
+       base_sex age_spline1Xsex age_spline2Xsex ///
+       base_vabs_dq age_spline1Xdq age_spline2Xdq  ///
+       {non_outcome_baseline} "
+    ) |> as.character(),
+    pred1_mt_imp = glue::glue(
+      "age_spline1 age_spline2 ///
+       base_sex age_spline1Xsex age_spline2Xsex ///
+       {non_outcome_baseline} "
     ) |> as.character(),
     pred2_mt = glue::glue(
-      "{pred1_mt} i.base_adi_65 base_ados_css_rrb base_ados_css_sa base_iq_full_scale base_iq_standard base_iqXmethod"
+      "{pred1_mt} base_adi_65 base_ados_css_rrb base_ados_css_sa base_iq_full_scale base_iq_standard base_iqXmethod"
     ) |> as.character(),
     pred2a_mt = glue::glue(
-      "{pred1_mt} i.base_adi_65 base_ados_css_rrb base_ados_css_sa c.base_iq_full_scale"
+      "{pred1_mt} base_adi_65 base_ados_css_rrb base_ados_css_sa c.base_iq_full_scale"
     ) |> as.character(),
     pred3_mt = glue::glue("{pred2_mt} base_ethnicity base_maternal_education") |> as.character(),
     pred3a_mt = glue::glue("{pred2a_mt} base_ethnicity base_maternal_education") |> as.character(),
@@ -91,10 +96,10 @@ analysis_spec_single_timepoint_cc <- common_analysis_spec |>
   mutate(data = list(analysis_data_wide), data_name = "st")
  
 analysis_spec_multi_timepoint_cc <- common_analysis_spec |> 
-  filter(model_name == model_name %in% c("mt_fi_study_rs", "mt_fi_study_ri"),
+  filter(model_name %in% c("mt_fi_study_rs", "mt_fi_study_ri"),
          predictor_set %in% c("pred1_mt")) |> 
   add_analysis_name(log_folder = log_folder, do_folder = do_folder) |> 
-  mutate(data = list(analysis_data_wide), data_name = "mt") |> 
+  mutate(data = list(analysis_data_long), data_name = "mt") |> 
   mutate(pred_waves = "0 -1",
          out_wave = 2)
 
@@ -132,6 +137,15 @@ analysis_spec_multi_timepoint_cc_nfu <- common_analysis_spec |>
   ) |> 
   add_analysis_name(log_folder = log_folder, do_folder = do_folder, suffix = suffix)
 
+
+
+analysis_spec_multi_timepoint_cc_imp <- common_analysis_spec |> 
+  filter(model_name == "mt_fi_study_rs",
+         predictor_set %in% c("pred1_mt_imp")) |> 
+  add_analysis_name(log_folder = log_folder, do_folder = do_folder) |> 
+  mutate(data = list(analysis_data_long), data_name = "mt") |> 
+  mutate(pred_waves = "0 -1",
+         out_wave = 2)
 
 # Multi timepoint analysis - with multiple imputation --------------------------------------------
 
@@ -180,7 +194,8 @@ analysis_spec <- bind_rows(
   analysis_spec_multi_timepoint_cc_nfu,
   analysis_spec_multi_timepoint_mi_pred3,
   analysis_spec_multi_timepoint_mi_pred2,
-  analysis_spec_multi_timepoint_mi_pred3a
+  analysis_spec_multi_timepoint_mi_pred3a,
+  analysis_spec_multi_timepoint_cc_imp
 ) |> 
   select(-data) 
 
@@ -198,6 +213,13 @@ tictoc::toc()
 set.seed(1923580)
 tictoc::tic()
 mt_results <- run_many_models(analysis_spec_multi_timepoint_cc) 
+tictoc::toc()
+
+
+# Running models
+set.seed(6416416)
+tictoc::tic()
+mt_results <- run_many_models(analysis_spec_multi_timepoint_cc_imp) 
 tictoc::toc()
 
 

@@ -1,10 +1,10 @@
-save_hux_table <- function(hux_table, file_name, label, caption, font_size = 11){
+save_hux_table <- function(hux_table, file_name, label, caption, font_size = 11, padding = 0.5, htb = FALSE){
   huxtable::set_default_properties(
     font = "mathptmx",
-    left_padding = 0.5,
-    right_padding = 0.5,
-    top_padding = 0.5,
-    bottom_padding = 0.5
+    left_padding = padding,
+    right_padding = padding,
+    top_padding = padding,
+    bottom_padding = padding
   )
   
   table <- hux_table |> 
@@ -19,6 +19,9 @@ save_hux_table <- function(hux_table, file_name, label, caption, font_size = 11)
   
   
   ht_latex <- table  |> huxtable::to_latex(tabular_only = FALSE) |> str_remove_all(pattern = " \\+ 1em")
+  if(htb){
+    ht_latex <- ht_latex |> str_replace("\\[ht\\]", "[!htb]")
+  }
   ht_latex |> write_lines(here::here(latex_folder, file_name))
   return(table)
   

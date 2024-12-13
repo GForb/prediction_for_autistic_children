@@ -39,6 +39,10 @@ in_srs <-  data |> filter(srs ==1, !is.na(SDQ_emotiol)) |> select(ID)
 
 data |> filter(srs ==1, !is.na(SDQ_emotiol)) |> count(autism)
 
+to_check <- data |> filter(srs ==1, !is.na(SDQ_emotiol)) |> select(ID, group_splitHTandDx, starts_with("Age"), starts_with("SDQ") )
+to_check |> filter(is.na(Age_at_assessment_years_SRS1_SDQ), is.na(Age_twin_TEDS_SDQ12), group_splitHTandDx ==1)
+
+
 ids_autism_status_all <- data |> select(
   ID, 
   family = randomfamid,

@@ -63,8 +63,6 @@ non_imputed_vars <- analysis_data_long |> select(ID, starts_with("study_"), age_
 
 # Run imputations separately in those with and without standard tests - what if there is missing data in the interaction term?
 
-
-
 imputed_data <- mice::complete(imputations, action = "all", mild = FALSE) |> 
   map(~bind_cols(., non_imputed_vars) |> mutate(study = as.character(study)))
 

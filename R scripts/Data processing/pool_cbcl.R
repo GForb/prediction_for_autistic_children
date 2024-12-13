@@ -32,7 +32,8 @@ pooled_data_cbcl$pooled_data_acc <- pooled_data_cbcl$pooled_data_acc |>
                            study == "elena_cbcl" ~ "ELENA",
                            study == "ssc" ~ "SSC",
                            study == "togo1" ~ "TOGO1",
-                           study == "togo2" ~ "TOGO2"),
+                           study == "togo2" ~ "TOGO2",
+                           TRUE~ study),
          ID = paste0(study, "_", old_ID))
 
 

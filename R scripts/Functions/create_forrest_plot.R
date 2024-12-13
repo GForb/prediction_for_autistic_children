@@ -103,7 +103,7 @@ create_forrest_plot_cbcl <- function(name, tau, meta_analysis, studies) {
                   alim = alim[[name]] , 
                   xlim = xlim[[name]],
                   transf = transf[[name]],
-                  slab = c("TOGO2","TOGO1" ,"SSC" ,"Pathways", "ELENA"),
+                  slab = c("TRAILS", "TOGO2","TOGO1" ,"SSC" ,"Pathways", "ELENA"),
                   header= "Study", 
                   mlab = tau_text)
   

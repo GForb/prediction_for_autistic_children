@@ -1,26 +1,41 @@
-analysis_data <- readRDS(here(derived_data, "pooled_sdq.Rds"))|> 
+
+
+analysis_data <- readRDS(here(derived_data, "pooled_cbcl.Rds"))|> 
   filter(base_all_complete, out_all_complete) 
 
-analysis_data_wide <- readRDS(here(derived_data, "pooled_sdq_wide.Rds"))|> 
+analysis_data_wide <- readRDS(here(derived_data, "pooled_cbcl_wide.Rds"))|> 
   filter(base_all_complete, out_all_complete) 
 
 analysis_data_base <- analysis_data |> filter(wave == base_wave)
 analysis_data_out <- analysis_data |> filter(wave == out_wave)
-sdq_levels <- analysis_data_out |> select(starts_with("sdq")) |> colnames()
-sdq_labels <- get_label(sdq_levels, label_no = 3)
+cbcl_levels <- analysis_data_out |> select(starts_with("cbcl")) |> colnames()
+cbcl_labels <- get_label(cbcl_levels, label_no = 3)
 
 study_levels <- analysis_data_out |> pull(study) |> unique() |> c("zOverall")
-study_labels <-  study_metadata$label[match(study_levels, study_metadata$name)]
+study_labels <- analysis_data_out |> pull(study) |> unique() |> c("Overall")
 
-sdq_cutoffs <- sdq_cutoffs |> select(domain = outcome, cutoff)
+# source for cutoffs: Swedish clinical sample https://pmc.ncbi.nlm.nih.gov/articles/PMC8297893/
+cbcl_cutoffs <- tibble(
+  domain = c(
+    "cbcl_aff",
+    "cbcl_anx",
+    "cbcl_som",
+    "cbcl_adhd",
+    "cbcl_odd",
+    "cbcl_con"
+  ),
+  cutoff = c(7, 6, NA, 6, 8, 14)
+)
+
+
 
 plot_data_base <- analysis_data_base |> mutate(study = "zOverall") |> 
-  bind_rows(analysis_data_base) |> select(ID, study, starts_with("sdq")) |> 
-  pivot_longer(cols = starts_with("sdq"), names_to = "domain", values_to = "Score") |> 
-  left_join(sdq_cutoffs) |> 
+  bind_rows(analysis_data_base) |> select(ID, study, starts_with("cbcl")) |> 
+  pivot_longer(cols = starts_with("cbcl"), names_to = "domain", values_to = "Score") |> 
+  left_join(cbcl_cutoffs) |> 
   mutate(domain = factor(domain, 
-                         levels = sdq_levels,
-                         labels = sdq_labels)) |> 
+                         levels = cbcl_levels,
+                         labels = cbcl_labels)) |> 
   mutate(study = factor(
     study, 
     levels = study_levels,
@@ -28,12 +43,12 @@ plot_data_base <- analysis_data_base |> mutate(study = "zOverall") |>
   ))
 
 plot_data_out <- analysis_data_out|> mutate(study = "zOverall") |> 
-  bind_rows(analysis_data_out) |> select(ID, study, starts_with("sdq")) |> 
-  pivot_longer(cols = starts_with("sdq"), names_to = "domain", values_to = "Score") |> 
-  left_join(sdq_cutoffs) |> # these are saved in a csv and loaded with config
+  bind_rows(analysis_data_out) |> select(ID, study, starts_with("cbcl")) |> 
+  pivot_longer(cols = starts_with("cbcl"), names_to = "domain", values_to = "Score") |> 
+  left_join(cbcl_cutoffs) |> 
   mutate(domain = factor(domain, 
-                         levels = sdq_levels,
-                         labels = sdq_labels)) |> 
+                         levels = cbcl_levels,
+                         labels = cbcl_labels)) |> 
   mutate(study = factor(
     study, 
     levels = study_levels,
@@ -58,7 +73,7 @@ plot_data_ages <- analysis_data_ages|> mutate(study = "zOverall") |>
 box_plot_by_study_domain <- function(plot_data) {
   plot_data |> ggplot2::ggplot(aes(y = Score, fill = study)) + 
     geom_boxplot(show.legend = FALSE) +  # Remove legend for geom_boxplot
-    geom_hline(aes(yintercept = cutoff, color = "High or Very High (low or very low for Pro-social domain)"), linetype = "dashed") +  # Add legend for geom_hline
+    geom_hline(aes(yintercept = cutoff, color = "High probability of disorder"), linetype = "dashed") +  # Add legend for geom_hline
     scale_fill_viridis_d(option = "viridis") +
     facet_grid(rows = vars(domain), cols = vars(study)) +
     scale_color_manual(name = "", values = "red") +  # Customize the color and name for geom_hline
@@ -70,10 +85,10 @@ box_plot_by_study_domain <- function(plot_data) {
           axis.line.x = element_blank())
 }
 
-sdq_base_plot <- plot_data_base |> box_plot_by_study_domain()
-sdq_base_plot
+cbcl_base_plot <- plot_data_base |> box_plot_by_study_domain()
+cbcl_base_plot
 
-sdq_out_plot <- plot_data_out |> box_plot_by_study_domain()
+cbcl_out_plot <- plot_data_out |> box_plot_by_study_domain()
 
 ages_plot <- plot_data_ages |>  ggplot2::ggplot(aes(y = Score, fill = study)) + 
   geom_boxplot(show.legend = FALSE) +  # Remove legend for geom_boxplot
@@ -88,10 +103,9 @@ ages_plot <- plot_data_ages |>  ggplot2::ggplot(aes(y = Score, fill = study)) +
   ylab("Years") +
   scale_y_continuous(breaks = scales::pretty_breaks(n = 3))
 
+ggsave(cbcl_base_plot, filename = file.path(thesis_plots, "Main Results",  "cbcl_base_plot.png"), width = 14, height = 18, unit = "cm")
+ggsave(cbcl_out_plot, filename = file.path(thesis_plots, "Main Results",  "cbcl_out_plot.png"), width = 14, height = 18, unit = "cm")
+ggsave(ages_plot, filename = file.path(thesis_plots, "Main Results",  "cbcl_ages_plot.png"), width = 14, height = 6, unit = "cm")
 
-ggsave(sdq_base_plot, filename = file.path(thesis_plots, "Main Results",  "sdq_base_plot.png"), width = 14, height = 18, unit = "cm")
-ggsave(sdq_out_plot, filename = file.path(thesis_plots, "Main Results",  "sdq_out_plot.png"), width = 14, height = 18, unit = "cm")
-ggsave(ages_plot, filename = file.path(thesis_plots, "Main Results",  "sdq_ages_plot.png"), width = 14, height = 6, unit = "cm")
-
-ggsave(ages_plot, filename = file.path(thesis_plots, "Main Results",  "sdq_ages_plot_conf.png"), width = 24, height = 13, unit = "cm")
+ggsave(ages_plot, filename = file.path(thesis_plots, "Main Results",  "cbcl_ages_plot_conf.png"), width = 24, height = 13, unit = "cm")
 

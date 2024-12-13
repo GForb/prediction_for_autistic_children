@@ -12,7 +12,7 @@ model_pred_gsem_ri_study_rs_id <- function(data,
                                            pred_waves,
                                            out_wave,
                                            do_file = NULL,
-                                           model_only = FALSE) {
+                                           model_only = FALSE, cv_only = FALSE) {
   wave_var <- "wave"
   id_var <- "ID"
   study_var <- "study"
@@ -68,7 +68,7 @@ model_pred_gsem_ri_study_rs_id <- function(data,
     int_valid_code = int_valid_code,
     run_model = run_model,
     do_file = do_file,
-    model_only = model_only,
+    model_only = model_only, cv_only = cv_only,
     run_model_only = run_model_only,
     run_model_only_mi = run_model_only_mi
   )
@@ -85,7 +85,7 @@ model_pred_gsem_ri_study_ri_id <- function(data,
                                            pred_waves,
                                            out_wave,
                                            do_file = NULL,
-                                           model_only = FALSE) {
+                                           model_only = FALSE, cv_only = FALSE) {
   study_var <- "study"
   stata_prog_source <- here::here("Stata", "prediction_progs.do")
   make_spline <- glue::glue(
@@ -131,7 +131,7 @@ model_pred_gsem_ri_study_ri_id <- function(data,
     analysis_code = analysis_code,
     run_model = run_model,
     do_file = do_file,
-    model_only = model_only,
+    model_only = model_only, cv_only = cv_only,
     run_model_only = run_model_only,
     run_model_only_mi = run_model_only_mi
   )
@@ -150,7 +150,7 @@ model_pred_gsem_ri_study_rs_id <- function(data,
                                            pred_waves,
                                            out_wave,
                                            do_file = NULL,
-                                           model_only = FALSE) {
+                                           model_only = FALSE, cv_only = FALSE) {
   wave_var <- "wave"
   id_var <- "ID"
   study_var <- "study"
@@ -203,7 +203,7 @@ model_pred_gsem_ri_study_rs_id <- function(data,
     analysis_code = analysis_code,
     run_model = run_model,
     do_file = do_file,
-    model_only = model_only,
+    model_only = model_only, cv_only = cv_only,
     run_model_only = run_model_only,
     run_model_only_mi = run_model_only_mi
   )
@@ -223,7 +223,7 @@ model_pred_gsem_fi_study_ri_id <- function(data,
                                            pred_waves,
                                            out_wave,
                                            do_file = NULL,
-                                           model_only = FALSE) {
+                                           model_only = FALSE, cv_only = FALSE) {
   study_var <- "study"
   stata_prog_source <- here::here("Stata", "prediction_progs.do")
   make_spline <- glue::glue(
@@ -271,7 +271,7 @@ model_pred_gsem_fi_study_ri_id <- function(data,
     analysis_code = analysis_code,
     run_model = run_model,
     do_file = do_file,
-    model_only = model_only,
+    model_only = model_only, cv_only = cv_only,
     run_model_only = run_model_only,
     run_model_only_mi = run_model_only_mi
   )
@@ -286,7 +286,7 @@ model_pred_gsem_fi_study_rs_id <- function(data,
                                            pred_waves,
                                            out_wave,
                                            do_file = NULL,
-                                           model_only = FALSE) {
+                                           model_only = FALSE, cv_only = FALSE) {
   wave_var <- "wave"
   id_var <- "ID"
   study_var <- "study"
@@ -339,7 +339,7 @@ model_pred_gsem_fi_study_rs_id <- function(data,
     analysis_code = analysis_code,
     run_model = run_model,
     do_file = do_file,
-    model_only = model_only,
+    model_only = model_only, cv_only = cv_only,
     run_model_only = run_model_only,
     run_model_only_mi = run_model_only_mi
   )
@@ -355,7 +355,7 @@ model_pred_reg_fi_study <- function(data,
                                     intercept_est,
                                     log_file,
                                     do_file = NULL,
-                                    model_only = FALSE) {
+                                    model_only = FALSE, cv_only = FALSE) {
   study_var <- "study"
   stata_prog_source <- here::here("Stata", "prediction_progs.do")
   make_spline <- glue::glue("mkspline base_spline = base_{outcome}, nknots(3) cubic")
@@ -386,7 +386,7 @@ model_pred_reg_fi_study <- function(data,
     analysis_code = analysis_code,
     run_model = run_model,
     do_file = do_file,
-    model_only = model_only,
+    model_only = model_only, cv_only = cv_only,
     run_model_only = run_model_only,
     run_model_only_mi = run_model_only_mi
   )
@@ -398,7 +398,7 @@ model_pred_gsem_ri_study <- function(data,
                                      intercept_est,
                                      log_file,
                                      do_file = NULL,
-                                     model_only = FALSE) {
+                                     model_only = FALSE, cv_only = FALSE) {
   study_var <- "study"
   stata_prog_source <- here::here("Stata", "prediction_progs.do")
   make_spline <- glue::glue("mkspline base_spline = base_{outcome}, nknots(3) cubic")
@@ -428,7 +428,7 @@ model_pred_gsem_ri_study <- function(data,
     analysis_code = analysis_code,
     run_model = run_model,
     do_file = do_file,
-    model_only = model_only,
+    model_only = model_only, cv_only = cv_only,
     run_model_only = run_model_only,
     run_model_only_mi = run_model_only_mi
   )

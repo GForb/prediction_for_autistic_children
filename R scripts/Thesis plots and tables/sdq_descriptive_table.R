@@ -6,9 +6,8 @@ analysis_data_out <- analysis_data |> filter(wave == out_wave)
 
 
 
-
 sdq_cutoffs <- tibble(
-  domain = c(
+  variable = c(
     "sdq_cond_p",
     "sdq_emot_p",
     "sdq_hyp_p",
@@ -59,10 +58,9 @@ table_data_base <- analysis_data_base |> mutate(study = "zOverall") |>
   pivot_longer(cols = c(n, mean, sd, range), values_to = "summary") |>
   pivot_wider(names_from = study, values_from = summary)
 
-base_sdq_table
 
-base_sdq_table <- analysis_data_base |> select(ID, study, starts_with("sdq")) |>  create_descriptive_table()
-out_sdq_table <- analysis_data_out |> select(ID, study, starts_with("sdq")) |>  create_descriptive_table()
+base_sdq_table <- analysis_data_base |> select(ID, study, starts_with("sdq")) |>  create_descriptive_table_outcome(cutoffs = sdq_cutoffs)
+out_sdq_table <- analysis_data_out |> select(ID, study, starts_with("sdq")) |>  create_descriptive_table_outcome(cutoffs = sdq_cutoffs)
 
 order_n = tibble(
   variable = c(
@@ -88,17 +86,24 @@ base_predictors_table <- analysis_data_base |>
   ) |>
   create_descriptive_table(order = order_n)
 
-sdq_study_names <- study_labels$label[match(colnames(base_predictors_table), study_labels$name)]
+sdq_study_names <- study_metadata$label[match(colnames(base_predictors_table), study_metadata$name)]
+
+sdq_table_width = 1.15
 
 base_sdq_table |> save_descriptive_hux_table(outcome_str = "sdq",
                                              what = "base",
-                                             study_names = sdq_study_names)
+                                             study_names = sdq_study_names,
+                                             table_width = sdq_table_width,
+                                             outcome_table = TRUE)
 base_predictors_table |> save_descriptive_hux_table(outcome_str = "sdq",
                                                     what = "pred",
-                                                    study_names = sdq_study_names)
+                                                    study_names = sdq_study_names,
+                                                    table_width = sdq_table_width)
 out_sdq_table |> save_descriptive_hux_table(outcome_str = "sdq",
                                             what = "out",
-                                            study_names = sdq_study_names) 
+                                            study_names = sdq_study_names,
+                                            table_width = sdq_table_width,
+                                            outcome_table = TRUE) 
 
 
 

@@ -48,12 +48,12 @@ check_cbcl_items <- function(cbcl_item_data) {
 calc_cbcl_dsmIV_domains <- function(data){
   domains <- list("cbcl_aff", "cbcl_anx", "cbcl_som", "cbcl_adhd", "cbcl_odd", "cbcl_con")
   items <- list(
-    paste0("cbcl_item_", c(5, 14, 18, 24, 35, 52, 54, 76, 77, 91, 100, 102, 103)),
-    paste0("cbcl_item_", c(11, 29, 30, 45, 50, 112)),
-    paste0("cbcl_item_56", letters[1:7]),
-    paste0("cbcl_item_", c(4, 8, 10, 41, 78, 93, 104)),
-    paste0("cbcl_item_", c(3, 22, 23, 86, 95)),
-    paste0("cbcl_item_", c(15, 16, 21, 26, 28, 37, 39, 43, 57, 67, 72, 81, 82, 90, 97, 101, 106))
+    paste0("cbcl_item_", c(5, 14, 18, 24, 35, 52, 54, 76, 77, 91, 100, 102, 103)),  # 13 items
+    paste0("cbcl_item_", c(11, 29, 30, 45, 50, 112)), # 6 items
+    paste0("cbcl_item_56", letters[1:7]), # 7 items
+    paste0("cbcl_item_", c(4, 8, 10, 41, 78, 93, 104)), # 7 items
+    paste0("cbcl_item_", c(3, 22, 23, 86, 95)), # 5 items
+    paste0("cbcl_item_", c(15, 16, 21, 26, 28, 37, 39, 43, 57, 67, 72, 81, 82, 90, 97, 101, 106)) # 17 items
   )
   if(is.null(data)){
     return(tibble(domain = domains |> unlist(), items ))

@@ -2,7 +2,6 @@
 
 # Main analysis 
 plots_folder <- here::here(thesis_plots, "Main Results")
-tables_folder <- here::here(thesis_tables, "Main Results")
 results_folder <- here::here(data_and_outputs, "Results", "SDQ", "Thesis")
 
 # Plot main results
@@ -50,4 +49,26 @@ plot_forrestplot_grid <- function(myOutcome){
 
 outcomes <- main_results$outcome |> unique()
 walk(outcomes, plot_forrestplot_grid)
+
+
+
+# Calibration plot for each outcome
+save_calib_plot <- function(myOutcome) {
+  results_data <- main_results |> filter(outcome == myOutcome, metric == "calib_slope") 
+  predictions_df <- readRDS(here::here(results_folder, paste0(results_data$analysis_name,"_",results_data$intercept_est_method,  ".rds"))) 
+  predictions_df_sampled <-     predictions_df |> 
+    group_by(ID) %>%           # Group by ID
+    slice_sample(n = 1) %>%    # Randomly select one row per group (ID)
+    ungroup()     
+  
+  calib_data <- predictions_df |> get_calib_data_by_study()
+  
+  calibration_plot_cont(predictions_df_sampled, "study", by_study_calibration = calib_data) + 
+    theme_bw(base_size = 11) +
+    theme(legend.position = "top") 
+  
+  ggsave(file = here::here(plots_folder, paste0("calib_plot_", myOutcome, ".png")), width = 14.5, height = 10, units = "cm")
+}
+walk(outcomes, save_calib_plot)
+
 

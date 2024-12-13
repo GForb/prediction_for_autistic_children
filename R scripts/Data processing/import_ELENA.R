@@ -104,6 +104,13 @@ data <- data_raw |>
 data |> count(base_wave_vabs)
 data |> count(base_wave_cbcl)
 
+data |> 
+  select(starts_with("age_v"), age_cbcl1, age_cbcl2, age_cbcl3) |> 
+  pivot_longer(cols = everything(), names_to = "what", values_to = "age") |> 
+  group_by(what) |> 
+  summarise(n = sum(!is.na(age)), min = min(age, na.rm = TRUE), max = max(age, na.rm = TRUE))
+
+
 cn <- colnames(data)
 
 
@@ -159,7 +166,7 @@ vabs_ages <- data |>
   select(-name) |> 
   select(ID, wave, age)
   
-# Calculating age equivalent scores for each domain as mean of subdomains
+# Calculating age equivalent scores for each domain as mean of sub domains
 # Note scores are stored in two variables _mois and _ans. The former contains the months and the latter the years. These must be added together to give the propper score.
 vabs_data <-  data |>  select(ID, starts_with("AE")) |> 
   select(-aerateur_transtympanique) |> 
