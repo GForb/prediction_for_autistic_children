@@ -50,7 +50,7 @@ check_age <- function(age, min_age, max_age) {
       return(min_age)
     }
   } else if(!is.na(age)) {
-    return(ifelse(age >=min_age & age <max_age,1, 0))
+    return(ifelse(age >=min_age & age < max_age,1, 0))
   } else {
     return(0)
   }

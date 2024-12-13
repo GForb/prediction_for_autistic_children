@@ -3,7 +3,7 @@
 # Return results table with meta-analysis as column...
 # Use this to create consistent set of results
 
-create_full_results_table <- function(results_folder, analysis_spec = NULL) {
+create_full_results_table <- function(results_folder, analysis_spec = NULL, cv_only =FALSE) {
   if(is.null(analysis_spec)){
     model_name_spec_raw <- readRDS(here::here(results_folder, "analysis_spec.rds"))
   } else {
@@ -21,19 +21,29 @@ create_full_results_table <- function(results_folder, analysis_spec = NULL) {
 
   # process in the case of multiple pred columns
   
-  
-  results_all <- get_meta_analysis_df(model_name_spec) 
-  results_cv <- get_internal_validation_df(cv_name_spec)
-  
-  full_results <- results_all$wide_results |> 
-    left_join(results_cv$wide_results, by = c("analysis_name"), suffix = c("", "_cv"))
+  if(cv_only){
+    results_cv <- get_internal_validation_df(cv_name_spec)
+    
+    full_results <- results_cv$wide_results
+    full_results_long <- results_cv$long_results 
 
+    
+  } else {
+    results_all <- get_meta_analysis_df(model_name_spec) 
+    results_cv <- get_internal_validation_df(cv_name_spec)
+    
+    full_results <- results_all$wide_results |> 
+      left_join(results_cv$wide_results, by = c("analysis_name"), suffix = c("", "_cv"))
+    
+    
+    
+    full_results_long <- results_all$long_results |> 
+      left_join(results_cv$long_results, by = c("analysis_name", "metric"), suffix = c("", "_cv")) |> 
+      select(metric, est, est_cv, se, tau,  everything())
+    
+    
+  }
 
-  
-  full_results_long <- results_all$long_results |> 
-    left_join(results_cv$long_results, by = c("analysis_name", "metric"), suffix = c("", "_cv")) |> 
-    select(metric, est, est_cv, se, tau,  everything())
-  
   
   saveRDS(full_results, file = here::here(results_folder, "results_meta_analysis.rds"))
   saveRDS(full_results_long, file = here::here(results_folder, "results_meta_analysis_long.rds"))
@@ -48,3 +58,4 @@ create_full_results_table <- function(results_folder, analysis_spec = NULL) {
       print(n = 24) 
   }
 }
+
