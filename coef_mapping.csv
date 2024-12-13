@@ -1,58 +1,102 @@
-coef,label,order
-n,N,1
-base_age,Age at Baseline,3
-out_age,Age at Outcome,3
-base_sdq_pro_p,SDQ Pro-social,5
-base_sdq_hyp_p,SDQ Hyperactivity,5
-base_sdq_emot_p,SDQ Emotional,5
-base_sdq_cond_p,SDQ Conduct,5
-base_sdq_peer_p,SDQ Peer,5
-base_sex,Sex,3
-_cons,Intercept,2
-var(STUDY[study]),Var Intercept,7
-var(e),Residual Variance,9
-study_ALSPAC,ALSPAC,2
-study_GUI,GUI,2
-study_k_families,1k Fam.,2
-study_lsac_b,LSAC B,2
-study_lsac_k,LSAC K,2
-study_MCS,MCS,2
-study_Quest,Quest,2
-study_SNAP,SNAP,2
-study_TEDS,TEDS,2
-base_spline1,Baseline outcome (spline 1),4
-base_spline2,Baseline outcome (spline 2),4
-1.base_sex#c.base_spline1,Sex by baseline outcome (spline 1),4
-1.base_sex#c.base_spline2,Sex by baseline outcome (spline 2),4
-base_ld,Learning Disability,6
-base_ethnicity,Ethnicity,6
-base_maternal_education,Maternal Education,6
-base_imd_decile,IMD (Decile),6
-base_maternal_mh,Maternal Mental Health (K6),6
-Model did not run,Model did not run,-1
-age_spline1,Age (spline 1),3
-age_spline2,Age (spline 2),3
-1.base_sex#c.age_spline1,Sex by Age (spline 1),3
-1.base_sex#c.age_spline2,Sex by Age (spline 2),3
-var(age_c),Var Slope,7
-var(_cons),Var Intercept,7
-"cov(age_c,_cons)",Cov Slope v Intercept,8
-var(M1[ID]),Var Intercept,7
-var(M2[ID]),Var Slope,7
-"cov(M1[ID],M2[ID])",Cov Slope v Intercept,8
-study_k_fa~s,1k Fam.,2
-base_sex c. age_spline1 1,Sex by Age (spline 1),3
-base_sex c. age_spline2 1,Sex by Age (spline 2),3
-base_sdq_h~p,SDQ Hyperactivity,5
-base_sdq_e~p,SDQ Emotional,5
-base_sdq_c~p,SDQ Conduct,5
-base_sdq~r_p,SDQ Peer,5
-base_ethni~y,Ethnicity,6
-base_mater~n,Maternal Education,6
-base_imd_d~e,IMD (Decile),6
-base_mater~h, Maternal MH (K6),6
-sd(age_c),SD Slope,7
-sd(_cons),SD Intercept,7
-"corr(age_c,_cons)",Corr Slope v intercept,8
-sd(Residual),SD residual,9
-base_sdq~o_p,SDQ Pro-social,5
+coef,label,order,,,,,,
+n,N,1,,,,,,
+base_age,Age at Baseline,2.9,,,,,,
+out_age,Age at Outcome,2.9,,,,,,
+base_sdq_pro_p,SDQ Pro-social,5,,,,,,
+base_sdq_hyp_p,SDQ Hyperactivity,5,,,,,,
+base_sdq_emot_p,SDQ Emotional,5,,,,,,
+base_sdq_cond_p,SDQ Conduct,5,,,,,,
+base_sdq_peer_p,SDQ Peer,5,,,,,,
+base_sex,Sex,3.1,,,,,,
+_cons,Intercept,2,,,,,,
+var(STUDY[study]),Var Intercept,7,,,,,,
+var(e),Residual Variance,9,,,,,,
+study_ALSPAC,ALSPAC,2,,,,,,
+study_GUI,GUI,2,,,,,,
+study_k_families,1k Fam.,2,,,,,,
+study_lsac_b,LSAC B,2,,,,,,
+study_lsac_k,LSAC K,2,,,,,,
+study_MCS,MCS,2,,,,,,
+study_Quest,Quest,2,,,,,,
+study_SNAP,SNAP,2,,,,,,
+study_TEDS,TEDS,2,,,,,,
+base_spline1,Baseline spline 1,2.99,,,,,,
+base_spline2,Baseline spline 2,2.99,,,,theta,1.36,1.8496
+1.base_sex#c.base_spline1,Sex by baseline spline 1,4,,,,phi,1.1,1.21
+1.base_sex#c.base_spline2,Sex by baseline spline 2,4,,,,,,
+base_ld,Learning Disability,6,,,,nobs,1,0.395476533
+base_ethnicity,Ethnicity,6.5,,,,,2,0.566797826
+base_maternal_education,Maternal Education,6.5,,,,,3,0.662457114
+base_imd_decile,IMD (Decile),6.5,,,,,,
+base_maternal_mh,Maternal MH (K6),6.5,,,,,,
+Model did not run,Model did not run,-1,,,,,,
+age_spline1,Age spline 1,3,,,,,,
+age_spline2,Age spline 2,3,,,,,,
+age_spline1Xsex,Sex by Age spline 1,3,,,,,,
+age_spline2Xsex,Sex by Age spline 2,3,,,,,,
+1.base_sex#c.age_spline1,Sex by Age spline 1,3,,,,,,
+1.base_sex#c.age_spline2,Sex by Age spline 2,3,,,,,,
+var(age_c),Var Slope,7,,,,,,
+var(_cons),Var Intercept,7,,,,,,
+"cov(age_c,_cons)",Cov Slope v Intercept,8,,,,,,
+var(M1[ID]),Var Intercept,7,,,,,,
+var(M2[ID]),Var Slope,7,,,,,,
+"cov(M1[ID],M2[ID])",Cov Slope v Intercept,8,,,,,,
+study_k_fa~s,1k Fam.,2,,,,,,
+base_sex c. age_spline1 1,Sex by Age spline 1,3,,,,,,
+base_sex c. age_spline2 1,Sex by Age spline 2,3,,,,,,
+base_sdq_h~p,SDQ Hyperactivity,5,,,,,,
+base_sdq_e~p,SDQ Emotional,5,,,,,,
+base_sdq_c~p,SDQ Conduct,5,,,,,,
+base_sdq~r_p,SDQ Peer,5,,,,,,
+base_ethni~y,Ethnicity,6.5,,,,,,
+base_mater~n,Maternal Education,6.5,,,,,,
+base_imd_d~e,IMD (Decile),6.5,,,,,,
+base_mater~h,Maternal MH (K6),6.5,,,,,,
+sd(age_c),SD Slope,7,,,,,,
+sd(_cons),SD Intercept,7,,,,,,
+"corr(age_c,_cons)",Corr Slope v intercept,8,,,,,,
+sd(Residual),SD residual,9,,,,,,
+base_sdq~o_p,SDQ Pro-social,5,,,,,,
+study_EDX,EDX,2,,,,,,
+study_ELENA,ELENA,2,,,,,,
+study_EpiTED,EpiTED,2,,,,,,
+study_Pathways,Pathways,2,,,,,,
+base_vabs_com_ae,VABS Communication,5,,,,,,
+base_vabs_dls_ae,VABS Daily Living Skills,5,,,,,,
+base_vabs_soc_ae,VABS Socialisation,5,,,,,,
+base_vabs_dq,DQ (VABS),3.2,,,,,,
+base_iq_full_scale,FSIQ,6,,,,,,
+base_iq_standard,Standard IQ test,6,,,,,,
+base_iqXmethod,FSIQ by test method,6,,,,,,
+base_ados_css_rrb,ADOS CSS RRB,6,,,,,,
+base_ados_css_sa,ADOS CSS SA,6,,,,,,
+age_spline1Xdq,DQ by Age spline 1,4,,,,,,
+age_spline2Xdq,DQ by Age spline 2,4,,,,,,
+c.base_spline1#c.base_vabs_dq,DQ by Baseline Spline 1,4.1,,,,,,
+c.base_spline2#c.base_vabs_dq,DQ by Baseline Spline 2,4.1,,,,,,
+base_adi_65,Current friendship ,6,,,,,,
+base_cbcl_aff,CBCL Affective,5.02,,,,,,
+base_cbcl_anx,CBCL Anxiety,5.03,,,,,,
+base_cbcl_som,CBCL Somatic,5.06,,,,,,
+base_cbcl_adhd,CBCL ADHD,5.01,,,,,,
+base_cbcl_odd,CBCL ODD,5.05,,,,,,
+base_cbcl_con,CBCL Conduct,5.04,,,,,,
+base_vabs_abc_ss,VABS Total,6,,,,,,
+study_SSC,SSC,2,,,,,,
+study_TOGO1,TOGO1,2,,,,,,
+study_TOGO2,TOGO2,2,,,,,,
+study_TRAILS,TRAILS,2,,,,,,
+study_Path~s,Pathways,2,,,,,,
+base_cbcl_~f,CBCL Affective,5.02,,,,,,
+base_cbcl_~x,CBCL Anxiety,5.03,,,,,,
+base_cbcl_~m,CBCL Somatic,5.06,,,,,,
+base_cbcl~hd,CBCL ADHD,5.01,,,,,,
+base_cbcl~dd,CBCL ODD,5.05,,,,,,
+base_cbcl_~n,CBCL Conduct,5.04,,,,,,
+base_iq_fu~e,FSIQ,6,,,,,,
+base_ados_~b,ADOS CSS RRB,6,,,,,,
+base_ados_~a,ADOS CSS SA,6,,,,,,
+base_vabs_~s,VABS Total,6,,,,,,
+base_iqXme~d,FSIQ by test method,6,,,,,,
+base_iq_st~d,Standard IQ test,6,,,,,,
