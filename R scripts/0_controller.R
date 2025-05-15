@@ -57,11 +57,6 @@ create_doc(dataset = "TRAILS_CC", template = descriptive_template, outcome = "cb
 create_doc(dataset = "TRAILS_POP", template = descriptive_template, outcome = "cbcl")
 
 
-
-
-
-
-
 # VABS Pipeline   ----
 
 ## Pooling ----
@@ -102,8 +97,6 @@ source(here(modelling_scripts, "cbcl_mi_multilevel.R"))
 tictoc::toc() 
 
 ##  Running models with validation ----
-
-
 source(here(data_processing_scripts, "save_analysis_datasets_cbcl.R"))
 
 tictoc::tic()
@@ -151,8 +144,6 @@ tictoc::toc()
 
 ##  Running models for model reporting
 source(here::here(modelling_scripts, "run_model_only_sdq.R"))
-
-
 
 # Reporting
 source(here::here(thesis_reporting, "n_fup_tables.R"))
