@@ -71,17 +71,17 @@ create_forrest_plot_cbcl <- function(name, tau, meta_analysis, studies) {
            r_squared = "R-squared",
            rmse = "Root Mean Squared Error")
   
-  alim <-  list(calib_slope = c(0.25,1.75),
+  alim <-  list(calib_slope = c(0,1.75),
                 calib_itl = c(-1.5,1.5),
                 r_squared = c(0,1),
                 r_squared_transformed = c(0,1),
                 rmse = c(0,5))
   
-  xlim <-  list(calib_slope = c(-0.1, 2.7),
-               calib_itl = c(-2.1, 2.7),
-               r_squared = c(-0.2, 1.4),
-               r_squared_transformed = c(-0.2, 1.4),
-               rmse = c(-0.6,5.6))
+  xlim <-  list(calib_slope = c(-0.3, 2.7),
+               calib_itl = c(-3, 3.75),
+               r_squared = c(-0.6, 1.4),
+               r_squared_transformed = c(-0.4, 1.4),
+               rmse = c(-0.6,7.5))
   
   refline <-  list(calib_slope = 1,
                    calib_itl = 0,
@@ -99,7 +99,7 @@ create_forrest_plot_cbcl <- function(name, tau, meta_analysis, studies) {
   metafor::forest(meta_analysis, 
                   addpred = TRUE, 
                   refline = refline[[name]] , 
-                  xlab = xlab[[name]], 
+                  xlab  = NA, 
                   alim = alim[[name]] , 
                   xlim = xlim[[name]],
                   transf = transf[[name]],
@@ -179,16 +179,16 @@ create_forrest_plot_sdq <- function(name, tau = NULL, meta_analysis, studies) {
                 rmse = "Root Mean Squared Error")
   
   alim <-  list(calib_slope = c(0.25,1.75),
-                calib_itl = c(-1.5,1.5),
+                calib_itl = c(-1.5,1.75),
                 r_squared = c(0,1),
                 r_squared_transformed = c(0,1),
-                rmse = c(1,3))
+                rmse = c(0.5,3))
   
-  xlim <-  list(calib_slope = c(-0.1, 2.7),
+  xlim <-  list(calib_slope = c(-0.5, 2.7),
                 calib_itl = c(-2.1, 2.7),
                 r_squared = c(-0.6, 1.4),
                 r_squared_transformed = c(-0.6, 1.4),
-                rmse = c(0.4,4.6))
+                rmse = c(-0.5,4.6))
   
   refline <-  list(calib_slope = 1,
                    calib_itl = 0,
