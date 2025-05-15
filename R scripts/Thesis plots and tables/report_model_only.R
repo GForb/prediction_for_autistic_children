@@ -8,7 +8,10 @@ process_results_for_outcome <- function(outcome, p_value_stars = TRUE, sqrt_var 
  model_results_name <- paste0(outcome, "_model_only.rds")
  model_results <- readRDS <- readRDS(here::here(results_folder, model_results_name))
  
- results <- map2(analysis_spec$analysis_name, 
+ print(analysis_spec$analysis_name)
+ length(model_results) |> print()
+ print(model_results[[1]])
+  results <- map2(analysis_spec$analysis_name, 
                  model_results,
                  \(x,y) process_model_results(x, y, results_folder, p_value_stars = TRUE, sqrt_var = sqrt_var)) |> 
    bind_rows() |> 
@@ -33,6 +36,7 @@ main_analysis_sdq <- sdq_results |>
               huxtable::hux(add_colnames = FALSE) |> 
    huxtable::set_bottom_border(row = c(1,10, 15, 20, 25), value = 0.5)  
   sdq_table |>  save_hux_table(caption = "Model coefficients for the primary analysis models of the SDQ. Columns show coefficient estimates and 95\\% confidence intervals. *p<0.05, **p<0.01, ***p<0.001.",
+                               short_caption = "Model coefficients for the primary analysis models of the SDQ",
                                label = "sdq_primary_model",
                                file_name = "sdq_primary_model.tex",
                                font_size = 10)
@@ -48,6 +52,7 @@ main_analysis_sdq <- sdq_results |>
     huxtable::hux(add_colnames = FALSE) |> 
     huxtable::set_bottom_border(row = c(1,10, 17), value = 0.5)  
   sdq_table_st |>  save_hux_table(caption = "Model coefficients for the single timepoint model for the SDQ, estimated using study, age, sex and baseline domains of outcome only. Columns show coefficient estimates and 95\\% confidence intervals. *p<0.05, **p<0.01, ***p<0.001.",
+                                short_caption = "Model coefficients for the single timepoint model for the SDQ",
                                label = "sdq_st_model",
                                file_name = "sdq_st_model.tex",
                                font_size = 10)
@@ -66,7 +71,8 @@ vabs_table <- bind_rows(colnames(main_analysis_vabs) |> get_label(label_no = 3),
   huxtable::hux(add_colnames = FALSE) |> 
   huxtable::set_bottom_border(row = c(1,5, 13, 16, 24), value = 0.5)  
 vabs_table |>  save_hux_table(caption = "Model coefficients for the primary analysis models of the VABS Columns show coefficient estimates and 95\\% confidence intervals. *p<0.05, **p<0.01, ***p<0.001.",
-                             label = "vabs_primary_model",
+                             short_caption = "Model coefficients for the primary analysis models of the VABS",
+                              label = "vabs_primary_model",
                              file_name = "vabs_primary_model.tex",
                              font_size = 10)
 
@@ -81,7 +87,8 @@ vabs_table_st <- bind_rows(colnames(st_vabs) |> get_label(label_no = 3), st_vabs
   huxtable::hux(add_colnames = FALSE) |> 
   huxtable::set_bottom_border(row = c(1,5, 11, 15), value = 0.5)  
 vabs_table_st |>  save_hux_table(caption = "Model coefficients for the single timepoint model for the VABS, estimated using study, age, sex and baseline domains of outcome only. Columns show coefficient estimates and 95\\% confidence intervals. *p<0.05, **p<0.01, ***p<0.001.",
-                                label = "vabs_st_model",
+                                 short_caption = "Model coefficients for the single timepoint model for the VABS",
+                                 label = "vabs_st_model",
                                 file_name = "vabs_st_model.tex",
                                 font_size = 10)
 
@@ -108,7 +115,8 @@ cbcl_table <- bind_rows(colnames(cbcl_results) |> get_label(label_no = 3), cbcl_
   huxtable::hux(add_colnames = FALSE) |> 
   huxtable::set_bottom_border(row = c(1,7, 12, 18, 27), value = 0.5)  
 cbcl_table |>  save_hux_table(caption = "Model coefficients for the primary analysis models of the CBCL. Columns show coefficient estimates and 95\\% confidence intervals. *p<0.05, **p<0.01, ***p<0.001.",
-                             label = "cbcl_primary_model",
+                              short_caption = "Model coefficients for the primary analysis models of the CBCL",
+                                label = "cbcl_primary_model",
                              file_name = "cbcl_primary_model.tex",
                              font_size = 10)
 
@@ -125,6 +133,7 @@ cbcl_table_st <- bind_rows(colnames(st_cbcl) |> get_label(label_no = 3), st_cbcl
   huxtable::hux(add_colnames = FALSE) |> 
   huxtable::set_bottom_border(row = c(1,7, 14), value = 0.5)  
 cbcl_table_st |>  save_hux_table(caption = "Model coefficients for the single timepoint model for the CBCL, estimated using study, age, sex and baseline domains of outcome only. Columns show coefficient estimates and 95\\% confidence intervals. *p<0.05, **p<0.01, ***p<0.001.",
-                                label = "cbcl_st_model",
+                                 short_caption = "Model coefficients for the single timepoint model for the CBCL",
+                                  label = "cbcl_st_model",
                                 file_name = "cbcl_st_model.tex",
                                 font_size = 10)

@@ -34,8 +34,8 @@ plot_forrestplot_grid <- function(myOutcomeDomain, myOutcome, main_results){
 
 save_calib_plot <- function(myOutcome, results_folder, main_results) {
   results_data <- main_results |> filter(outcome == myOutcome, metric == "calib_slope") 
-  predictions_df <- readRDS(here::here(results_folder, paste0(results_data$analysis_name,"_",results_data$intercept_est_method,  ".rds"))) 
-  predictions_df_sampled <-     predictions_df |> 
+  predictions_df <- readRDS(here::here(results_folder, paste0(results_data$analysis_name,"_",results_data$intercept_est_method, ".rds"))) 
+  predictions_df_sampled <- predictions_df |> 
     group_by(ID) %>%           # Group by ID
     slice_sample(n = 1) %>%    # Randomly select one row per group (ID)
     ungroup()     

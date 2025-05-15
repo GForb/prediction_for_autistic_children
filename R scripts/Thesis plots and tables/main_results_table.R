@@ -17,7 +17,7 @@ main_results_sdq |>
   plot_many_ma_by_metric(my_colour = "turquoise4", diamond_height = 0.2) +
   ggtitle("")
 
-ggsave(file = here::here(plots_folder, "sdq_main_results.png"), width = 18, height = 8, units = "cm")
+ggsave(file = here::here(plots_folder, "sdq_main_results.png"), width = 18, height = 7, units = "cm")
 
 
 # VABS ----
@@ -35,7 +35,7 @@ main_results_vabs |>
   plot_many_ma_by_metric(my_colour = "turquoise4", diamond_height = 0.2, rmse_stand = TRUE) +
   ggtitle("")
 
-ggsave(file = here::here(plots_folder, "vabs_main_results.png"), width = 18, height = 8, units = "cm")
+ggsave(file = here::here(plots_folder, "vabs_main_results.png"), width = 18, height = 7, units = "cm")
 
 
 
@@ -54,7 +54,7 @@ main_results_cbcl |>
   plot_many_ma_by_metric(my_colour = "turquoise4", diamond_height = 0.2, rmse_stand = TRUE) +
   ggtitle("")
 
-ggsave(file = here::here(plots_folder, "cbcl_main_results.png"), width = 18, height = 8, units = "cm")
+ggsave(file = here::here(plots_folder, "cbcl_main_results.png"), width = 18, height = 7, units = "cm")
 
 main_results_bne <- bind_rows(main_results_sdq |> mutate(scale = "SDQ"), 
                               main_results_cbcl |> filter(metric != "rmse") |> mutate(metric = case_when(metric == "rmse_stand" ~ "rmse",
