@@ -35,7 +35,7 @@ source(here::here("R scripts", "config.R"))
 
 
 # Descriptive Reports
-descriptive_template <- here::here("Rmarkdown/descriptive_report_template.rmd")
+descriptive_template <- here("Rmarkdown/descriptive_report_template.rmd")
 ## SDQ
 create_doc(dataset = "ALSPAC", template = descriptive_template, outcome = "sdq")
 create_doc(dataset = "gui", template = descriptive_template, outcome = "sdq")
@@ -74,7 +74,7 @@ create_doc(dataset = "TRAILS_POP", template = descriptive_template, outcome = "c
   tictoc::toc() 
   
   ##  Meta-analysing results ----
-  results_folder <- here::here(data_and_outputs, "Results", "VABS", "Thesis")
+  results_folder <- here(data_and_outputs, "Results", "VABS", "Thesis")
   tictoc::tic()
   set.seed(42345234)
   create_full_results_table(results_folder)
@@ -82,7 +82,7 @@ create_doc(dataset = "TRAILS_POP", template = descriptive_template, outcome = "c
   
   # Running models for model reporting  ----
   ##  Running models for model reporting
-  source(here::here(modelling_scripts, "run_model_only_vabs.R"))
+  source(here(modelling_scripts, "run_model_only_vabs.R"))
   
 
 # CBCL Pipeline ----
@@ -104,7 +104,7 @@ run_models("cbcl")
 tictoc::toc() 
 
 ##  Meta-analysing results ----
-results_folder <- here::here(data_and_outputs, "Results", "CBCL", "Thesis")
+results_folder <- here(data_and_outputs, "Results", "CBCL", "Thesis")
 
 tictoc::tic()
 set.seed(366345634)
@@ -113,7 +113,7 @@ tictoc::toc()
 
 ##  Running models for model reporting
 tictoc::tic()
-source(here::here(modelling_scripts, "run_model_only_cbcl.R"))
+source(here(modelling_scripts, "run_model_only_cbcl.R"))
 tictoc::toc() 
 
 # SDQ Pipeline  ----
@@ -136,44 +136,50 @@ run_models("sdq")
 tictoc::toc() 
 
 ##  Meta-analysing results ----
-results_folder <- here::here(data_and_outputs, "Results", "SDQ", "Thesis")
+results_folder <- here(data_and_outputs, "Results", "SDQ", "Thesis")
 tictoc::tic()
 set.seed(949493)
 create_full_results_table(results_folder)
 tictoc::toc() 
 
 ##  Running models for model reporting
-source(here::here(modelling_scripts, "run_model_only_sdq.R"))
+source(here(modelling_scripts, "run_model_only_sdq.R"))
 
 # Reporting
-source(here::here(thesis_reporting, "n_fup_tables.R"))
-source(here::here(thesis_reporting, "ages_tables.R"))
+source(here(thesis_reporting, "n_fup_tables.R"))
+source(here(thesis_reporting, "ages_tables.R"))
 
-source(here::here(thesis_reporting, "sdq_summary_plots.R"))
-source(here::here(thesis_reporting, "cbcl_summary_plots.R"))
-source(here::here(thesis_reporting, "vabs_summary_plots.R"))
-
-
-source(here::here(thesis_reporting, "cbcl_descriptive_table.R"))
-source(here::here(thesis_reporting, "sdq_descriptive_table.R"))
-source(here::here(thesis_reporting, "vabs_descriptive_table.R"))
-
-source(here::here(thesis_reporting, "cr_main_results.R"))
-source(here::here(thesis_reporting, "main_results_table.R"))
-
-source(here::here(thesis_reporting, "thesis_forrest_plots_and_calibration.R"))
+source(here(thesis_reporting, "sdq_summary_plots.R"))
+source(here(thesis_reporting, "cbcl_summary_plots.R"))
+source(here(thesis_reporting, "vabs_summary_plots.R"))
 
 
-source(here::here(thesis_reporting, "report_model_only.R"))
+source(here(thesis_reporting, "cbcl_descriptive_table.R"))
+source(here(thesis_reporting, "sdq_descriptive_table.R"))
+source(here(thesis_reporting, "vabs_descriptive_table.R"))
 
-source(here::here(thesis_reporting, "sensitivity_analysis_plots_and_tables.R"))
+source(here(thesis_reporting, "cr_main_results.R"))
+source(here(thesis_reporting, "main_results_table.R"))
+
+source(here(thesis_reporting, "thesis_forrest_plots_and_calibration.R"))
+
+
+source(here(thesis_reporting, "report_model_only.R"))
+
+source(here(thesis_reporting, "sensitivity_analysis_plots_and_tables.R"))
 
 source(here(modelling_scripts, "cr_pi_data.R"))
-source(here::here(thesis_reporting, "prediction_intervals.R"))
+source(here(thesis_reporting, "prediction_intervals.R"))
 
 
 # ISCB Charts
 
-template = here::here("Rmarkdown/iscb_charts.Rmd")
+template = here("Rmarkdown/iscb_charts.Rmd")
 output_file_name  <-  "iscb_charts.html"
 run_results_report(template, output_file_name)
+
+
+# Plots for presentations
+source(here(reporting_scripts, "sibngle_outcome_pi.R"))
+source(here(reporting_scripts, "sdq_v_cbcl.R"))
+
