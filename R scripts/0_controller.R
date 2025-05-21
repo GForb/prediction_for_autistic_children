@@ -158,6 +158,9 @@ source(here(thesis_reporting, "cbcl_descriptive_table.R"))
 source(here(thesis_reporting, "sdq_descriptive_table.R"))
 source(here(thesis_reporting, "vabs_descriptive_table.R"))
 
+# source(here(thesis_reporting, "by_domain_descriptive_plot.R)) NOT USED IN THESIS: Plots descriptive of overall by domain. May contain bugs.
+
+
 source(here(thesis_reporting, "cr_main_results.R"))
 source(here(thesis_reporting, "main_results_table.R"))
 
@@ -167,6 +170,7 @@ source(here(thesis_reporting, "thesis_forrest_plots_and_calibration.R"))
 source(here(thesis_reporting, "report_model_only.R"))
 
 source(here(thesis_reporting, "sensitivity_analysis_plots_and_tables.R"))
+source(here(thesis_reporting, "correlation_plots.R"))
 
 source(here(modelling_scripts, "cr_pi_data.R"))
 source(here(thesis_reporting, "prediction_intervals.R"))
