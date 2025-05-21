@@ -44,6 +44,30 @@ plot_many_ma_by_metric <- function(data, outcome = NULL, my_colour = "black", di
   return(plot)
 }
 
+plot_one_ma_by_metric <- function(data, outcome = NULL, my_colour = "black", diamond_height = 0.1) {
+  myOutcome = outcome
+  if(is.null(outcome)) {
+    myOutcome = data |> pull(outcome) |> unique()
+  }
+  
+  
+  plot_data <- data |> filter(outcome %in% myOutcome) |>  
+    mutate(metric = factor(
+      metric, 
+      levels = c("rmse", "rmse_stand", "r_squared_transformed", "calib_itl", "calib_slope"), 
+      labels = c("RMSE", "Standardised \n RMSE", "R-squared", "Calibration \n in the Large", "Calibration \n Slope")))
+  
+  
+  
+  print(plot_data |> filter(metric == "Standardised \n RMSE") |> select(label, position, metric, est, starts_with("ci"), starts_with("pi")))
+  plot <- plot_data |>
+    plot_many_ma(diamond_height = diamond_height, my_colour = my_colour) + 
+    ggtitle(get_label(myOutcome, label_no = 2)) 
+  
+  
+  return(plot)
+}
+
 plot_many_ma_by_outcome <- function(data, my_colour = "black", diamond_height = 0.1, vline_data = NULL, vline_pi = FALSE, scales = "free_x") {
   
   outcomes <- data |> pull(outcome) |> unique()
@@ -130,8 +154,6 @@ plot_many_ma_multi_out <- function(data, my_colour = "black", diamond_height = 0
     diamond$scale <- data$scale[i]
     diamond
   }))
-  
-  print(diamond_data)
   
   
   # Create the plot
