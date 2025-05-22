@@ -1,4 +1,4 @@
-# Prediction for autistic chilren [TO BE UPDATED]
+# Prediction for autistic chilren
 
 
 
