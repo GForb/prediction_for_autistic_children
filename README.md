@@ -64,14 +64,14 @@ This contians stata files used in the analysis. The file prediction_progs.do def
 Models are estimted, and internal-external cross validation is carried out in Stata. Data processing, meta-analysis of results, and reporting is carried out in R. The whole modelling process is controlled via R.
 
 ## Modelling
-Prior to modelling, multiple imputaiotn is carried out in the mi_ scripts and the multiply imputed datasets are saved.
+Prior to modelling, multiple imputaiotn is carried out in the `mi_\*` scripts and the multiply imputed datasets are saved.
 
-For each *outcome* the script run_*outcome*_models.R creates a grid which charactersits of the analysis including a model function, which predictors, and which dataset to use. This script then passes the grid to the run_many_models function which loops trough the rows and calls the mdoel function for each row.
+For each `*outcome*` the script `run_*outcome*_models.R` creates a grid which charactersits of the analysis including a model function, which predictors, and which dataset to use. This script then passes the grid to the run_many_models function which loops trough the rows and calls the mdoel function for each row.
 
-The model functions are defined in the script *Rscripts/Functions/model_factories.R*. They are named `model_pred_reg...` or `model_pred_gsem...` indicating whether mdoelling is carried out using linear regression or Stata's `gsem` command. The model functions set up the arguments required for the stata code then call `run_stata_code`. 
+The model functions are defined in the script `*Rscripts/Functions/model_factories.R*`. They are named `model_pred_reg...` or `model_pred_gsem...` indicating whether mdoelling is carried out using linear regression or Stata's `gsem` command. The model functions set up the arguments required for the stata code then call `run_stata_code`. 
 This fucntion creates a .do file for the analysis, and runs it in Stata via the Rstata package. The .do file for each analysis is saved with the results and not included in this repository. Each analysis calls the stata script Stata/prediction_progs.do wchih implents the analysis and carries out internal-external cross validation.
 
 The Stata code saves the predicted values and outcomes for each cross validation fold. Performance metrics and meta-analysis of performance metrics are carried out by the funciton `create_full_results_table` saved in `R scripts/Functions/create_full_results_table.R`. Ultimately the outcomes and predicted values are passed to functions from the package `IPDPredictR` which calcualtes model performance and implements the meta-analysis of results. 
 
-A similar process is fallowed in the scripts run_model_only_*outcome*, but the only the models are estimated and no cross-validation is carried out.
+A similar process is fallowed in the scripts `run_model_only_*outcome*`, but the only the models are estimated and no cross-validation is carried out.
 
