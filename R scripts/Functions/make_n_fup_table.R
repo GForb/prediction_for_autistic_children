@@ -85,7 +85,7 @@ save_n_fup_hux_table <- function(n_fup_table, outcome_str) {
   hux_table |> save_hux_table(
     file_name = paste0(outcome_str, "_n_fup_table.tex"),
     caption = glue::glue(
-      "Number of people with eligible baseline data, numbers included in analysis, and reason for exlusion for the {outcome_str_caps}."
+      "Number of people with eligible baseline data, numbers included in analysis, and reason for exclusion for the {outcome_str_caps}."
     ),
     label = paste0(outcome_str, "_n_fup")
   )

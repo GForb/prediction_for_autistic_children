@@ -77,7 +77,7 @@ ma_calib_slope <- ma_list[[1]]
 
 anx_by_study[[1]] |> filter(metric == "calib_slope")
 
-# Forrest plots for each outcome
+# Forest plots for each outcome
 outcomes <- main_results$outcome |> unique()
 walk(outcomes, function(myOutcome) plot_forrestplot_grid(myOutcomeDomain = myOutcome, myOutcome = "cbcl", main_results = main_results))
 walk(outcomes, function(myOutcome) save_calib_plot(myOutcome, results_folder, main_results))

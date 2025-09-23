@@ -40,7 +40,7 @@ save_sens_hux_table <- function(sens_table, outcome){
     huxtable::set_valign(col = 1, value = "middle")
     
   
-  outcome_label <- get_label(outcome)
+  outcome_label <- get_label(outcome, label_no = 4)
   
   print(glue::glue("Saving table for model validation for sensitivity analysis of {outcome_label}."))
   ht <- hux_table |> save_hux_table(

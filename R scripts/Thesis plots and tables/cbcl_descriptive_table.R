@@ -43,7 +43,8 @@ base_predictors_table <- analysis_data_base |>
 
 
 base_table_output <- base_table |> save_descriptive_hux_table(outcome_str = "cbcl", what = "base", outcome_table = TRUE, col1_width = 0.12, col2_width = 0.18, htb = TRUE)
-base_predictors_table |> save_descriptive_hux_table(outcome_str = "cbcl", what = "pred", htb = TRUE)
+base_predictors_table |> save_descriptive_hux_table(outcome_str = "cbcl", what = "pred", htb = TRUE, col1_width = 0.12, ,
+                                                    col2_width = 0.13)
 out_table |> save_descriptive_hux_table(outcome_str = "cbcl", what = "out", outcome_table = TRUE, col1_width = 0.12, col2_width = 0.18, htb = TRUE)
 
 
