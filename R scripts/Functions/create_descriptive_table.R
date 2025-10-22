@@ -53,7 +53,7 @@ create_descriptive_table <- function(data,
       Variable =  get_label(variable, label_no = 3),
       name = case_when(
         name == "n_per" ~ "n (\\%)",
-        name == "per_comp" ~ "\\% data",
+        name == "per_comp" ~ "\\% recorded",
         TRUE ~ name
       )
     )
@@ -240,7 +240,7 @@ save_descriptive_hux_table <- function(descriptive_table,
     base = glue::glue("the {outcome_str_caps} at Baseline"),
     out = glue::glue("the {outcome_str_caps} at Outcome"),
     pred = glue::glue(
-      "the baseline predictors used in the analysis of {outcome_str_caps}"
+      "the baseline predictors used in the analysis of {outcome_str_caps}. Table shows descriptive descriptives and the percentage of participants included in the analysis with recorded data"
     )
   )
   what_word <- what_words[what]
