@@ -1,4 +1,5 @@
 # See file controller_functions for helper functions
+# See config file for set up of paths.
 
 ## SDQ
 process("ALSPAC")
@@ -187,4 +188,5 @@ run_results_report(template, output_file_name)
 source(here(reporting_scripts, "sibngle_outcome_pi.R"))
 source(here(reporting_scripts, "sdq_v_cbcl.R"))
 
-
+# Paper tables and figures
+source(here(paper_scripts, "paper_baseline_table.R"))

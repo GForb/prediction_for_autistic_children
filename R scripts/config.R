@@ -20,6 +20,7 @@ modelling_scripts <- here::here("R scripts", "Modelling")
 reporting_scripts <- here::here("R scripts", "Reporting")
 thesis_reporting <- here::here("R scripts", "Thesis plots and tables")
 reporting_scripts <- here::here("R scripts", "Reporting")
+paper_scripts <- here::here("R scripts", "Paper")
 
 results_folder_sdq <- here::here(data_and_outputs, "Results", "SDQ", "Thesis")
 results_folder_cbcl <- here::here(data_and_outputs, "Results", "CBCL", "Thesis")

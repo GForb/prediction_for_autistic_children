@@ -2,7 +2,6 @@
  # Functions ----
 process <- function(study_name) {
   source(here(data_processing_scripts, paste0("import_", study_name, ".R")))
-
 }
 
 # Running analysis
