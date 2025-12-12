@@ -22,9 +22,11 @@ thesis_reporting <- here::here("R scripts", "Thesis plots and tables")
 reporting_scripts <- here::here("R scripts", "Reporting")
 paper_scripts <- here::here("R scripts", "Paper")
 
-results_folder_sdq <- here::here(data_and_outputs, "Results", "SDQ", "Thesis")
-results_folder_cbcl <- here::here(data_and_outputs, "Results", "CBCL", "Thesis")
-results_folder_vabs <- here::here(data_and_outputs, "Results", "VABS", "Thesis")
+results_folder_main <- here::here(data_and_outputs, "Results")
+
+results_folder_sdq <- here::here(results_folder_main, "SDQ", "Thesis")
+results_folder_cbcl <- here::here(results_folder_main, "CBCL", "Thesis")
+results_folder_vabs <- here::here(results_folder_main, "VABS", "Thesis")
 
 
 devtools::install_github("GForb/IPDPredictR")
