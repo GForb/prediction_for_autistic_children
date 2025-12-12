@@ -111,7 +111,7 @@ data <- data_raw |>
          method_bestQD = 1,
          bestQDV0 = as.numeric(bestQDV0),
          bestQDV2 = as.numeric(bestQDV2),
-         base_sex = ifelse(data_raw$sex == "Girl", 1, 0),
+         base_sex = ifelse(data_raw$sex == 2, 1, 0),
          base_maternal_education = case_when(niveau_etude_mere == "3_Graduated school" ~ 1,
                                        niveau_etude_mere == "2_High school" ~ 0,
                                        niveau_etude_mere == "1_Middle school" ~ 0,
