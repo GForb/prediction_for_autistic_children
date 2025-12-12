@@ -38,8 +38,10 @@ paper_scripts <- here::here("R scripts", "Paper")
 
 devtools::install_github("GForb/IPDPredictR")
 
-#ggcorrplot sfsmisc metafor
 # Loading required libraries
+library(metafor)
+library(huxtable)
+library(smcfcs)
 library(here)
 library(testthat)
 library(haven) 

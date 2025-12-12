@@ -37,7 +37,7 @@ source(here::here("R scripts", "config_v2.R"))
 
 
 # Descriptive Reports
-descriptive_template <- here("Rmarkdown/descriptive_report_template.rmd")
+descriptive_template <- here("Rmarkdown/descriptive_report_template_v2.rmd")
 ## SDQ
 create_doc(dataset = "ALSPAC", template = descriptive_template, outcome = "sdq")
 create_doc(dataset = "gui", template = descriptive_template, outcome = "sdq")
@@ -57,6 +57,12 @@ create_doc(dataset = "togo1", template = descriptive_template, outcome = "cbcl")
 create_doc(dataset = "togo2", template = descriptive_template, outcome = "cbcl")
 create_doc(dataset = "TRAILS_CC", template = descriptive_template, outcome = "cbcl")
 create_doc(dataset = "TRAILS_POP", template = descriptive_template, outcome = "cbcl")
+
+## VABS
+create_doc(dataset = "edx_vabs", template = descriptive_template, outcome = "vabs")
+create_doc(dataset = "elena_vabs", template = descriptive_template, outcome = "vabs")
+create_doc(dataset = "pathways_vabs", template = descriptive_template, outcome = "vabs")
+create_doc(dataset = "epited", template = descriptive_template, outcome = "vabs")
 
 
 # VABS Pipeline   ----
@@ -89,8 +95,8 @@ create_doc(dataset = "TRAILS_POP", template = descriptive_template, outcome = "c
 # CBCL Pipeline ----
 
 # ## Pooling ----
-# pool("cbcl")
-# create_doc(dataset = "pooled_cbcl", template = descriptive_template, outcome = "cbcl")
+#pool("cbcl")
+#reate_doc(dataset = "pooled_cbcl", template = descriptive_template, outcome = "cbcl")
 # 
 # ## Multiple Imputaiton ----
 # tictoc::tic()
