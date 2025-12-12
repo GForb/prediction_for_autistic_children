@@ -55,7 +55,7 @@ scale_max <- bind_rows(
 
 full_results <- map(c("SDQ", "CBCL"),
                     function(study_name) {
-                      results_folder <- here::here(data_and_outputs, "Results", study_name, "Single Study")
+                      results_folder <- here::here(results_folder_main, study_name, "Single Study")
                       readRDS(here::here(results_folder,"results_meta_analysis.rds"))
                     }) |> 
   bind_rows() |> 

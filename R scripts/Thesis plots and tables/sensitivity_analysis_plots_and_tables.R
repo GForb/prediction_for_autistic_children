@@ -89,7 +89,7 @@ sens_labels_all <- tibble(
 
 # SDQ ----
 # Sensitivity analysis: Table
-results_folder <- here::here(data_and_outputs, "Results", "SDQ", "Thesis")
+results_folder <- results_folder_sdq
 
 
 raw_results_long <- readRDS(file = here::here(results_folder, "results_meta_analysis_long.rds"))
@@ -146,7 +146,7 @@ walk(metrics, function(myMetric) {
 })
 
 # VABS ----
-results_folder <- here::here(data_and_outputs, "Results", "VABS", "Thesis")
+results_folder <- results_folder_vabs
 raw_results_long <- readRDS(file = here::here(results_folder, "results_meta_analysis_long.rds"))
 
 results <- raw_results_long |> 
@@ -205,7 +205,7 @@ walk(metrics, function(myMetric) {
 
 
 # CBCL ----
-results_folder <- here::here(data_and_outputs, "Results", "CBCL", "Thesis")
+results_folder <- results_folder_cbcl
 raw_results_long <- readRDS(file = here::here(results_folder, "results_meta_analysis_long.rds")) |> 
   select(outcome, metric, est, ci.lb, ci.ub, pi.lb, pi.ub, model, predictor_set, intercept_est_method, analysis_name)
 

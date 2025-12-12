@@ -55,7 +55,7 @@ coulours <- c(VABS = "turquoise4", CBCL = "turquoise4", SDQ = "turquoise4")
 plots_folder <- here::here(thesis_plots, "Main Results")
 
 # SDQ
-results_folder <- here::here(data_and_outputs, "Results", "SDQ", "Thesis")
+results_folder <- results_folder_sdq
 main_results <- readRDS(here::here(results_folder, "main_results_sdq.rds")) 
 
 # Forrest plots for each outcome
@@ -64,7 +64,7 @@ walk(outcomes, function(myOutcome) plot_forrestplot_grid(myOutcomeDomain = myOut
 walk(outcomes, function(myOutcome) save_calib_plot(myOutcome, results_folder, main_results))
 
 # CBCL
-results_folder <- here::here(data_and_outputs, "Results", "CBCL", "Thesis")
+results_folder <- results_folder_cbcl
 main_results <- readRDS(here::here(results_folder, "main_results_cbcl.rds")) 
 
 anx <- main_results |> filter(metric == "calib_slope", outcome == "cbcl_anx")
@@ -84,7 +84,7 @@ walk(outcomes, function(myOutcome) save_calib_plot(myOutcome, results_folder, ma
 
 
 # VABS
-results_folder <- here::here(data_and_outputs, "Results", "VABS", "Thesis")
+results_folder <- results_folder_vabs
 main_results <- readRDS(here::here(results_folder, "main_results_vabs.rds")) 
 
 # Forrest plots for each outcome
@@ -96,7 +96,7 @@ walk(outcomes, function(myOutcome) save_calib_plot(myOutcome, results_folder, ma
 # SDQ - inc post_base_diangosis
 plots_folder <- here::here(thesis_plots, "SDQ Post diag")
 
-results_folder <- here::here(data_and_outputs, "Results", "SDQ", "Thesis")
+results_folder <- results_folder_sdq
 results <- readRDS(here::here(results_folder, "results_sdq_all_aut.rds")) 
 
 # Forrest plots for each outcome

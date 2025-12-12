@@ -1,4 +1,4 @@
-results_folder <- here::here(data_and_outputs, "Results", "CBCL", "Thesis")
+results_folder <- results_folder_cbcl
 analysis_spec <- readRDS(here::here(results_folder, "analysis_spec.rds"))
 
 

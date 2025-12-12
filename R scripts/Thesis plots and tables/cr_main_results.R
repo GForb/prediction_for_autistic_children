@@ -1,6 +1,6 @@
 
 # SDQ ----
-results_folder <- here::here(data_and_outputs, "Results", "SDQ", "Thesis")
+results_folder <- results_folder_sdq
 raw_results_long <- readRDS(file = here::here(results_folder, "results_meta_analysis_long.rds"))
 
 results <- raw_results_long |> 
@@ -20,7 +20,7 @@ results_with_late_diag <- results |> filter(suffix == "_all_aut", intercept_est_
 saveRDS(results_with_late_diag, file = here::here(results_folder, "results_sdq_all_aut.rds"))
 
 # VABS ----
-results_folder <- here::here(data_and_outputs, "Results", "VABS", "Thesis")
+results_folder <- results_folder_vabs
 raw_results_long <- readRDS(file = here::here(results_folder, "results_meta_analysis_long.rds"))
 
 results <- raw_results_long |> 
@@ -47,7 +47,7 @@ main_results_vabs <- bind_rows(main_results_vabs, standard_rmse)
 saveRDS(main_results_vabs, file = here::here(results_folder, "main_results_vabs.rds"))
 
 # CBCL ----
-results_folder <- here::here(data_and_outputs, "Results", "CBCL", "Thesis")
+results_folder <- results_folder_cbcl
 
 # Fascinating - need to make sens plot
 

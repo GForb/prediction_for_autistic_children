@@ -2,7 +2,7 @@ analysis_data_long <- readRDS(here(derived_data, "pooled_cbcl_spline.Rds"))
 # Missing data is at level 2: The cluster level (cluster = individual) - this is the script to use to investigate how to impute missing data.
 # 1% of data are partially complete - to drop or not to drop? - wont introduce bias
 
-plots_folder <- here::here(data_and_outputs, "Results", "CBCL", "Imputation Plots")
+plots_folder <- here::here(results_folder_main, "CBCL", "Imputation Plots")
 
 id_nums <- analysis_data_long |> 
   select(ID) |> 

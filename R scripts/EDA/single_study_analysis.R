@@ -1,7 +1,7 @@
 # For SDQ:
 
 # 1: In a rich, longitudianl environment is the difference between single timepoint and multimepoint still small
-results_folder <- here::here(data_and_outputs, "Results", "SDQ", "Single Study")
+results_folder <- here::here(results_folder_main, "SDQ", "Single Study")
 log_folder <- here::here(results_folder, "Logs")
 do_folder <- here::here(results_folder, "Do Files")
 

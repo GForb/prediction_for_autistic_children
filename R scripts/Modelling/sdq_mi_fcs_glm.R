@@ -5,7 +5,7 @@ analysis_data_wide <- readRDS(here(derived_data, "pooled_sdq_wide.Rds")) |> filt
 
 # Add spline variables for SDQ - think about how this is done with the MI models - do I include in every imputation?
 
-plots_folder <- here::here(data_and_outputs, "Results", "SDQ", "Imputation Plots")
+plots_folder <- here::here(results_folder_main, "SDQ", "Imputation Plots")
 
 # Adding additional model terms:
 # Spline for each sdq domain using Stata mkspline

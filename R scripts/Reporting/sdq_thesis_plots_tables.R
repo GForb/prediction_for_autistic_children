@@ -3,7 +3,7 @@
 # Main analysis 
 plots_folder <- here::here(thesis_plots, "Main Results")
 tables_folder <- here::here(thesis_tables, "Main Results")
-results_folder <- here::here(data_and_outputs, "Results", "SDQ", "Thesis")
+results_folder <- results_folder_sdq
 
 # Plot main results
 coulours <- c(VABS = "turquoise4", CBCL = "turquoise4", SDQ = "turquoise4")

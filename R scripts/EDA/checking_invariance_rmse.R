@@ -2,11 +2,11 @@
 
 # Load some results
 
-longitudinal <- readRDS(here::here(data_and_outputs, "Results", "CBCL", "Thesis", "mt_fi_study_ri_cbcl_adhd_pred1_mt_estimate_cv.rds")) |> 
+longitudinal <- readRDS(here::here(results_folder_main, "CBCL", "Thesis", "mt_fi_study_ri_cbcl_adhd_pred1_mt_estimate_cv.rds")) |> 
   mutate(model = "longitudinal")
-st <- readRDS(here::here(data_and_outputs, "Results", "CBCL", "Thesis", "st_fi_study_cbcl_adhd_pred1_estimate_cv.rds")) |> 
+st <- readRDS(here::here(results_folder_main, "CBCL", "Thesis", "st_fi_study_cbcl_adhd_pred1_estimate_cv.rds")) |> 
   mutate(model = "st")
-st_av <- readRDS(here::here(data_and_outputs, "Results", "CBCL", "Thesis", "st_fi_study_cbcl_adhd_pred1_average.rds")) |> 
+st_av <- readRDS(here::here(results_folder_main, "CBCL", "Thesis", "st_fi_study_cbcl_adhd_pred1_average.rds")) |> 
   mutate(model = "st_av")
 
 

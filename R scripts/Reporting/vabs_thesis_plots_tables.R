@@ -3,7 +3,7 @@
 # Main analysis 
 plots_folder <- here::here(thesis_plots, "Main Results")
 tables_folder <- here::here(thesis_tables, "Main Results")
-results_folder <- here::here(data_and_outputs, "Results", "VABS", "Thesis")
+results_folder <- results_folder_vabs
 
 
 raw_results_long <- readRDS(file = here::here(results_folder, "results_meta_analysis_long.rds"))

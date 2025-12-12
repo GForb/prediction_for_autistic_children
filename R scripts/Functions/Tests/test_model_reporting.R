@@ -1,4 +1,4 @@
-results_folder <- here::here(data_and_outputs, "Results", "SDQ", "Prelim")
+results_folder <- here::here(results_folder_main, "SDQ", "Prelim")
 outcome <- "sdq_cond_p"
 intercept_est <- "average"
 model_name <- "mt_ri_study_rs"

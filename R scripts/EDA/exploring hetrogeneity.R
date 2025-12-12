@@ -1,4 +1,4 @@
-results_folder <- here::here(data_and_outputs, "Results", "SDQ", "Prelim")
+results_folder <- here::here(results_folder_main, "SDQ", "Prelim")
 
 outcome <- "sdq_peer_p"
 model_full_name <- paste0("st_ri_study_", outcome, "_pred3_mi_average")
