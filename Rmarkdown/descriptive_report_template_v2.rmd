@@ -1,0 +1,193 @@
+---
+params: 
+  set_title: ""
+  name_dataset: ""
+  name_var_metadata: "var_metadata"
+  outcome: ""
+title: "`r params$set_title`"
+editor: source
+---
+
+```{r global_options, include=FALSE}
+# This is a way to set options for all code chunks at once
+# Note that you can also dynamically control options by setting them to a value
+# DPI setting increased for Word output, cairo is anti aliasing
+# copied this from https://stackoverflow.com/questions/33445110/rmarkdown-global-options-vs-opts-chunk we may want to change the figure options
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
+```
+
+```{r,include=FALSE}
+
+  
+source(here::here("R scripts/config_v2.R")) 
+
+data_file <- paste0(params$name_dataset, ".Rds")
+data_file_acc <- paste0(params$name_dataset, "_acc.Rds")
+data <- readRDS(file.path(derived_data, data_file))
+n_studies <- data |> pull(study) |> unique() |> length()
+particpant_accounting <- readRDS(file.path(derived_data, data_file_acc))
+var_metadata <- get(params$name_var_metadata)
+
+outcome_names <- var_metadata |> filter(outcome ==1) |> pull(variable_name)
+
+ if(params$outcome == "sdq"){
+    predictor_metadata <- var_metadata |> filter(sdq_predictor == 1, outcome ==0)
+  } else if(outcome == "cbcl"){
+    predictor_metadata <- var_metadata |> filter(cbcl_predictor == 1, outcome ==0)
+  } else if(outcome == "vabs"){
+    predictor_metadata <- var_metadata |> filter(vabs_predictor == 1, outcome ==0)
+  } else {
+    predictor_metadata <- var_metadata |> 
+      filter(
+        (vabs_predictor == 1 |cbcl_predictor == 1 |sdq_predictor), 
+         outcome ==0)
+  }
+predictor_names <- predictor_metadata |> pull(variable_name)
+
+overall_n <- length(data$ID |> unique())
+
+```
+
+## Completeness
+
+### Outcomes
+
+```{r}
+
+table_data <- data |> 
+  filter(wave == out_wave) |>
+  select(ID, age, study, any_of(c(outcome_names, "fu_length"))) |> 
+  get_counts_table_by_study()
+
+table_data |> 
+  flextable::flextable() |> 
+  autofit()
+
+
+```
+
+### Baseline
+
+```{r}
+
+data |> 
+  filter(wave == base_wave) |>
+  select(ID, age, study,  any_of(c(outcome_names))) |> 
+  get_counts_table_by_study() |> 
+  flextable::flextable() |> 
+  autofit()
+
+
+```
+
+### Predictors
+
+```{r}
+
+ data |> 
+  filter(wave == base_wave) |>
+  select(ID, age, study, any_of(predictor_names)) |> 
+  get_counts_table_by_study() |> 
+  flextable::flextable() |> 
+  colformat_char(na_str = "not measured") |> 
+  autofit()
+
+
+```
+
+## Data Summaries
+
+### Outcomes
+
+```{r}
+#| warning: false
+out_data <- data |> 
+  filter(wave == out_wave) |> 
+  select(ID, age, any_of(c(outcome_names, "fu_length"))) 
+
+out_data |> describe_df(metadata = var_metadata)
+out_data |> describe_all(metadata = var_metadata)
+
+
+```
+
+### Baseline measures of outcomes
+
+```{r}
+#| warning: false
+base_data_outcomes <- data |> 
+  filter(wave == base_wave) |> 
+  select(ID, age, any_of(outcome_names))
+
+base_data_outcomes |> describe_df(metadata = var_metadata)
+
+
+base_data_outcomes  |> 
+  describe_all(metadata = var_metadata) 
+```
+
+### Other Predictors
+
+```{r}
+#| warning: false
+base_data <- data |> 
+  filter(wave == base_wave) |> 
+   select(any_of(predictor_names))
+
+base_data |> describe_df(metadata = var_metadata)
+
+base_data |>
+  describe_all(metadata = var_metadata)
+```
+
+### Earlier assessments of outcomes
+
+```{r}
+#| warning: false
+
+early_data <- data |> 
+  filter(wave < base_wave)
+
+if(nrow(early_data) > 0){
+  early_data |> 
+    select(age, any_of(outcome_names)) |> 
+    describe_all(metadata = var_metadata)
+} else {
+  print("No earlier data")
+}
+
+
+
+
+
+```
+
+## Correatlions
+
+### Baseline data
+
+```{r}
+base_data_all <- data |> 
+  filter(wave == base_wave) |> 
+  select(any_of(c(outcome_names, predictor_names)))
+  
+cor_mat <- cor(base_data_all, use = "pairwise.complete.obs", method = "spearman") |> round(2)
+cor_plot(cor_mat) |> print()
+```
+
+### Outcomes
+
+```{r}
+out_data <- out_data |> select(-age, -any_of("fu_length")) |> 
+    rename_with(~paste0("out_", .), everything()) |> 
+  rename( ID = out_ID)
+
+base_data_outcomes <- base_data_outcomes |> select(-age)
+
+outcome_data <- inner_join(base_data_outcomes, out_data, by = "ID") |> select(-ID, starts_with("age"))
+
+cor_mat <- cor(outcome_data, use = "pairwise.complete.obs", method = "spearman") |> round(2)
+cor_plot(cor_mat) |> print()
+
+
+```
