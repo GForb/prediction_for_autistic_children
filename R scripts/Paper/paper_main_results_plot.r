@@ -4,13 +4,26 @@ plots_folder <- here::here(here(outputs, "Paper"))
 
 
 # Loading Data ----
+results_folder <- results_folder_sdq
+
+main_results_sdq <- readRDS(here::here(results_folder, "main_results_sdq.rds")) |>  
+  mutate(pi.lb = case_when(metric == "r_squared_transformed" & pi.lb < 0 ~ 0,
+                           TRUE ~ pi.lb))
+
+results_folder <- results_folder_vabs
 
 main_results_vabs <- readRDS(here::here(results_folder, "main_results_vabs.rds")) |> 
-  filter(metric != "rmse") 
+  filter(metric != "rmse") |>  
+  mutate(pi.lb = case_when(metric == "r_squared_transformed" & pi.lb < 0 ~ 0,
+                           TRUE ~ pi.lb))
+
+  
 
 results_folder <- results_folder_cbcl
 main_results_cbcl <- readRDS(here::here(results_folder, "main_results_cbcl.rds")) |> 
-  filter(metric != "rmse") 
+  filter(metric != "rmse") |> 
+  mutate(pi.lb = case_when(metric == "r_squared_transformed" & pi.lb < 0 ~ 0,
+                           TRUE ~ pi.lb))
 
 # Plotting ----
 sdq_plot <- main_results_sdq |> 
