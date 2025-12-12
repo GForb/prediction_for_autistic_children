@@ -1,5 +1,5 @@
 
-get_pi_data <- function(analysis_spec, data, minmax_values = NULL, results_folder) {
+get_pi_data <- function(data, minmax_values = NULL, results_folder) {
   analysis_spec <- readRDS(here::here(results_folder, "analysis_spec.rds")) 
   
   outcomes <- analysis_spec$outcome |> unique()
@@ -13,7 +13,12 @@ get_pi_data <- function(analysis_spec, data, minmax_values = NULL, results_folde
   
   # Get RMSE from pooled results
   raw_results_long <- readRDS(file = here::here(results_folder, "results_meta_analysis_long.rds"))
-  rmse <- raw_results_long |> filter(metric == "rmse", model == "st_fi_study", intercept_est_method == "estimate_cv", predictor_set == "pred1") |> select(rmse = est, outcome)
+  rmse <- raw_results_long |> filter(
+    metric == "rmse",
+    model == "st_fi_study",
+    intercept_est_method == "estimate_cv",
+    predictor_set == "pred1"
+  ) |> select(rmse = est, outcome)
   
   n <- nrow(analysis_data_wide)
   p = 11 # number of predictors, better to extract from model,
@@ -112,6 +117,56 @@ make_pi_plot <- function(predictions, cutoffs = NULL, legend = TRUE) {
     plot <- plot  + theme(legend.position = "none")
   }
 
+  
+  
+  return(plot)
+  
+}
+
+make_pi_plot_paper <- function(predictions, cutoffs = NULL, legend = TRUE) {
+  plot_data <- predictions |> 
+    mutate(round_base = round(base_spline1),
+           outcome = get_label(outcome, label_no = 3)) |> 
+    select(outcome, round_base, pred, ID, starts_with("pi_lower"), starts_with("pi_upper"))  |> 
+    pivot_longer(cols = -c("ID", "round_base", "outcome"), names_to = "what", values_to = "value") |>
+    group_by(round_base, what, outcome) |>
+    summarise(mean = mean(value)) |>
+    pivot_wider(names_from = what, values_from = mean) 
+  
+  # Reshape data to add alpha level as a variable and define transparency
+  plot_data_long <- plot_data |> 
+    pivot_longer(
+      cols = starts_with("pi_"),
+      names_to = c(".value", "alpha"),
+      names_pattern = "pi_(lower|upper)_(.*)"
+    ) 
+  # Convert alpha to a factor
+  plot_data_long$alpha <- factor(plot_data_long$alpha, levels = c("0.05", "0.1", "0.25", "0.5"))
+  
+  # Plot with varying transparency for each ribbon
+  plot <- ggplot(plot_data_long, aes(x = round_base)) +
+    geom_ribbon(aes(ymin = lower, ymax = upper, fill = alpha)) +
+    scale_fill_brewer(type = "seq", labels = c("95%", "90%", "75%", "50%")) +
+    geom_line(aes(y = pred), color = "black", size = 1) +
+    labs(y = "Prediction", x = "Baseline outcome", fill = "Prediction Interval") +
+    facet_wrap(vars(outcome), nrow = 1, scales = "free")  
+  
+  
+  if(!is.null(cutoffs)){
+    cutoffs <- cutoffs |> mutate(LineName = "Likely disorder cutoff")
+    plot <- plot +   
+      geom_hline(data = cutoffs, aes(yintercept = cutoff, linetype = LineName), color = "red") +
+      geom_vline(data = cutoffs, aes(xintercept = cutoff), linetype = "dashed", color = "red") +
+      scale_linetype_manual(values = 2)  +
+      labs(linetype = NULL) 
+  }
+  
+  if(legend){
+    plot <- plot  + theme(legend.position = "top")
+  } else {
+    plot <- plot  + theme(legend.position = "none")
+  }
+  
   
   
   return(plot)
