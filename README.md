@@ -16,7 +16,7 @@ This folder contains notes on the dataset, instructions on how to set up file pa
 ***File paths environment variables must be set up prior to running any scripts***
 
 see setting_up_paths.md
-## 1. To run the analysis (or parts of it).
+## 2. To run the analysis (or parts of it).
 1. Set up the path to the "Data and Outputs" folder in your evnironment variable
 
 Create an environment variable named pfac_path  with the path to the data and outputs folder. To do this edit your .Renviron file to include the following:
@@ -30,7 +30,7 @@ One the environment variable is set up then the R script set_paths can be run to
 2. Run the config.R script
 3. Run 0_controller.R (or parts of it). This runs the entire analysis form start to finnish.
 
-## 2. Rscripts
+## 3. Rscripts
 ### Top level r scripts:
   - config.R: Sets up paths relative to path environment variables and loads libraries and functions. This needs to be run first prior to other scripts.
   - 0_controller.R: Will run the whole analysis from start to finish
@@ -61,10 +61,10 @@ Scripts to produce the figures and tables used in PhD thesis. Figures are output
 Other results reporting not included in PhD thesis, eg. conferences/informal presentations
 
 
-## 3. Rmarkdown
+## 4. Rmarkdown
 Contains required rmarkdown files. These are knitted by the run_desciprtive_reports function
 
-## 4. Stata
+## 5. Stata
 This contians stata files used in the analysis. The file prediction_progs.do defines a series of stata progrmas that are used to implement each model and conduct validation of model performance. Code for the second pilot analysis reported in the PhD thesis is saved in Pilot2.
 
 ## Other files
