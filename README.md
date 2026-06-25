@@ -16,6 +16,19 @@ This folder contains notes on the dataset, instructions on how to set up file pa
 ***File paths environment variables must be set up prior to running any scripts***
 
 see setting_up_paths.md
+## 1. To run the analysis (or parts of it).
+1. Set up the path to the "Data and Outputs" folder in your evnironment variable
+
+Create an environment variable named pfac_path  with the path to the data and outputs folder. To do this edit your .Renviron file to include the following:
+
+pfac_path = "*path to data*"
+
+To edit the .Renviron file, load the "usethis" package and use the the commnand usethis::edit_r_environ().
+
+One the environment variable is set up then the R script set_paths can be run to create r objects with the needed paths.
+2. Run the script tilted install_IPDPredictR.R. This installs a package named IPDPredictR from github. This is a package authored by me that contains functions used in the analysis.
+2. Run the config.R script
+3. Run 0_controller.R (or parts of it). This runs the entire analysis form start to finnish.
 
 ## 2. Rscripts
 ### Top level r scripts:
