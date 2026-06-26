@@ -1,7 +1,9 @@
 
 process_results_for_outcome <- function(outcome, p_value_stars = TRUE, sqrt_var = FALSE) {
   uppercase_outcome <- toupper(outcome)
-  results_folders <- list(cbcl = results_folder_cbcl, sdq = results_folder_sdq, vabs = results_folder_sdq)
+  results_folders <- list(cbcl = results_folder_cbcl, 
+                          sdq = results_folder_sdq, 
+                          vabs = results_folder_vabs)
   results_folder <- results_folders[[outcome]]
   analysis_spec <- readRDS(here::here(results_folder, "analysis_spec.rds"))
   
