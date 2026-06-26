@@ -16,10 +16,12 @@ country_name <- "Netherlands"
 
 
 data_folder <- here::here(raw_data, "TRAILS")
-data_raw <- haven::read_sav(here::here(data_folder, "Forbes G 300924.sav")) |> 
-  rename(ID = idno) 
 
-
+data_raw <- foreign::read.spss(
+  here::here(data_folder, "Forbes G 300924.sav"),
+  to.data.frame = TRUE,
+  use.value.labels = FALSE
+) |> rename(ID = idno)
 
 data_raw |> count(cohort)
 cn <- colnames(data_raw)
