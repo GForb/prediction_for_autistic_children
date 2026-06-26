@@ -195,3 +195,6 @@ source(here(reporting_scripts, "sdq_v_cbcl.R"))
 
 # Paper tables and figures
 source(here(paper_scripts, "paper_baseline_table.R"))
+source(here(paper_scripts, "paper_main_results_plot.R"))
+source(here(paper_scripts, "paper_prediction_intervals.R"))
+source(here(paper_scripts, "paper_prediction_examples.R"))
