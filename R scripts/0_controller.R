@@ -57,6 +57,12 @@ create_doc(dataset = "togo2", template = descriptive_template, outcome = "cbcl")
 create_doc(dataset = "TRAILS_CC", template = descriptive_template, outcome = "cbcl")
 create_doc(dataset = "TRAILS_POP", template = descriptive_template, outcome = "cbcl")
 
+## VABS
+create_doc(dataset = "edx_vabs", template = descriptive_template, outcome = "vabs")
+create_doc(dataset = "elena_vabs", template = descriptive_template, outcome = "vabs")
+create_doc(dataset = "pathways_vabs", template = descriptive_template, outcome = "vabs")
+create_doc(dataset = "epited", template = descriptive_template, outcome = "vabs")
+
 
 # VABS Pipeline   ----
 
