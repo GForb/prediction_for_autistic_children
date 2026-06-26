@@ -55,8 +55,7 @@ create_doc( dataset = "elena_cbcl", template = descriptive_template, outcome = "
 create_doc(dataset = "pathways_cbcl", template = descriptive_template, outcome = "cbcl")
 create_doc(dataset = "togo1", template = descriptive_template, outcome = "cbcl")
 create_doc(dataset = "togo2", template = descriptive_template, outcome = "cbcl")
-create_doc(dataset = "TRAILS_CC", template = descriptive_template, outcome = "cbcl")
-create_doc(dataset = "TRAILS_POP", template = descriptive_template, outcome = "cbcl")
+create_doc(dataset = "TRAILS", template = descriptive_template, outcome = "cbcl")
 
 ## VABS
 create_doc(dataset = "edx_vabs", template = descriptive_template, outcome = "vabs")
@@ -91,7 +90,7 @@ create_doc(dataset = "epited", template = descriptive_template, outcome = "vabs"
   ##  Running models for model reporting
   source(here(modelling_scripts, "run_model_only_vabs.R"))
   
-# CBCL NOT RUN AS NO CHANGES TO DATA- RESULTS COPIED FROM PREVIOUS RUN
+# CBCL NOT RUN AS NO CHANGES TO DATA- RESULTS COPIED FROM PREVIOUS RUN - SAVED IN THESIS SUBDIRECTORY
 # CBCL Pipeline ----
 
 # ## Pooling ----
@@ -122,7 +121,7 @@ create_doc(dataset = "epited", template = descriptive_template, outcome = "vabs"
 # source(here(modelling_scripts, "run_model_only_cbcl.R"))
 # tictoc::toc() 
  
-# SDQ NOT RUN AS NO CHANGES TO DATA- RESULTS COPIED FROM PREVIOUS RUN
+# SDQ NOT RUN AS NO CHANGES TO DATA- RESULTS COPIED FROM PREVIOUS RUN  - SAVED IN THESIS SUBDIRECTORY
 # SDQ Pipeline  ----
 
 # Pooling   ----  
@@ -164,7 +163,6 @@ source(here(thesis_reporting, "cbcl_descriptive_table.R"))
 source(here(thesis_reporting, "sdq_descriptive_table.R"))
 source(here(thesis_reporting, "vabs_descriptive_table.R"))
 
-# source(here(thesis_reporting, "by_domain_descriptive_plot.R)) NOT USED IN THESIS: Plots descriptive of overall by domain. May contain bugs.
 
 
 source(here(thesis_reporting, "cr_main_results.R"))
