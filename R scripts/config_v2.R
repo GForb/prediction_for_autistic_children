@@ -7,17 +7,17 @@ print("running config v2")
 # Data folders
 data_and_outputs <-  Sys.getenv("pfac_path")
 raw_data <- here::here(data_and_outputs, "Raw data")
-derived_data <- here::here(data_and_outputs, "Derived data/v2")
+derived_data <- here::here(data_and_outputs, "Publication", "Derived data")
 
 # Output folders
-outputs <- here::here(data_and_outputs, "Outputs","v2")
+outputs <- here::here(data_and_outputs, "Publication", "Outputs")
 thesis_tables <- file.path(outputs, "Thesis Tables")
 thesis_plots <- file.path(outputs, "Thesis Plots")
 
 latex_folder <-  file.path(thesis_tables, "LatexTables")
 
 # Results folders
-results_folder_main <- here::here(data_and_outputs, "Results", "v2")
+results_folder_main <- here::here(data_and_outputs, "Publication", "Results")
 
 results_folder_sdq <- here::here(results_folder_main, "SDQ", "Thesis")
 results_folder_cbcl <- here::here(results_folder_main, "CBCL", "Thesis")
