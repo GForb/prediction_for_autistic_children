@@ -10,7 +10,7 @@ nrow(analysis_data_wide)
 
 analysis_data_long <- sdq_long_data |> filter(out_all_complete, base_all_complete)
 
-results_folder <- here::here(data_and_outputs, "Results", "Test")
+results_folder <- here::here(results_folder_main, "Test")
 log_folder <- here::here(results_folder, "Logs")
 do_folder <- here::here(results_folder, "Do Files")
 

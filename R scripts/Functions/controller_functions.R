@@ -5,7 +5,6 @@ process <- function(study_name) {
 }
 
 # Running analysis
-descriptive_template <- here::here("Rmarkdown/descriptive_report_template.rmd")
 
 
 pool <- function(outcome_name) {

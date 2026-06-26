@@ -7,7 +7,7 @@ predictor_names <- predictor_metadata |> pull(variable_name)
 
 overall_n <- length(data$ID |> unique())
 
-results_folder <- here::here(data_and_outputs, "Results", "sdq", "Prelim")
+results_folder <- here::here(results_folder_main, "sdq", "Prelim")
 
 outcomes <- c("sdq_cond_p", "sdq_emot_p", "sdq_hyp_p", "sdq_peer_p", "sdq_pro_p") # 
 
@@ -19,7 +19,7 @@ model_names2 <- tibble(outcomes = outcomes) |>
   mutate(model_name =  paste0("st_ri_study_", outcomes, "_pred1_average")
   )
 
-results_folder <- here::here(data_and_outputs, "Results", "sdq", "Prelim")
+results_folder <- here::here(results_folder_main, "sdq", "Prelim")
 results <- readRDS(here(results_folder, "results_meta_analysis.rds"))
 
 result <- results |> filter(

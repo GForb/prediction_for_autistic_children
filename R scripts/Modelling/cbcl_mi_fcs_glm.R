@@ -4,7 +4,7 @@ analysis_data_wide <- readRDS(here(derived_data, "pooled_cbcl_wide.Rds")) |> fil
 
 # Add spline variables for cbcl - think about how this is done with the MI models - do I include in every imputation?
 
-plots_folder <- here::here(data_and_outputs, "Results", "CBCL", "Imputation Plots") # For some reason this doesn't work.
+plots_folder <- here::here(results_folder_main, "CBCL", "Imputation Plots") # For some reason this doesn't work.
 
 # Adding additional model terms:
 # Spline for each cbcl domain using Stata mkspline

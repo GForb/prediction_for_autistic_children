@@ -1,4 +1,4 @@
-results_folder <- here::here(data_and_outputs, "Results", "Test")
+results_folder <- here::here(results_folder_main, "Test")
 
 model_name_spec_raw <- readRDS(here::here(results_folder, "analysis_spec.rds"))
 

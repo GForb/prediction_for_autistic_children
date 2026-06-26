@@ -1,5 +1,5 @@
 
-results_folder <- here::here(data_and_outputs, "Results", "sdq", "Prelim")
+results_folder <- here::here(results_folder_main, "sdq", "Prelim")
 
 
 outcomes <- c("sdq_cond_p", "sdq_emot_p", "sdq_hyp_p", "sdq_peer_p", "sdq_pro_p") # 

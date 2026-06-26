@@ -33,7 +33,7 @@ analysis_ns
 
 
 
-results_folder <- here::here(data_and_outputs, "Results", "CBCL", "Thesis")
+results_folder <- results_folder_cbcl
 log_folder <- here::here(results_folder, "Logs")
 do_folder <- here::here(results_folder, "Do Files")
 

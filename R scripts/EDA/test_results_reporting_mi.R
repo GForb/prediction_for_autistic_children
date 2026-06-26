@@ -1,4 +1,4 @@
-results_folder <- here::here(data_and_outputs, "Results", "VABS", "Prelim")
+results_folder <- here::here(results_folder_main, "VABS", "Prelim")
 model_name_spec <- readRDS(here::here(results_folder, "analysis_spec.rds")) |> 
   mutate(file_name = paste0(analysis_name,".rds"))
 

@@ -3,7 +3,7 @@ analysis_data_long <- readRDS(here(derived_data, "pooled_sdq.Rds"))
 # Missing data is at level 2: The cluster level (cluster = indivudal)
 
 
-plots_folder <- here::here(data_and_outputs, "Results", "SDQ", "Imputation Plots")
+plots_folder <- here::here(results_folder_main, "SDQ", "Imputation Plots")
 
 
 analysis_data_long |> 

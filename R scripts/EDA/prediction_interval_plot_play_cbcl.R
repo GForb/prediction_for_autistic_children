@@ -22,7 +22,7 @@ sdq_cutoffs <- tibble(
   min = 0
 ) |> 
   mutate(outcome_label = get_label(outcome, label_no = 3))
-results_folder <- here::here(data_and_outputs, "Results", "SDQ", "Thesis")
+results_folder <- results_folder_sdq
 
 analysis_data_wide <- readRDS(here(derived_data, "pooled_sdq_wide.Rds")) |> filter(base_all_complete, out_all_complete, autism != "post baseline")
 analysis_spec <- readRDS(here::here(results_folder, "analysis_spec.rds")) 
@@ -47,7 +47,7 @@ cbcl_cutoffs <- tibble(
   min = 0
 ) |> 
   mutate(outcome_label = get_label(outcome, label_no = 3))
-results_folder <- here::here(data_and_outputs, "Results", "CBCL", "Thesis")
+results_folder <-results_folder_cbcl
 
 analysis_data_wide <- readRDS(here(derived_data, "pooled_cbcl_wide.Rds")) |> filter(base_all_complete, out_all_complete)
 analysis_spec <- readRDS(here::here(results_folder, "analysis_spec.rds")) 

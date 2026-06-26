@@ -1,5 +1,5 @@
 
-results_folder <- here::here(data_and_outputs, "Results", "VABS", "Prelim")
+results_folder <- here::here(results_folder_main, "VABS", "Prelim")
 
 
 outcome <- "vabs_dls_ae"

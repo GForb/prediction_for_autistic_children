@@ -1,6 +1,6 @@
 # Load required packages
 library(ggplot2)
-results_folder <- here::here(data_and_outputs, "Results", "SDQ", "Prelim")
+results_folder <- here::here(results_folder_main, "SDQ", "Prelim")
 
 data_mt <- readRDS(here::here(results_folder, "results_meta_analysis_long.rds")) |> 
   filter(model == "mt_ri_study_rs", intercept_est_method == "estimate") |> 

@@ -16,7 +16,7 @@ library(ggplot2)
 library(stringr)
 source(here::here("R scripts/config.R")) 
 
-results_folder <- here::here(data_and_outputs, "Results", outcome, "Prelim")
+results_folder <- here::here(results_folder_main, outcome, "Prelim")
 full_data <- readRDS(here::here(results_folder, "results_meta_analysis_long.rds")) 
 
 metrics_to_report <- c("calib_itl", "calib_slope", "r_squared_transformed", "rmse")

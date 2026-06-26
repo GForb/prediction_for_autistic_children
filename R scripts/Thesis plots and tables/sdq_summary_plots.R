@@ -12,7 +12,7 @@ sdq_labels <- get_label(sdq_levels, label_no = 3)
 study_levels <- analysis_data_out |> pull(study) |> unique() |> c("zOverall")
 study_labels <-  study_metadata$label[match(study_levels, study_metadata$name)]
 
-sdq_cutoffs <- sdq_cutoffs |> select(domain = outcome, cutoff)
+sdq_cutoffs <- sdq_cutoffs |> select(domain, cutoff)
 
 plot_data_base <- analysis_data_base |> mutate(study = "zOverall") |> 
   bind_rows(analysis_data_base) |> select(ID, study, starts_with("sdq")) |> 

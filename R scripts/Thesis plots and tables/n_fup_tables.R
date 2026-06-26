@@ -68,9 +68,16 @@ analysis_data_wide <- analysis_data_wide |> mutate(
   )
 )
 by_study_acc <- get_by_study_acc(accounting_data, analysis_data_wide) |> 
-  mutate(eligble_baseline = case_when(study == "EpiTED" | study == "zOverall" ~ eligble_baseline +67,
+  mutate(eligble_baseline = case_when(study == "EpiTED" | study == "zOverall" ~ eligble_baseline +67, # 67 added to numbers for EpiTED as email received externally indicaed more people had data than were recorded in the dataset
                                       TRUE ~ eligble_baseline),
          loss_to_follow_up = case_when(study == "EpiTED"| study == "zOverall"  ~ loss_to_follow_up +67,
                                       TRUE ~ loss_to_follow_up))
 vabs_table <- make_n_fup_table(by_study_acc)
 vabs_table |> save_n_fup_hux_table(outcome_str = "vabs")
+
+
+write.csv(cbcl_table, here(outputs,"Dataset summaries", "n_fup_cbcl.csv"), row.names = FALSE)
+write.csv(vabs_table, here(outputs,"Dataset summaries", "n_fup_vabs.csv"), row.names = FALSE)
+write.csv(sdq_table, here(outputs,"Dataset summaries", "n_fup_sdq.csv"), row.names = FALSE)
+
+

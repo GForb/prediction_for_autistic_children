@@ -57,6 +57,12 @@ create_doc(dataset = "togo2", template = descriptive_template, outcome = "cbcl")
 create_doc(dataset = "TRAILS_CC", template = descriptive_template, outcome = "cbcl")
 create_doc(dataset = "TRAILS_POP", template = descriptive_template, outcome = "cbcl")
 
+## VABS
+create_doc(dataset = "edx_vabs", template = descriptive_template, outcome = "vabs")
+create_doc(dataset = "elena_vabs", template = descriptive_template, outcome = "vabs")
+create_doc(dataset = "pathways_vabs", template = descriptive_template, outcome = "vabs")
+create_doc(dataset = "epited", template = descriptive_template, outcome = "vabs")
+
 
 # VABS Pipeline   ----
 
@@ -75,7 +81,7 @@ create_doc(dataset = "TRAILS_POP", template = descriptive_template, outcome = "c
   tictoc::toc() 
   
   ##  Meta-analysing results ----
-  results_folder <- here(data_and_outputs, "Results", "VABS", "Thesis")
+  results_folder <- results_folder_vabs
   tictoc::tic()
   set.seed(42345234)
   create_full_results_table(results_folder)
@@ -105,7 +111,7 @@ run_models("cbcl")
 tictoc::toc() 
 
 ##  Meta-analysing results ----
-results_folder <- here(data_and_outputs, "Results", "CBCL", "Thesis")
+results_folder <- results_folder_cbcl
 
 tictoc::tic()
 set.seed(366345634)
@@ -137,7 +143,7 @@ run_models("sdq")
 tictoc::toc() 
 
 ##  Meta-analysing results ----
-results_folder <- here(data_and_outputs, "Results", "SDQ", "Thesis")
+results_folder <-results_folder_sdq
 tictoc::tic()
 set.seed(949493)
 create_full_results_table(results_folder)

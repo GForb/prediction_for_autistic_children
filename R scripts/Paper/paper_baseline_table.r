@@ -1,11 +1,11 @@
 bl_cbcl <- readRDS(here(derived_data, "pooled_cbcl.Rds"))|> 
   filter(base_all_complete, out_all_complete) |> 
-  filter(wave == base_wave) |> 
+  filter(wave == out_wave) |> 
   mutate(outcome = "cbcl")
 
 bl_sdq <- readRDS(here(derived_data, "pooled_sdq.Rds"))|> 
   filter(base_all_complete, out_all_complete) |> 
-  filter(wave == base_wave, autism != "post baseline") |> 
+  filter(wave == out_wave, autism != "post baseline") |> 
   mutate(outcome = "sdq") |> 
   select(-autism)
 
@@ -13,18 +13,18 @@ bl_sdq <- readRDS(here(derived_data, "pooled_sdq.Rds"))|>
 
 bl_vabs <- readRDS(here(derived_data, "pooled_vabs.Rds"))|> 
   filter(base_all_complete, out_all_complete) |> 
-  filter(wave == base_wave) |> 
+  filter(wave == out_wave) |> 
   mutate(outcome = "vabs")
 
 order_n = tibble(
-  variable = c("base_age","base_sex", 
+  variable = c("base_age","age", "fu_length", "base_sex", 
                "base_iq_full_scale", "base_ld",
                "base_ados_css_rrb", "base_ados_css_sa", "base_vabs_abc_ss",
                "base_adi_65", "base_maternal_education","base_maternal_mh", "base_ethnicity", "base_imd_decile",
                "base_cbcl_aff", "base_cbcl_anx", "base_cbcl_adhd", "base_cbcl_con", "base_cbcl_odd", "base_cbcl_som",
                "base_sdq_emot_p", "base_sdq_hyp_p", "base_sdq_cond_p", "base_sdq_peer_p", "base_sdq_pro_p",
                "base_vabs_com_ae", "base_vabs_dls_ae", "base_vabs_soc_ae"), 
-  order_no = 1:26)
+  order_no = 1:28)
 
 
 bl_data <- bind_rows(bl_cbcl, bl_vabs, bl_sdq) |> 

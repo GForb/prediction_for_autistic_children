@@ -3,14 +3,14 @@ plots_folder <- here::here(thesis_plots, "Main Results")
 
 
 # Loading Data ----
-results_folder <- here::here(data_and_outputs, "Results", "SDQ", "Thesis")
+results_folder <- results_folder_sdq
 main_results_sdq <- readRDS(here::here(results_folder, "main_results_sdq.rds")) 
 
-results_folder <- here::here(data_and_outputs, "Results", "VABS", "Thesis")
+results_folder <- results_folder_vabs
 main_results_vabs <- readRDS(here::here(results_folder, "main_results_vabs.rds")) |> 
   filter(metric != "rmse") 
 
-results_folder <- here::here(data_and_outputs, "Results", "CBCL", "Thesis")
+results_folder <- results_folder_cbcl
 main_results_cbcl <- readRDS(here::here(results_folder, "main_results_cbcl.rds")) |> 
   filter(metric != "rmse") 
 

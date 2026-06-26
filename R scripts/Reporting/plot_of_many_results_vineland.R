@@ -1,7 +1,7 @@
 # Load required packages
 library(ggplot2)
 library(stringr)
-results_folder <- here::here(data_and_outputs, "Results", "VABS", "Prelim")
+results_folder <- here::here(results_folder_main, "VABS", "Prelim")
 full_data <- readRDS(here::here(results_folder, "results_meta_analysis_long.rds")) 
 
 processed_data <- full_data |>

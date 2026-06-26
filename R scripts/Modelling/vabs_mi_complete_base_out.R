@@ -1,7 +1,7 @@
 analysis_data_wide <- readRDS(here(derived_data, "pooled_vabs_wide.Rds")) |> 
   filter(base_all_complete, out_all_complete)
 
-plots_folder <- here::here(data_and_outputs, "Results", "VABS", "Imputation Plots")
+plots_folder <- here::here(results_folder_main, "VABS", "Imputation Plots")
 
 
 analysis_data_wide |> 
