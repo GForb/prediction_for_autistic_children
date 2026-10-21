@@ -78,21 +78,22 @@ use "pooled_vabs.dta", clear
 keep if base_all_complete == 1 & out_all_complete == 1 & all_complete == 1
 
 * gsem latent variables need numeric group variables. String versions are kept for if conditions.
+* The string copy of study must not start with study_ or it is picked up by the study_* dummies.
 rename ID ID_str
 encode ID_str, gen(ID)
-rename study study_str
-encode study_str, gen(study)
+rename study studyname
+encode studyname, gen(study)
 
-tab study_str wave
+tab studyname wave
 
 
 * 1. Raw gsem check, independent of prediction_progs.do ----
-gsem (`outcome' <- study_* age_c M1[ID]@1) if study_str != "`hold_out'", nocons
+gsem (`outcome' <- study_* age_c M1[ID]@1) if studyname != "`hold_out'", nocons
 
-predict ri_a if study_str == "`hold_out'" & inlist(wave, 0, -1), latent(M1[ID])
+predict ri_a if studyname == "`hold_out'" & inlist(wave, 0, -1), latent(M1[ID])
 clonevar outcome_keep = `outcome'
-replace `outcome' = . if study_str == "`hold_out'" & !inlist(wave, 0, -1)
-predict ri_b if study_str == "`hold_out'" & inlist(wave, 0, -1), latent(M1[ID])
+replace `outcome' = . if studyname == "`hold_out'" & !inlist(wave, 0, -1)
+predict ri_b if studyname == "`hold_out'" & inlist(wave, 0, -1), latent(M1[ID])
 replace `outcome' = outcome_keep
 drop outcome_keep
 check_no_leakage ri_a ri_b, label("Raw gsem predict latent(M1[ID])")
@@ -100,30 +101,30 @@ drop ri_a ri_b
 
 
 * 2. Fixed study, random intercept (IECV) ----
-gsem (`outcome' <- study_* age_c M1[ID]@1) if study_str != "`hold_out'", nocons
+gsem (`outcome' <- study_* age_c M1[ID]@1) if studyname != "`hold_out'", nocons
 run_leak_test, label("Fixed study, random intercept, IECV") outcome(`outcome') ///
-	holdout(study_str == "`hold_out'")
+	holdout(studyname == "`hold_out'")
 
 
 * 3. Fixed study, random slope (IECV) ----
-gsem (`outcome' <- study_* age_c M1[ID]@1 c.age_c#M2[ID]@1) if study_str != "`hold_out'", nocons iterate(50) // estimates need not converge for this test
+gsem (`outcome' <- study_* age_c M1[ID]@1 c.age_c#M2[ID]@1) if studyname != "`hold_out'", nocons iterate(50) // estimates need not converge for this test
 run_leak_test, label("Fixed study, random slope, IECV") outcome(`outcome') ///
-	holdout(study_str == "`hold_out'") pred_options(random_slope)
+	holdout(studyname == "`hold_out'") pred_options(random_slope)
 
 
 * 4. Random study, random intercept, average intercept (IECV) ----
-gsem (`outcome' <- age_c STUDY[study]@1 M1[ID]@1) if study_str != "`hold_out'"
+gsem (`outcome' <- age_c STUDY[study]@1 M1[ID]@1) if studyname != "`hold_out'"
 run_leak_test, label("Random study, random intercept, average, IECV") outcome(`outcome') ///
-	holdout(study_str == "`hold_out'") pred_options(random_study intercept_est(average))
+	holdout(studyname == "`hold_out'") pred_options(random_study intercept_est(average))
 
 
 * 5. Random study, random intercept, estimate_cv intercept (IECV) ----
 * Study intercept is estimated from rows with int_est_marker == 1 (training studies + 9/10 of the held out study);
 * predictions are made for the remaining 1/10, whose unseen outcomes are removed in run B.
-splitsample if study_str == "`hold_out'", generate(int_est_fold) cluster(ID) nsplit(10)
-gen int_est_marker = 1 if int_est_fold != 1 | study_str != "`hold_out'"
+splitsample if studyname == "`hold_out'", generate(int_est_fold) cluster(ID) nsplit(10)
+gen int_est_marker = 1 if int_est_fold != 1 | studyname != "`hold_out'"
 run_leak_test, label("Random study, random intercept, estimate_cv, IECV") outcome(`outcome') ///
-	holdout(study_str == "`hold_out'" & int_est_marker != 1) ///
+	holdout(studyname == "`hold_out'" & int_est_marker != 1) ///
 	pred_options(random_study intercept_est(estimate) int_est_marker(int_est_marker))
 drop int_est_fold int_est_marker
 
