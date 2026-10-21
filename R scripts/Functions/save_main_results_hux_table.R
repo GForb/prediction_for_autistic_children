@@ -23,7 +23,7 @@ save_main_results_hux_table <- function(main_results,outcome,  dp = 2){
   colnames(main_results_table) |> print()
   if(!is.null(main_results_table$rmse_stand)){
     header_row <-  c("", "", "Standardised RMSE", "$R^2$", "Calibration In-The-Large", "Calibration Slope")
-    stand_text <- "Standardised RMSE is the RMSE divided by the maximum of the scale."
+    stand_text <- "Standardised RMSE is the RMSE standardised to a 10-point scale."
   } else {
     header_row <- c("", "", "RMSE", "$R^2$", "Calibration In-The-Large", "Calibration Slope")
     stand_text = ""
