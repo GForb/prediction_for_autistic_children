@@ -26,6 +26,6 @@ out_table |> save_descriptive_hux_table(outcome_str = "vabs", what = "out", outc
 
 
 # 
-# write_csv(base_table, file.path(thesis_tables, "vabs_descriptive_table_base.csv"))
-# write_csv(base_predictors_table, file.path(thesis_tables, "vabs_descriptive_table_predictors.csv"))
-# write_csv(out_table, file.path(thesis_tables, "vabs_descriptive_table_outcomes.csv"))
+write_csv(base_table, file.path(thesis_tables, "vabs_descriptive_table_base.csv"))
+write_csv(base_predictors_table, file.path(thesis_tables, "vabs_descriptive_table_predictors.csv"))
+write_csv(out_table, file.path(thesis_tables, "vabs_descriptive_table_outcomes.csv"))
