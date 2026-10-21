@@ -46,7 +46,7 @@ main_analysis_vabs <- vabs_results |>
 vabs_table <- bind_rows(colnames(main_analysis_vabs) |> get_label(label_no = 3), main_analysis_vabs) |> 
   huxtable::hux(add_colnames = FALSE) |> 
   huxtable::set_bottom_border(row = c(1,5, 13, 16, 24), value = 0.5)  
-vabs_table |>  save_hux_table(caption = "Model coefficients for the primary analysis models of the VABS Columns show coefficient estimates and 95\\% confidence intervals. *p<0.05, **p<0.01, ***p<0.001.",
+vabs_table |>  save_hux_table(caption = "Model coefficients for the primary analysis models of the VABS. Columns show coefficient estimates and 95\\% confidence intervals. *p<0.05, **p<0.01, ***p<0.001.",
                              short_caption = "Model coefficients for the primary analysis models of the VABS",
                               label = "vabs_primary_model",
                              file_name = "vabs_primary_model.tex",

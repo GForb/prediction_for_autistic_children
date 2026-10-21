@@ -24,7 +24,7 @@ base_spline1,Baseline spline 1,2.99,,,,,,
 base_spline2,Baseline spline 2,2.99,,,,theta,1.36,1.8496
 1.base_sex#c.base_spline1,Sex by baseline spline 1,4,,,,phi,1.1,1.21
 1.base_sex#c.base_spline2,Sex by baseline spline 2,4,,,,,,
-base_ld,Learning Disability,6,,,,nobs,1,0.395476533
+base_ld,Intellectual Disability,6,,,,nobs,1,0.395476533
 base_ethnicity,Ethnicity,6.5,,,,,2,0.566797826
 base_maternal_education,Maternal Education,6.5,,,,,3,0.662457114
 base_imd_decile,IMD (Decile),6.5,,,,,,
