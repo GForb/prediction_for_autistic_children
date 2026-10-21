@@ -326,6 +326,7 @@ model_pred_gsem_fi_study_rs_id <- function(data,
     	intercept_est({intercept_est}) ///
     	out_wave({out_wave}) ///
     	predictor_waves({pred_waves}) ///
+    	random_slope ///
     	mixed_model({mixed_model}) ///
     	mixed_model_options(\"{mixed_model_options}\")
     "

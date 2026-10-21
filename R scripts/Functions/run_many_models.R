@@ -44,7 +44,7 @@ run_model <- function(model_function, analysis_name = NULL, multiple_imputed_dat
   
     results <-  results |> 
       filter(validation != "cv") |> 
-      select(-pred_cv) 
+      select(-any_of("pred_cv"))
     if(results |> select(starts_with("pred")) |> ncol() > 0){
       results <- results |> 
         pivot_longer(cols = starts_with("pred"), names_to = "int_est", values_to = "pred") |> 

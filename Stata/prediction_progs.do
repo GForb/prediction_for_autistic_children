@@ -248,7 +248,7 @@ syntax varname, ///
 			 predictor_waves(`predictor_waves') out_wave(`out_wave') ///
 			 model_name(model)  ///
 			 pred_var_name(pred_cv) int_est_marker(`int_est_marker') ///
-			 random_split `random_study' ///
+			 random_split `random_study' `random_slope' ///
 			 model_code(`model_code') model_options(`model_options')  ///
 			 intercept_est(estimate)
 	}
@@ -319,7 +319,7 @@ syntax varname, hold_out_fold(string) model_name(passthru) ///
 			}
 			else {
 				est_intercept_get_pred `varlist', hold_out_fold(`hold_out_fold') 	`predictor_waves' `out_wave' `model_name' pred_var_name(pred_estimate_cv) ///
-					`random_split' `random_study'  model_code(`model_code') model_options(`model_options') intercept_est(estimate) `intercept_value'  int_est_marker(`int_est_marker')	
+					`random_split' `random_study' `random_slope' model_code(`model_code') model_options(`model_options') intercept_est(estimate) `intercept_value'  int_est_marker(`int_est_marker')	
 			}
 
 			
@@ -427,7 +427,7 @@ syntax name (name = pred_var) [if/], predictor_waves(numlist) out_wave(integer) 
 	di "predicting random slope values"
 		predict `rand_slope'  if inlist(wave, `predictor_waves_csv') `not_int_est' `extra_if', latent(M2[ID]) 
 		bysort ID: egen `rand_slope_all' = mean(`rand_slope') 
-		replace `pred_var' = `pred_var' + `rand_slope_all'  if `pred_var' !=.
+		replace `pred_var' = `pred_var' + `rand_slope_all'*age_c  if `pred_var' !=. // M2[ID] is the coefficient on age_c (c.age_c#M2[ID]), so scale by age at the outcome wave
 	
 	}
 	
@@ -699,5 +699,5 @@ end
          
      return local var_ri = A[1,`ncol_ri']
      return local var_rs = A[1,`ncol_rs']
-     return local cov_rs_ri = A[1,`ncol_cov']  
+     return local cov_rs_ri = `cov_rs_ri' // uses adjusted covariance if correlation >= 0.999
 end
