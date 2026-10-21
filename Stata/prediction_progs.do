@@ -495,13 +495,14 @@ syntax varname, model_code(string) hold_out_fold(string)  intercept_est(string) 
 	* if intercept_est is value then intercept_value is taken
 
 	if "`intercept_est'" == "average" {
-			qui levelsof `varlist', local(folds)
-			local n_folds = wordcount(`"`folds'"') 
+			* Study intercepts are identified by name (study_*), not position, as dummies for studies dropped from the data remain as omitted columns
+			local study_colnames : colnames `A'
 			local intercept_total = 0
 			local weight_total = 0
-			forvalues i = 1 (1) `n_folds' {
+			forvalues i = 1 (1) `=colsof(`A')' {
+				local colname = word("`study_colnames'", `i')
 				local est = `A'[1,`i']
-				if `est' != 0 {
+				if strpos("`colname'", "`varlist'_") == 1 & `est' != 0 { // omitted dummies are named o.study_* so are excluded
 					local weight = 1/(`A'[2,`i'])^2 // inverse variance weight
 					local intercept_total = `intercept_total' + `est'*`weight'
 					local weight_total = `weight_total' + `weight' // note one study will be ommited and take value 0
@@ -591,13 +592,14 @@ syntax varname, ///
 		
 		
 		if "`intercept_est'" == "average" {
-			qui levelsof `varlist', local(folds)
-			local n_folds = wordcount(`"`folds'"') 
+			* Study intercepts are identified by name (study_*), not position, as dummies for studies dropped from the data remain as omitted columns
+			local study_colnames : colnames `A'
 			local intercept_total = 0
 			local weight_total = 0
-			forvalues i = 1 (1) `n_folds' {
+			forvalues i = 1 (1) `=colsof(`A')' {
+				local colname = word("`study_colnames'", `i')
 				local est = `A'[1,`i']
-				if `est' != 0 {
+				if strpos("`colname'", "`varlist'_") == 1 & `est' != 0 { // omitted dummies are named o.study_* so are excluded
 					local weight = 1/(`A'[2,`i'])^2 // inverse variance weight
 					local intercept_total = `intercept_total' + `est'*`weight'
 					local weight_total = `weight_total' + `weight' // note one study will be ommited and take value 0
