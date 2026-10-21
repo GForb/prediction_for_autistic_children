@@ -1,3 +1,6 @@
+# This config file is to be used with the output included in the publication.
+
+
 # Setting paths ----
 # To set paths the global option "pfac_path" must be set with the path to the data and outputs folder. 
 # If using Rstudio, this can be done by adding  Sys.setenv(pfac_path = "*path to data*") to the .Renviron file. To edit the .Renviron file you can use  usethis::edit_r_environ().
