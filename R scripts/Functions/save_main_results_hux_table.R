@@ -1,4 +1,4 @@
-save_main_results_hux_table <- function(main_results,outcome,  dp = 2){
+save_main_results_hux_table <- function(main_results,outcome,  dp = 2, file_suffix = "main_results", analysis_description = "the primary analysis"){
   main_results_table  <- main_results |> 
     mutate(
       est_str = paste0(round(est, dp)),
@@ -49,9 +49,9 @@ save_main_results_hux_table <- function(main_results,outcome,  dp = 2){
   outcome_upper <- toupper(outcome)
   
   hux_table |> save_hux_table(
-    file_name = paste0(outcome,"_main_results.tex"),
-    caption = glue::glue("Results for model validation of the primary analysis of the {outcome_upper}. {stand_text}"),
-    label = paste0(outcome,"_main_results"),
+    file_name = paste0(outcome, "_", file_suffix, ".tex"),
+    caption = glue::glue("Results for model validation of {analysis_description} of the {outcome_upper}. {stand_text}"),
+    label = paste0(outcome, "_", file_suffix),
     htb = TRUE)
   # 
   

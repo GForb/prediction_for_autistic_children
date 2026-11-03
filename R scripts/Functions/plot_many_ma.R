@@ -1,4 +1,4 @@
-plot_many_ma_by_metric <- function(data, outcome = NULL, my_colour = "black", diamond_height = 0.1, vline_data = NULL, vline_pi = FALSE, rmse_stand = FALSE) {
+plot_many_ma_by_metric <- function(data, outcome = NULL, my_colour = "black", diamond_height = 0.1, vline_data = NULL, vline_pi = FALSE, rmse_stand = FALSE, show_vline = TRUE) {
   myOutcome = outcome
   if(is.null(outcome)) {
     myOutcome = data |> pull(outcome) |> unique()
@@ -30,9 +30,12 @@ plot_many_ma_by_metric <- function(data, outcome = NULL, my_colour = "black", di
   plot <- plot_data |>
     plot_many_ma(diamond_height = diamond_height, my_colour = my_colour) + 
     facet_grid(cols = vars(metric), scales = "free_x") + 
-    geom_vline(data = vline_data, aes(xintercept = vline_x), linetype = "dashed", color = "red") +
     ggtitle(get_label(myOutcome, label_no = 2)) 
   
+  if(show_vline){
+    plot <- plot + 
+      geom_vline(data = vline_data, aes(xintercept = vline_x), linetype = "dashed", color = "red")
+  }
   
   if(vline_pi){
     plot <- plot + 
