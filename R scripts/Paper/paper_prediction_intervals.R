@@ -2,7 +2,7 @@ library(patchwork)
 
 plots_folder <- here::here(here(outputs, "Paper"))
 
-pi_data_sdq_raw <- readRDS(here(derived_data, "pi_data_sdq.Rds"))
+pi_data_sdq_raw <- readRDS(here(pi_data_folder, "pi_data_sdq.Rds"))
 
 pi_data_sdq_raw |> select(base_spline1, outcome) |> 
   group_by(outcome) |> 
@@ -21,7 +21,7 @@ report_coverage(pi_data_sdq)
 # CBCL - load data
 
 # source for cutoffs: Swedish clinical sample https://pmc.ncbi.nlm.nih.gov/articles/PMC8297893/
-pi_data_cbcl_raw <- readRDS(here(derived_data, "pi_data_cbcl.Rds")) |> 
+pi_data_cbcl_raw <- readRDS(here(pi_data_folder, "pi_data_cbcl.Rds")) |> 
   filter(!(outcome %in% c("cbcl_odd", "cbcl_som")))
 
 
@@ -52,10 +52,10 @@ report_coverage(pi_data_cbcl)
 # VABS - load data
 
 # source for cutoffs: Swedish clinical sample https://pmc.ncbi.nlm.nih.gov/articles/PMC8297893/
-pi_data_vabs_raw <- readRDS(here(derived_data, "pi_data_vabs.Rds")) 
+pi_data_vabs_raw <- readRDS(here(pi_data_folder, "pi_data_vabs.Rds")) 
 
 
-pi_data_vabs_raw |> select(base_spline1, outcome) |> 
+pi_data_vabs_raw |> select(base_spline1, outcome) |>
   group_by(outcome) |> 
   summarise(q5 = quantile(base_spline1, 0.05),
             q90 = quantile(base_spline1, 0.95))

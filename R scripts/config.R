@@ -6,6 +6,7 @@
 data_and_outputs <-  Sys.getenv("pfac_path")
 raw_data <- here::here(data_and_outputs, "Raw data")
 derived_data <- here::here(data_and_outputs,"Thesis", "Derived data")
+pi_data_folder <- derived_data
 
 # Output folders
 outputs <- here::here(data_and_outputs,"Thesis", "Outputs")

@@ -13,13 +13,23 @@ print("running config v4 for revised results")
 data_and_outputs <-  Sys.getenv("pfac_path")
 raw_data <- here::here(data_and_outputs, "Raw data")
 derived_data <- here::here(data_and_outputs, "Publication", "Derived Data")
+# Prediction interval data is created from revised results, so is saved separately from the publication derived data
+pi_data_folder <- here::here(derived_data, "Revised")
+dir.create(pi_data_folder, showWarnings = FALSE)
 
 # Output folders
-outputs <- here::here(data_and_outputs, "Publication", "Outputs")
+outputs <- here::here(data_and_outputs, "Publication", "Outputs", "Revised")
 thesis_tables <- file.path(outputs, "Thesis Tables")
 thesis_plots <- file.path(outputs, "Thesis Plots")
 
 latex_folder <-  file.path(thesis_tables, "LatexTables")
+
+# Creating output folders, mirroring the publication outputs folder structure
+for (folder in c("Paper", "Results", "Dataset summaries", "Plots",
+                 file.path("Thesis Plots", c("SDQ Post diag", "Main Results")),
+                 file.path("Thesis Tables", c("LatexTables", "Main Results")))) {
+  dir.create(file.path(outputs, folder), recursive = TRUE, showWarnings = FALSE)
+}
 
 # Results folders
 results_folder_main <- here::here(data_and_outputs, "Publication", "Results")

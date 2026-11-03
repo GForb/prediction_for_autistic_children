@@ -13,6 +13,7 @@ raw_data <- here::here(data_and_outputs, "Raw data")
 outputs_root_folder <- "Validation"
 
 derived_data <- here::here(data_and_outputs, outputs_root_folder, "Derived Data")
+pi_data_folder <- derived_data
 
 # Output folders
 outputs <- here::here(data_and_outputs, outputs_root_folder, "Outputs")
