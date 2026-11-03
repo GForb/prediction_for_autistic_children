@@ -12,12 +12,12 @@ sdq_labels <- get_label(sdq_levels, label_no = 3)
 study_levels <- analysis_data_out |> pull(study) |> unique() |> c("zOverall")
 study_labels <-  study_metadata$label[match(study_levels, study_metadata$name)]
 
-sdq_cutoffs <- sdq_cutoffs |> select(domain, cutoff)
+sdq_cutoffs_domain <- sdq_cutoffs |> select(domain = outcome, cutoff)
 
 plot_data_base <- analysis_data_base |> mutate(study = "zOverall") |> 
   bind_rows(analysis_data_base) |> select(ID, study, starts_with("sdq")) |> 
   pivot_longer(cols = starts_with("sdq"), names_to = "domain", values_to = "Score") |> 
-  left_join(sdq_cutoffs) |> 
+  left_join(sdq_cutoffs_domain) |> 
   mutate(domain = factor(domain, 
                          levels = sdq_levels,
                          labels = sdq_labels)) |> 
@@ -30,7 +30,7 @@ plot_data_base <- analysis_data_base |> mutate(study = "zOverall") |>
 plot_data_out <- analysis_data_out|> mutate(study = "zOverall") |> 
   bind_rows(analysis_data_out) |> select(ID, study, starts_with("sdq")) |> 
   pivot_longer(cols = starts_with("sdq"), names_to = "domain", values_to = "Score") |> 
-  left_join(sdq_cutoffs) |> # these are saved in a csv and loaded with config
+  left_join(sdq_cutoffs_domain) |> # these are saved in a csv and loaded with config
   mutate(domain = factor(domain, 
                          levels = sdq_levels,
                          labels = sdq_labels)) |> 

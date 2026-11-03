@@ -6,7 +6,7 @@ analysis_data_out <- analysis_data |> filter(wave == out_wave)
 
 
 
-sdq_cutoffs <- tibble(
+sdq_cutoffs_table <- tibble(
   variable = c(
     "sdq_cond_p",
     "sdq_emot_p",
@@ -59,8 +59,8 @@ table_data_base <- analysis_data_base |> mutate(study = "zOverall") |>
   pivot_wider(names_from = study, values_from = summary)
 
 
-base_sdq_table <- analysis_data_base |> select(ID, study, starts_with("sdq")) |>  create_descriptive_table_outcome(cutoffs = sdq_cutoffs)
-out_sdq_table <- analysis_data_out |> select(ID, study, starts_with("sdq")) |>  create_descriptive_table_outcome(cutoffs = sdq_cutoffs)
+base_sdq_table <- analysis_data_base |> select(ID, study, starts_with("sdq")) |>  create_descriptive_table_outcome(cutoffs = sdq_cutoffs_table)
+out_sdq_table <- analysis_data_out |> select(ID, study, starts_with("sdq")) |>  create_descriptive_table_outcome(cutoffs = sdq_cutoffs_table)
 
 order_n = tibble(
   variable = c(

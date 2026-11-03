@@ -2,7 +2,7 @@ analysis_data <- readRDS(here(derived_data, "pooled_cbcl.Rds"))|>
   filter(base_all_complete, out_all_complete) 
 
 # source for cutoffs: Swedish clinical sample https://pmc.ncbi.nlm.nih.gov/articles/PMC8297893/
-cbcl_cutoffs <- tibble(
+cbcl_cutoffs_table <- tibble(
   variable = c(
     "cbcl_aff",
     "cbcl_anx",
@@ -26,8 +26,8 @@ fishmethods::clus.rho(analysis_data_base$cbcl_anx, analysis_data_base$study)
 
 analysis_data_out <- analysis_data |> filter(wave == out_wave)
 
-base_table <- analysis_data_base |> select(ID, study, starts_with("cbcl")) |>  create_descriptive_table_outcome(cutoffs = cbcl_cutoffs)
-out_table <- analysis_data_out |> select(ID, study, starts_with("cbcl")) |>  create_descriptive_table_outcome(cutoffs = cbcl_cutoffs)
+base_table <- analysis_data_base |> select(ID, study, starts_with("cbcl")) |>  create_descriptive_table_outcome(cutoffs = cbcl_cutoffs_table)
+out_table <- analysis_data_out |> select(ID, study, starts_with("cbcl")) |>  create_descriptive_table_outcome(cutoffs = cbcl_cutoffs_table)
 
 order_n = tibble(
   variable = c("base_sex", 
