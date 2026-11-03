@@ -9,19 +9,31 @@ fixed studies are study_*
 returns pred var as pred
 */
 
+
+/*
+get_all_preds is the main program called in this file.
+
+It implementes different forms of cross validaion for the model passed in the model_code argument.
+
+*/
+
 cap prog drop get_all_preds
 prog define get_all_preds
-syntax name, ///
-	model_code(passthru) ///
+syntax name, /// name is the name of the study var. If is refered using the local macro namelist.
+	model_code(passthru) /// code to be used for the analysis model
 	[ ///
-	intercept_est(passthru)  ///
-	single_time_point ///
-	predictor_waves(passthru) out_wave(passthru) ///
-	cross_validation n_cv_folds(integer 5) n_reps(integer 1) random_study random_slope ///
-	model_options(passthru) ///
-	intercept_value(passthru) ///
-	simple_model(passthru) simple_model_options(passthru) ///
-	mixed_model(passthru) mixed_model_options(passthru) mixed_model_extract_values(passthru) ///
+	intercept_est(passthru)  /// this can be estiamte or average, or estimate_cv. If estimate, study specific intercepts are made conditional on study, if average predictions are made marginal to studies by using the average intercept from the other studies in the dataset.
+	single_time_point /// argument to indicate that the model is a simple linear regression using only one timepoint of predictors
+	predictor_waves(passthru) out_wave(passthru) /// numbers for the wave variable that indicate which wave is to be used as outcome, which as predictors
+	cross_validation /// This argment controls whether random cross validation or internal-external cross validation is used. If 
+	n_cv_folds(integer 5) /// if regular cross-validation is used, the number of cv folds
+	n_reps(integer 1) /// Number of repeats, allows for repeated CV
+	random_study /// indicates that a random intercept is used for study, otherwise assumes fixed intercept
+	random_slope /// Idicates a random slope is used in the model for time
+	model_options(passthru) /// Options to be used with model code
+	intercept_value(passthru) /// If a specific intercept value is to be used, this can be specified here. 
+	simple_model(passthru) simple_model_options(passthru) /// These allow a simple model to be fit first . Aids convergence for gsem.
+	mixed_model(passthru) mixed_model_options(passthru) mixed_model_extract_values(passthru) /// This allows the model to be fit with mixed with parameter estimates passed to gsem. Sometimes mixed converges, or is much quicker than gsem.
 	]
 	
 	tempfile data_with_preds
@@ -45,14 +57,15 @@ syntax name, ///
 			}
 			
 			local random_split "random_split"
-			local namelist fold
+			local namelist fold // updaes the variable named in namelist with the fold variable. This is otherwise study.
 		}	
 		cap drop validation_rep
 		gen validation_rep = `rep'
 	
-		*For internal validaiton there are two variables: fold and study 
+		*For internal validaiton there are two variables: fold and study, with fold contained in the local macro namelist. 
+		*For IECV namelist contains the study variable
 	
-	
+		* In this loop, for each fold (either random or study), hold out predictions are obtained for that fold.
 		qui levelsof  `namelist', local(folds)
 		foreach fold in `folds' {
 
@@ -107,7 +120,12 @@ syntax varname, ///
 	intercept_value(passthru) ///
 	]
 	
-	* Fit model
+	*This program:
+	* 1. Fits model on data not in the hold out fold.
+	* 2. Estimates an intercept to be used when making predicitons in the hold out fold
+    * 3. Makes predictions in the hold out fold using intercept from (2)	
+	
+	* Fit model not in the hold out fold
 	if "`model_options'" != "" local model_options_c , `model_options'
 	`model_code' if `varlist' != "`hold_out_fold'"  `model_options_c'
 	local outcome `e(depvar)'
@@ -230,7 +248,7 @@ syntax varname, ///
 			 predictor_waves(`predictor_waves') out_wave(`out_wave') ///
 			 model_name(model)  ///
 			 pred_var_name(pred_cv) int_est_marker(`int_est_marker') ///
-			 random_split `random_study' ///
+			 random_split `random_study' `random_slope' ///
 			 model_code(`model_code') model_options(`model_options')  ///
 			 intercept_est(estimate)
 	}
@@ -301,7 +319,7 @@ syntax varname, hold_out_fold(string) model_name(passthru) ///
 			}
 			else {
 				est_intercept_get_pred `varlist', hold_out_fold(`hold_out_fold') 	`predictor_waves' `out_wave' `model_name' pred_var_name(pred_estimate_cv) ///
-					`random_split' `random_study'  model_code(`model_code') model_options(`model_options') intercept_est(estimate) `intercept_value'  int_est_marker(`int_est_marker')	
+					`random_split' `random_study' `random_slope' model_code(`model_code') model_options(`model_options') intercept_est(estimate) `intercept_value'  int_est_marker(`int_est_marker')	
 			}
 
 			
@@ -409,7 +427,7 @@ syntax name (name = pred_var) [if/], predictor_waves(numlist) out_wave(integer) 
 	di "predicting random slope values"
 		predict `rand_slope'  if inlist(wave, `predictor_waves_csv') `not_int_est' `extra_if', latent(M2[ID]) 
 		bysort ID: egen `rand_slope_all' = mean(`rand_slope') 
-		replace `pred_var' = `pred_var' + `rand_slope_all'  if `pred_var' !=.
+		replace `pred_var' = `pred_var' + `rand_slope_all'*age_c  if `pred_var' !=. // M2[ID] is the coefficient on age_c (c.age_c#M2[ID]), so scale by age at the outcome wave
 	
 	}
 	
@@ -467,7 +485,10 @@ syntax varname, model_code(string) hold_out_fold(string)  intercept_est(string) 
 		local eq_name = word("`col_eq_names'", `i')
 		local constraint_name _b[`eq_name':`colname']
 		
-		if "`col_fold'" != "`hold_out_fold'" { //  &  regexm("`col_fold'", "^var\(e\." ) != 1
+		* Omitted study dummies (o.study_*, e.g. studies dropped from sensitivity datasets) are not constrained, as gsem omits them again and constraining them gives r(412) redundant or inconsistent constraints
+		local omitted_study = strpos("`colname'", "o.`varlist'_") == 1
+
+		if "`col_fold'" != "`hold_out_fold'" & !`omitted_study' { //  &  regexm("`col_fold'", "^var\(e\." ) != 1
 			local a = `A'[1,`i']
 			di "constraint `i' `constraint_name' = `a'"
 			constraint `i' `constraint_name' = `a'
@@ -477,13 +498,14 @@ syntax varname, model_code(string) hold_out_fold(string)  intercept_est(string) 
 	* if intercept_est is value then intercept_value is taken
 
 	if "`intercept_est'" == "average" {
-			qui levelsof `varlist', local(folds)
-			local n_folds = wordcount(`"`folds'"') 
+			* Study intercepts are identified by name (study_*), not position, as dummies for studies dropped from the data remain as omitted columns
+			local study_colnames : colnames `A'
 			local intercept_total = 0
 			local weight_total = 0
-			forvalues i = 1 (1) `n_folds' {
+			forvalues i = 1 (1) `=colsof(`A')' {
+				local colname = word("`study_colnames'", `i')
 				local est = `A'[1,`i']
-				if `est' != 0 {
+				if strpos("`colname'", "`varlist'_") == 1 & `est' != 0 { // omitted dummies are named o.study_* so are excluded
 					local weight = 1/(`A'[2,`i'])^2 // inverse variance weight
 					local intercept_total = `intercept_total' + `est'*`weight'
 					local weight_total = `weight_total' + `weight' // note one study will be ommited and take value 0
@@ -573,13 +595,14 @@ syntax varname, ///
 		
 		
 		if "`intercept_est'" == "average" {
-			qui levelsof `varlist', local(folds)
-			local n_folds = wordcount(`"`folds'"') 
+			* Study intercepts are identified by name (study_*), not position, as dummies for studies dropped from the data remain as omitted columns
+			local study_colnames : colnames `A'
 			local intercept_total = 0
 			local weight_total = 0
-			forvalues i = 1 (1) `n_folds' {
+			forvalues i = 1 (1) `=colsof(`A')' {
+				local colname = word("`study_colnames'", `i')
 				local est = `A'[1,`i']
-				if `est' != 0 {
+				if strpos("`colname'", "`varlist'_") == 1 & `est' != 0 { // omitted dummies are named o.study_* so are excluded
 					local weight = 1/(`A'[2,`i'])^2 // inverse variance weight
 					local intercept_total = `intercept_total' + `est'*`weight'
 					local weight_total = `weight_total' + `weight' // note one study will be ommited and take value 0
@@ -681,5 +704,5 @@ end
          
      return local var_ri = A[1,`ncol_ri']
      return local var_rs = A[1,`ncol_rs']
-     return local cov_rs_ri = A[1,`ncol_cov']  
+     return local cov_rs_ri = `cov_rs_ri' // uses adjusted covariance if correlation >= 0.999
 end

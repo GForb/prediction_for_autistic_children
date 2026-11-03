@@ -82,7 +82,7 @@ summarised_data <- grouped_data |>
     ungroup() 
 
   summarised_data |> 
-    pivot_longer(cols = -c(fold, validation_rep), names_to = "metric", values_to = "value") |> 
+    pivot_longer(cols = -any_of(c("fold", "validation_rep", "imp_no")), names_to = "metric", values_to = "value") |> 
     group_by(metric) |> 
     summarise(est = mean(value)) |> 
     ungroup()

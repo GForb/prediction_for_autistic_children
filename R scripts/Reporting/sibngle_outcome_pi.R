@@ -1,4 +1,4 @@
-pi_data_vabs <- readRDS(here(derived_data, "pi_data_vabs.Rds"))
+pi_data_vabs <- readRDS(here(pi_data_folder, "pi_data_vabs.Rds"))
 
 pi_data_vabs |> filter(outcome == "vabs_dls_ae") |> 
   make_pi_plot() +
@@ -7,7 +7,7 @@ pi_data_vabs |> filter(outcome == "vabs_dls_ae") |>
   labs(y = "Predicted Age Equivalent Score at 14",
        x = "Age equivalent at age 10/11")
 
-pi_data_sdq <- readRDS(here(derived_data, "pi_data_sdq.Rds"))
+pi_data_sdq <- readRDS(here(pi_data_folder, "pi_data_sdq.Rds"))
 
 pi_data_sdq |> filter(outcome == "sdq_emot_p", cutoffs = TRUE) |> 
   make_pi_plot() +

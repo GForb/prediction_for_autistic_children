@@ -15,7 +15,7 @@ study_levels <- analysis_data_out |> pull(study) |> unique() |> c("zOverall")
 study_labels <- analysis_data_out |> pull(study) |> unique() |> c("Overall")
 
 # source for cutoffs: Swedish clinical sample https://pmc.ncbi.nlm.nih.gov/articles/PMC8297893/
-cbcl_cutoffs <- tibble(
+cbcl_cutoffs_domain <- tibble(
   domain = c(
     "cbcl_aff",
     "cbcl_anx",
@@ -32,7 +32,7 @@ cbcl_cutoffs <- tibble(
 plot_data_base <- analysis_data_base |> mutate(study = "zOverall") |> 
   bind_rows(analysis_data_base) |> select(ID, study, starts_with("cbcl")) |> 
   pivot_longer(cols = starts_with("cbcl"), names_to = "domain", values_to = "Score") |> 
-  left_join(cbcl_cutoffs) |> 
+  left_join(cbcl_cutoffs_domain) |> 
   mutate(domain = factor(domain, 
                          levels = cbcl_levels,
                          labels = cbcl_labels)) |> 
@@ -45,7 +45,7 @@ plot_data_base <- analysis_data_base |> mutate(study = "zOverall") |>
 plot_data_out <- analysis_data_out|> mutate(study = "zOverall") |> 
   bind_rows(analysis_data_out) |> select(ID, study, starts_with("cbcl")) |> 
   pivot_longer(cols = starts_with("cbcl"), names_to = "domain", values_to = "Score") |> 
-  left_join(cbcl_cutoffs) |> 
+  left_join(cbcl_cutoffs_domain) |> 
   mutate(domain = factor(domain, 
                          levels = cbcl_levels,
                          labels = cbcl_labels)) |> 

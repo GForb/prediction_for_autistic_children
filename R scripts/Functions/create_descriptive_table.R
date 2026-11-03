@@ -240,7 +240,7 @@ save_descriptive_hux_table <- function(descriptive_table,
     base = glue::glue("the {outcome_str_caps} at Baseline"),
     out = glue::glue("the {outcome_str_caps} at Outcome"),
     pred = glue::glue(
-      "the baseline predictors used in the analysis of {outcome_str_caps}. Table shows descriptive descriptives and the percentage of participants included in the analysis with recorded data"
+      "the baseline predictors used in the analysis of {outcome_str_caps}. Table shows descriptive statistics and the percentage of participants included in the analysis with recorded data"
     )
   )
   what_word <- what_words[what]

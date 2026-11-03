@@ -28,7 +28,7 @@ cbcl_ext_tscore,0,100,any,0,CBCL Externalising,CBCL Externalising T-score,,CBCL 
 cbcl_int_total,0,100,any,0,CBCL Internalising,CBCL Internalising Total,,CBCL Internalising Total,0,0,0,0,0,,,
 cbcl_int_tscore,0,100,any,0,CBCL Internalising,CBCL Internalising T-score,,CBCL Internalising T-score,0,0,0,0,0,,,
 cbcl_aff,0,26,integer,0,CBCL Affective,CBCL DSM Affective Problems,Affective,CBCL DSM Affective Problems,,1,0,0,1,13,7,Swedish clinical sample https://pmc.ncbi.nlm.nih.gov/articles/PMC8297893/
-cbcl_anx,0,12,integer,0,CBCL Anxiety,CBCL DSM Axiety Problems,Anxiety,CBCL DSM Axiety Problems,,1,0,0,1,6,6,Swedish clinical sample https://pmc.ncbi.nlm.nih.gov/articles/PMC8297893/
+cbcl_anx,0,12,integer,0,CBCL Anxiety,CBCL DSM Anxiety Problems,Anxiety,CBCL DSM Anxiety Problems,,1,0,0,1,6,6,Swedish clinical sample https://pmc.ncbi.nlm.nih.gov/articles/PMC8297893/
 cbcl_som,0,14,integer,0,CBCL Somatic,CBCL DSM Somatic Problems,Somatic,CBCL DSM Somatic Problems,,1,0,0,1,7,,Swedish clinical sample https://pmc.ncbi.nlm.nih.gov/articles/PMC8297893/
 cbcl_adhd,0,14,integer,0,CBCL ADHD,CBCL DSM ADHD Problems,ADHD,CBCL DSM ADHD Problems,,1,0,0,1,7,6,Swedish clinical sample https://pmc.ncbi.nlm.nih.gov/articles/PMC8297893/
 cbcl_odd,0,10,integer,0,CBCL ODD,CBCL DSM Oppositional Defiant Problems,ODD,CBCL DSM Oppositional Defiant Problems,,1,0,0,1,5,8,Swedish clinical sample https://pmc.ncbi.nlm.nih.gov/articles/PMC8297893/
@@ -37,8 +37,8 @@ base_hearing_impairment,0,1,integer,1,Hearing Impariment,Hearing Impariment,,,1,
 base_visual_impairment,0,1,integer,1,Visual Impairment,Visual Impairment,,,1,1,1,0,0,,,
 base_subjective_poverty,0,20,integer,0,Subjective poverty,Subjective poverty,,,1,0,0,0,0,,,
 base_imd_decile,0,10,any,0,IMD - decile,Index of multiple deprevation - decile,IMD - decile,,1,0,0,0,0,,,
-base_ld,0,1,integer,1,Intelectual Disability,Intelectual Disability,,,1,0,0,1,0,,,
-learning_disability_cat,0,5,integer,1,Intelectual Disability - Category,Intelectual Disability - Category,,,0,0,0,1,0,,,
+base_ld,0,1,integer,1,Intellectual Disability,Intellectual Disability,,,1,0,0,1,0,,,
+learning_disability_cat,0,5,integer,1,Intellectual Disability - Category,Intellectual Disability - Category,,,0,0,0,1,0,,,
 base_maternal_education,0,1,integer,1,Maternal Education,Maternal Education beyond high school,Maternal Education,,1,1,1,0,0,,,
 base_maternal_mh,0,30,integer,0,Maternal K6,Maternal Mental Health (K6),,,1,0,0,0,0,,,
 base_ados_css_rrb,0,10,integer,0,ADOS CSS RRB,ADOS CSS Restricted Reppetative Behaviours,ADOS CSS RRB,,1,1,1,0,0,,,

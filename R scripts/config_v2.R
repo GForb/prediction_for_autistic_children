@@ -1,3 +1,6 @@
+# This config file is to be used with the output included in the publication.
+
+
 # Setting paths ----
 # To set paths the global option "pfac_path" must be set with the path to the data and outputs folder. 
 # If using Rstudio, this can be done by adding  Sys.setenv(pfac_path = "*path to data*") to the .Renviron file. To edit the .Renviron file you can use  usethis::edit_r_environ().
@@ -8,6 +11,7 @@ print("running config v2 for publicaiton output")
 data_and_outputs <-  Sys.getenv("pfac_path")
 raw_data <- here::here(data_and_outputs, "Raw data")
 derived_data <- here::here(data_and_outputs, "Publication", "Derived Data")
+pi_data_folder <- derived_data
 
 # Output folders
 outputs <- here::here(data_and_outputs, "Publication", "Outputs")

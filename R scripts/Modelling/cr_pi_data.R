@@ -8,7 +8,7 @@ pi_data_sdq <- get_pi_data(
   minmax_values = sdq_cutoffs |> select(outcome, min, max),
   results_folder = results_folder_sdq
 )
-saveRDS(pi_data_sdq, here(derived_data, "pi_data_sdq.Rds"))
+saveRDS(pi_data_sdq, here(pi_data_folder, "pi_data_sdq.Rds"))
 # CBCL
 
 
@@ -19,7 +19,7 @@ pi_data_cbcl <- get_pi_data(
   minmax_values = cbcl_cutoffs |> select(outcome, min, max),
   results_folder = results_folder_cbcl
 )
-saveRDS(pi_data_cbcl, here(derived_data, "pi_data_cbcl.Rds"))
+saveRDS(pi_data_cbcl, here(pi_data_folder, "pi_data_cbcl.Rds"))
 
 # VABS
 vabs_cutoffs <- tibble(
@@ -42,4 +42,4 @@ pi_data_vabs <- get_pi_data(
   results_folder = results_folder_vabs
 )
 
-saveRDS(pi_data_vabs, here(derived_data, "pi_data_vabs.Rds"))
+saveRDS(pi_data_vabs, here(pi_data_folder, "pi_data_vabs.Rds"))
