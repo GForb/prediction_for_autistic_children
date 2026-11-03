@@ -167,49 +167,49 @@ tictoc::toc()
 # source(here(modelling_scripts, "run_model_only_sdq.R"))
 
 # Reporting
-# NOT RUN YET - to be run once revised results have been checked
-# source(here(thesis_reporting, "n_fup_tables.R"))
-# source(here(thesis_reporting, "ages_tables.R"))
-#
-# source(here(thesis_reporting, "sdq_summary_plots.R"))
-# source(here(thesis_reporting, "cbcl_summary_plots.R"))
-# source(here(thesis_reporting, "vabs_summary_plots.R"))
-#
-#
-# source(here(thesis_reporting, "cbcl_descriptive_table.R"))
-# source(here(thesis_reporting, "sdq_descriptive_table.R"))
-# source(here(thesis_reporting, "vabs_descriptive_table.R"))
-#
-#
-#
-# source(here(thesis_reporting, "cr_main_results.R"))
-# source(here(thesis_reporting, "main_results_table.R"))
-#
-# source(here(thesis_reporting, "thesis_forrest_plots_and_calibration.R"))
-#
-#
-# source(here(thesis_reporting, "report_model_only.R"))
-#
-# source(here(thesis_reporting, "sensitivity_analysis_plots_and_tables.R"))
-# source(here(thesis_reporting, "correlation_plots.R"))
-#
-# source(here(modelling_scripts, "cr_pi_data.R"))
-# source(here(thesis_reporting, "prediction_intervals.R"))
-#
-#
-# # ISCB Charts
-#
-# template = here("Rmarkdown/iscb_charts.Rmd")
-# output_file_name  <-  "iscb_charts.html"
-# run_results_report(template, output_file_name)
-#
-#
-# # Plots for presentations
-# source(here(reporting_scripts, "sibngle_outcome_pi.R"))
-# source(here(reporting_scripts, "sdq_v_cbcl.R"))
-#
-# # Paper tables and figures
-# source(here(paper_scripts, "paper_baseline_table.R"))
-# source(here(paper_scripts, "paper_main_results_plot.R"))
-# source(here(paper_scripts, "paper_prediction_intervals.R"))
-# source(here(paper_scripts, "paper_prediction_examples.R"))
+ source(here(thesis_reporting, "n_fup_tables.R"))
+ source(here(thesis_reporting, "ages_tables.R"))
+
+ source(here(thesis_reporting, "sdq_summary_plots.R"))
+ source(here(thesis_reporting, "cbcl_summary_plots.R"))
+ source(here(thesis_reporting, "vabs_summary_plots.R"))
+
+
+ source(here(thesis_reporting, "cbcl_descriptive_table.R"))
+ source(here(thesis_reporting, "sdq_descriptive_table.R"))
+ source(here(thesis_reporting, "vabs_descriptive_table.R"))
+
+
+
+ source(here(thesis_reporting, "cr_main_results.R"))
+ source(here(thesis_reporting, "main_results_table.R"))
+ source(here(thesis_reporting, "single_timepoint_results_table.R"))
+
+ source(here(thesis_reporting, "thesis_forrest_plots_and_calibration.R"))
+
+
+ source(here(thesis_reporting, "report_model_only.R"))
+
+ source(here(thesis_reporting, "sensitivity_analysis_plots_and_tables.R"))
+ source(here(thesis_reporting, "correlation_plots.R"))
+
+ source(here(modelling_scripts, "cr_pi_data.R"))
+ source(here(thesis_reporting, "prediction_intervals.R"))
+
+
+ # ISCB Charts
+
+ #template = here("Rmarkdown/iscb_charts.Rmd")
+ #output_file_name  <-  "iscb_charts.html"
+ #run_results_report(template, output_file_name)
+
+
+ # Plots for presentations
+ source(here(reporting_scripts, "sibngle_outcome_pi.R"))
+ source(here(reporting_scripts, "sdq_v_cbcl.R"))
+
+ # Paper tables and figures
+ source(here(paper_scripts, "paper_baseline_table.R"))
+ source(here(paper_scripts, "paper_main_results_plot.R"))
+ source(here(paper_scripts, "paper_prediction_intervals.R"))
+ source(here(paper_scripts, "paper_prediction_examples.R"))
