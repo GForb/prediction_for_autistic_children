@@ -54,3 +54,4 @@ cbcl_plot <- main_results_cbcl |>
   plot_annotation(tag_levels = 'A')
 
 ggsave(file = here::here(plots_folder, "main_results.png"), width = 18, height = 21, units = "cm")
+ggsave(file = here::here(plots_folder, "main_results.pdf"), width = 18, height = 21, units = "cm")

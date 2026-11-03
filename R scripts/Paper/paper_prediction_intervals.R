@@ -55,7 +55,7 @@ report_coverage(pi_data_cbcl)
 pi_data_vabs_raw <- readRDS(here(derived_data, "pi_data_vabs.Rds")) 
 
 
-pi_data_vabs |> select(base_spline1, outcome) |> 
+pi_data_vabs_raw |> select(base_spline1, outcome) |> 
   group_by(outcome) |> 
   summarise(q5 = quantile(base_spline1, 0.05),
             q90 = quantile(base_spline1, 0.95))
@@ -74,3 +74,4 @@ vabs_plot
   plot_annotation(tag_levels = 'A')
 
 ggsave(here::here(plots_folder, paste0("prediction_intervals.png")), width = 18, height = 21, units = "cm")
+ggsave(here::here(plots_folder, paste0("prediction_intervals.pdf")), width = 18, height = 21, units = "cm")
