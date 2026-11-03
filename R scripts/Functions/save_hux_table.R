@@ -7,7 +7,10 @@ save_hux_table <- function(hux_table, file_name, label, caption, short_caption =
     bottom_padding = padding
   )
   
-  table <- hux_table |> 
+  # Defaults only apply to tables created afterwards, so font and padding are also set on this table directly
+  table <- hux_table |>
+    huxtable::set_font(value = "mathptmx") |>
+    huxtable::set_all_padding(value = padding) |>
     huxtable::set_top_border(row = 1, value = 0.8) |>
     huxtable::set_bottom_border(row = huxtable::final(1), value = 0.8) |> 
     huxtable::set_caption_pos("bottom") |> 
