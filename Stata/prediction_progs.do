@@ -485,7 +485,10 @@ syntax varname, model_code(string) hold_out_fold(string)  intercept_est(string) 
 		local eq_name = word("`col_eq_names'", `i')
 		local constraint_name _b[`eq_name':`colname']
 		
-		if "`col_fold'" != "`hold_out_fold'" { //  &  regexm("`col_fold'", "^var\(e\." ) != 1
+		* Omitted study dummies (o.study_*, e.g. studies dropped from sensitivity datasets) are not constrained, as gsem omits them again and constraining them gives r(412) redundant or inconsistent constraints
+		local omitted_study = strpos("`colname'", "o.`varlist'_") == 1
+
+		if "`col_fold'" != "`hold_out_fold'" & !`omitted_study' { //  &  regexm("`col_fold'", "^var\(e\." ) != 1
 			local a = `A'[1,`i']
 			di "constraint `i' `constraint_name' = `a'"
 			constraint `i' `constraint_name' = `a'
